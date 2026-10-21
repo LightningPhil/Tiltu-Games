@@ -100,9 +100,9 @@ for(const viewport of [{width:320,height:640},{width:844,height:390},{width:1280
   await open(page,game);
   expect(await page.evaluate(()=>document.documentElement.scrollHeight),`${game}: page height`).toBeLessThanOrEqual(viewport.height+1);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth),`${game}: page width`).toBeLessThanOrEqual(viewport.width+1);
-  const surface=(await page.locator('.workspace-surface').boundingBox())!,hand=await page.locator('.workspace-hand').count()?await page.locator('.workspace-hand').boundingBox():null;
-  expect(surface.height,`${game}: table visibility`).toBeGreaterThan(130);
-  expect(surface.height+(hand?.height??0),`${game}: cards given screen space`).toBeGreaterThan(viewport.height<500?180:viewport.height*.43);
+  let heights={surfaceHeight:0,handHeight:0};
+  await expect.poll(async()=>{heights=await page.evaluate(()=>({surfaceHeight:document.querySelector('.workspace-surface')?.getBoundingClientRect().height??0,handHeight:document.querySelector('.workspace-hand')?.getBoundingClientRect().height??0}));return heights.surfaceHeight;},{message:`${game}: table visibility`}).toBeGreaterThan(130);
+  expect(heights.surfaceHeight+heights.handHeight,`${game}: cards given screen space`).toBeGreaterThan(viewport.height<500?180:viewport.height*.43);
   for(const control of await page.locator('.workspace-actions button,.workspace-hand>button').all()){const b=await control.boundingBox();if(b&&b.width&&b.height){expect(b.y+b.height,`${game}: decision controls`).toBeLessThanOrEqual(viewport.height+1);expect(b.x+b.width,`${game}: hand right edge`).toBeLessThanOrEqual(viewport.width+1);}}
   await page.getByRole('tab',{name:'Setup',exact:true}).click();await expect(page.locator('.settings-card').first()).toBeVisible();await page.keyboard.press('Escape');await expect(page.locator('.workspace-board')).toBeVisible();
  });

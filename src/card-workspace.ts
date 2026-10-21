@@ -26,6 +26,7 @@ export function prepareCardWorkspace(game:string,main:HTMLElement,arena:HTMLElem
   for(const el of [...(sidebar?.querySelectorAll<HTMLElement>('#undo,[data-patience="hint"],[data-patience="auto"]')??[])])el.remove(); // Existing on-table versions remain the live controls.
  }
  if(game==='blackjack'){
+  const stake=p.stats.querySelector<HTMLSelectElement>('#blackjack-bet-table');if(stake){stake.setAttribute('aria-label','Next stake in practice chips');for(const option of stake.options)option.textContent=option.value;}
   const reset=arena.querySelector('#new-game');if(reset)main.querySelector('.settings-card')?.append(reset);
  }
  move('.tutor-panel,.blackjack-coach,.poker-table-tutor,.poker-showdown,.poker-stages,.gin-hand-legend,.plus-round-summary,.plus-last-trick,.poker-key-guide,.retro-status',p.tools);

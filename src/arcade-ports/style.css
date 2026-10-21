@@ -23,6 +23,135 @@
 #app .arcade-port.whacker-port .leaderboard{padding:15px;margin:10px 0 0;background:var(--surface);border:1px solid var(--line);border-radius:12px}#app .arcade-port.whacker-port .leaderboard h2{font-size:20px}#app .arcade-port.whacker-port .leaderboard-heading{display:block}#app .arcade-port.whacker-port .leaderboard-heading>span{font-size:9px}#app .arcade-port.whacker-port #whack-root>footer{display:none}#app .arcade-port.whacker-port .section-heading{margin-bottom:12px}#app .arcade-port.whacker-port .section-heading h2{font-size:17px}#app .arcade-port.whacker-port .character-picker{gap:7px}#app .arcade-port.whacker-port .character-card{min-height:70px;padding:5px}#app .arcade-port.whacker-port .character-card .character-icon{height:40px}#app .arcade-port.whacker-port .character-card .character-name{font-size:9px}#app .arcade-port.whacker-port .start-note{font-size:10px}#app .arcade-port.whacker-port #start{font-size:16px;padding:12px}
 #app .arcade-port.whacker-port :is(.hole-key,.target-badge){font-family:system-ui,sans-serif!important}#app .arcade-port.whacker-port .hole-key{color:#fff;background:#163d2799;border-radius:4px}#app .arcade-port.whacker-port .well-rim{pointer-events:none}#app .arcade-port.whacker-port .board-message{color:var(--accent)}
 .port-error{padding:40px;max-width:600px;margin:auto}
+#app .ballistics-port .start-card{padding:16px 22px;width:min(850px,100%);overflow:auto}
+#app .ballistics-port .title-row{margin:0;padding:0}
+#app .ballistics-port .title-row h1{font-size:25px;line-height:1.1;margin:0}
+#app .ballistics-port .title-art{display:none}
+#app .ballistics-port .port-mode-actions{margin:12px 0}
+#app .ballistics-port #ballistics-workshop .arcade-tab-panel{padding:6px 0}
+#app .ballistics-port #squad-options{border:0;padding:0;margin:0}
+#app .ballistics-port #squad-options>summary{display:none}
+#app .ballistics-port .map-generator{padding:0;border:0}
+#app .ballistics-port .settings-layout{display:block}
+#app .ballistics-port .settings-card{max-height:100%;overflow:auto}
+#app .ballistics-port .mobile-arsenal{display:none}
+@media(max-width:760px){
+ #app .ballistics-port #weapon-panel{display:none}
+ #app .ballistics-port .mobile-arsenal{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1;color:var(--muted);font-size:10px}
+ #app .ballistics-port #weapon-select{width:100%;min-height:42px;padding:6px;font-size:11px}
+ #app .ballistics-port .loadout{gap:10px;align-items:start}
+ #app .ballistics-port #gauges-panel{width:135px}
+ #app .ballistics-port #touch-controls{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
+ #app .ballistics-port #touch-controls button{min-height:44px;padding:6px;font-size:10px}
+ #app .ballistics-port #touch-controls .touch-fire{grid-column:4;grid-row:1/span 2;font-size:14px}
+ #app .ballistics-port .weapon-guidance{font-size:10px;line-height:1.4;margin:6px 0;min-height:28px}
+ #app .ballistics-port .field-toolbar{left:6px;right:6px;top:6px;gap:4px;flex-wrap:wrap}
+ #app .ballistics-port .field-toolbar button{min-height:32px;padding:4px 5px;font-size:8px}
+ #app .ballistics-port .start-card{padding:14px}
+}
+#app .horizon-port #load-screen .menu-panel{width:min(850px,100%);padding:18px 22px}
+#app .horizon-port #load-screen .title{font-size:26px;margin:0 0 6px}
+#app .horizon-port #load-screen .title small{display:none}
+#app .horizon-port #load-screen .intro{font-size:12px;margin:0}
+#app .horizon-port #horizon-deck .arcade-tab-panel{padding:8px 2px}
+#app .horizon-port #horizon-deck .field-label{margin:10px 0 5px;font-size:10px}
+#app .horizon-port #horizon-deck .route-picker{margin-top:12px}
+#app .horizon-port #horizon-deck .setup-control-note{font-size:12px;line-height:1.6}
+#app .horizon-port #horizon-deck .assist-options{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+#app .horizon-port #horizon-deck .flight-manual{margin:0;border:0}
+#app .horizon-port #horizon-deck .flight-manual>summary{display:none}
+#app .horizon-port #horizon-deck .manual-body{padding:0}
+#app .horizon-port .pause-panel{max-height:100%;overflow:auto;max-width:760px;width:100%;padding:18px}
+#app .horizon-port #horizon-pause :is(.pause-radio,.pause-presentation){border:0;margin:0;padding:0}
+#app .horizon-port #horizon-pause details>summary{display:none}
+#app .horizon-port #horizon-pause .pause-settings{margin:0;padding:4px 0}
+#app .horizon-port #pause-screen #resume{margin:8px 0;width:100%}
+@media(max-width:700px){
+ #app .horizon-port #load-screen .menu-panel{padding:14px}
+ #app .horizon-port #horizon-deck .assist-options{grid-template-columns:1fr}
+ #app .horizon-port:not(.detailed-hud) :is(.radar-panel,.attitude-panel,.compass-panel){display:none}
+ #app .horizon-port .hud-actions{gap:4px}
+ #app .horizon-port .hud-actions button{min-width:34px;min-height:36px;padding:4px;font-size:10px}
+ #app .horizon-port #touch-stick{width:96px;height:96px;left:12px;bottom:30px}
+ #app .horizon-port .touch-buttons{right:12px;bottom:30px;gap:7px;grid-template-columns:48px 68px;grid-template-rows:48px 68px}
+ #app .horizon-port .touch-action{width:48px;height:48px;font-size:9px}
+ #app .horizon-port .touch-action.fire{width:68px;height:68px}
+ #app .horizon-port .systems-panel{bottom:170px;left:12px;max-width:155px}
+ #app .horizon-port .systems-panel #energy-hint,#app .horizon-port .systems-panel #pulse-box>small{display:none}
+}
+#app .whacker-port .sidebar{overflow:hidden;padding:0}
+#app .whacker-port #whack-options{height:100%;display:flex;flex-direction:column;min-height:0}
+#app .whacker-port #whack-options>.arcade-tab-panel{min-height:0;overflow:auto;padding:6px 2px;overscroll-behavior:contain}
+#app .whacker-port #whack-options .panel{margin:0;padding:12px}
+#app .whacker-port #custom-menu{border:0;margin:0;padding:12px}
+#app .whacker-port #custom-menu>summary{display:none}
+#app .whacker-port #setup-panel>#start{margin-bottom:12px}
+#app .whacker-port .board-section{display:flex;flex-direction:column;position:relative}
+#app .whacker-port .garden{flex:1;min-height:0}
+#app .whacker-port .board-section>*:not(.garden){flex-shrink:0}
+#app .whacker-port #whack-root:not(.is-setup) .game-layout{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr)}
+#app .whacker-port #whack-root:not(.is-setup) .sidebar{display:none}
+#app .whacker-port #round-panel:not([hidden]){display:flex;justify-content:center;gap:24px;padding:4px 10px;margin:0;background:transparent;border:0}
+#app .whacker-port #round-panel>:not(.live-stat){display:none}
+#app .whacker-port #round-panel .live-stat{display:flex;gap:8px;align-items:center;margin:0;font-size:10px}
+#app .whacker-port #round-panel .live-stat strong{font-size:13px}
+#app .whacker-port #results-panel:not([hidden]){position:absolute;inset:0;z-index:25;margin:0;overflow:auto;background:var(--surface);padding:18px;max-width:600px;margin-inline:auto}
+#app .whacker-port #results-panel .result-medal{display:none}
+@media(max-width:600px){
+ #app .whacker-port #whack-root.is-setup .game-layout{display:block;min-height:0}
+ #app .whacker-port #whack-root.is-setup .board-section{display:none}
+ #app .whacker-port #whack-root.is-setup .sidebar{height:100%}
+ #app .whacker-port #character-picker{grid-template-columns:repeat(3,minmax(0,1fr))}
+ #app .whacker-port #whack-options .character-card{min-height:62px}
+ #app .whacker-port .scoreboard{padding:6px 9px}
+ #app .whacker-port #round-panel:not([hidden]){gap:12px}
+ #app .whacker-port #round-panel .live-stat{gap:4px;font-size:9px}
+}
+#app .void-port .title-shell{width:min(820px,100%);max-height:100%;padding:18px 22px;overflow:auto;margin:auto}
+#app .void-port .void-hangar-heading .hangar-title{font-size:28px;margin:0}
+#app .void-port .void-hangar-heading .title-intro{margin:6px 0;font-size:12px}
+#app .void-port .void-hangar-heading .port-launch-actions{margin:10px 0}
+#app .void-port #void-hangar-panels>.arcade-tab-panel{padding:10px 0}
+#app .void-port #void-hangar-panels :is(.practice-panel,.career-panel,.record-strip){margin-top:0}
+#app .void-port #void-hangar-panels :is(.practice-panel,.career-panel,.controls-details)>summary{display:none}
+#app .void-port #void-hangar-panels .briefing-card{margin-top:12px}
+#app .void-port .pause-settings{display:block;min-width:0}
+#app .void-port .pause-shell{max-height:100%;overflow:auto;padding:18px;width:min(760px,100%)}
+#app .void-port .pause-settings .arcade-tab-panel{padding:8px 0}
+#app .void-port .flight-hud{padding:8px 12px;gap:12px;top:8px}
+#app .void-port #chapter-label{display:none}
+#app .void-port .flight-bottom{padding:8px 12px;bottom:8px;display:flex;flex-direction:column;gap:6px}
+#app .void-port .void-control-row{display:grid;grid-template-columns:100px minmax(0,1fr) 100px;gap:12px;align-items:center;width:100%;pointer-events:auto}
+#app .void-port #fire-btn{width:84px;height:84px;min-height:0;border-radius:50%;font-size:16px;justify-self:start;border:2px solid var(--p2);touch-action:none}
+#app .void-port #fire-btn small{display:block;font-size:10px;color:inherit;margin-top:3px}
+#app .void-port .void-stick-wrap{display:grid;justify-items:center;gap:3px;font-size:9px;color:var(--muted)}
+#app .void-port .ability-controls{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
+#app .void-port .ability-controls button{min-height:42px;min-width:0;padding:7px 10px}
+#app .void-port .pulse-control button{min-width:0}
+#app .void-port #controls-hint{display:none}
+@media(max-width:600px){
+ #app .void-port .title-shell{padding:14px}
+ #app .void-port .flight-hud{padding:6px 8px;gap:5px}
+ #app .void-port .flight-hud #hud-phase{font-size:8px;margin-bottom:4px}
+ #app .void-port .flight-hud #hud-score{font-size:20px}
+ #app .void-port .flight-bottom{padding:7px;width:calc(100% - 16px)}
+ #app .void-port .void-control-row{grid-template-columns:74px minmax(0,1fr) 84px;gap:6px}
+ #app .void-port #fire-btn{width:70px;height:70px;font-size:14px}
+ #app .void-port .arcade-stick{width:84px;height:84px}
+ #app .void-port .ability-controls{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+ #app .void-port .ability-controls button{min-height:40px;padding:4px;font-size:8px;white-space:normal}
+ #app .void-port .hud-resources{font-size:8px;gap:8px}
+ #app .void-port .hud-resources b{font-size:11px}
+ #app .void-port .hud-resources small{font-size:8px}
+}
+@media(max-height:500px) and (min-width:601px){
+ #app .void-port .flight-hud{padding:5px 10px;gap:10px}
+ #app .void-port .flight-hud #hud-phase,#app .void-port #hud-combo{display:none}
+ #app .void-port .flight-hud #hud-score{font-size:22px}
+ #app .void-port .void-control-row{grid-template-columns:64px 1fr 64px}
+ #app .void-port .arcade-stick,#app .void-port #fire-btn{width:60px;height:60px}
+ #app .void-port .void-stick-wrap>small,#app .void-port .hud-resources{display:none}
+}
 #app .arcade-port :is(.primary,.primary-button) :is(span,b,strong,small){color:var(--accent-ink)}
 #app .arcade-port .port-launch-actions{display:flex;gap:9px;align-items:stretch;margin:14px 0 18px;flex-wrap:wrap}
 #app .arcade-port .port-launch-actions>button{flex:1;min-width:145px;min-height:45px;margin:0;display:flex;align-items:center;justify-content:center;font-size:13px;padding:12px 18px;border-radius:10px}
@@ -48,6 +177,14 @@
 }
 @media(max-height:600px) and (min-width:601px){.port-heading .eyebrow{display:none}.port-heading{min-height:30px}.ports-page{gap:6px;padding-top:6px;padding-bottom:6px}.port-heading h1{font-size:21px}#app .arcade-port.whacker-port #whack-root{padding:9px;gap:7px}#app .arcade-port.whacker-port .masthead{display:none}#app .arcade-port.whacker-port #whack-root{grid-template-rows:auto minmax(0,1fr)}#app .arcade-port.whacker-port .scoreboard{padding:7px 14px 12px}#app .arcade-port.whacker-port .score-stat strong{font-size:20px}#app .arcade-port.whacker-port .game-layout{grid-template-columns:minmax(0,1fr) 285px}#app .arcade-port.whacker-port .controls-hint{display:none}#app .arcade-port.whacker-port .board-section{grid-template-rows:auto minmax(0,1fr) auto auto}#app .arcade-port.whacker-port .board-top{min-height:20px}#app .arcade-port .screen .menu-panel{padding:12px}#app .arcade-port.horizon-port .title{margin-top:6px}#app .arcade-port.horizon-port .intro{margin-bottom:10px}}
 @media(prefers-reduced-motion:reduce){#app .arcade-port *{scroll-behavior:auto!important;transition:none!important}}
+@media(max-height:500px) and (min-width:601px){
+ #app .arcade-port.whacker-port .scoreboard{padding:3px 12px 7px}
+ #app .arcade-port.whacker-port .score-stat strong{font-size:18px;line-height:1.15}
+ #app .arcade-port.whacker-port .score-stat>span{font-size:7px}
+ #app .arcade-port.whacker-port .board-top{min-height:14px;font-size:8px}
+ #app .arcade-port.whacker-port .board-bottom{min-height:32px;padding:0;justify-content:flex-end}
+ #app .arcade-port.whacker-port #board-message,#app .arcade-port.whacker-port #round-panel:not([hidden]){display:none}
+}
 
 #app .arcade-port.whacker-port .hole{width:min(100%,170px);justify-self:center}
 #app .arcade-port.whacker-port .animal{height:130%;top:-22%}

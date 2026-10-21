@@ -1,4 +1,6 @@
 import {SKILL_NAMES} from './skill.ts';
+import {panelNavigation} from './arcade-controls.ts';
+import {lifeLayout} from './life-layout.ts';
 import LifeWorker from './ai-worker.ts?worker&inline';
 import { tetraJoinedEdges } from './board-art.ts';
 import { digitalGraphic, mineGraphic } from './graphics.ts';
@@ -35,6 +37,7 @@ export class ArcadeController {
   private lifeRotation = 0; private lifeMirror = false; private showLifeTrails = false; private lifeTrails: number[] = [];
   private lifeWorlds = new Map<LifeMode, LifeSession>();
   private lifeZoom = 1; private lifePan: { pointer: number; x: number; y: number; left: number; top: number } | null = null;
+  private lifeTab=0;
   private paint: { pointer: number; value: number; first: boolean; last: number } | null = null;
   private selected: TilePlace | null = null;
   private tetraLarge = false; private tetraColours = true;
@@ -43,6 +46,8 @@ export class ArcadeController {
   private held = new Map<number, number>(); private steer = 0; private mouse: number | null = null; private brake = false; private jump = false; private fast = false;
   private skiKeys = new Set<string>(); private skiRenderer = new SkiRenderer(); private skiNotice = ''; private skiNoticeUntil = 0;
   private skiCountdown = 0;
+  private skiSetupTab=0;
+  private skiControls=new Map<number,HTMLElement>();
   private message = '';
   constructor(private app: HTMLElement, private state: SavedState, private changed: () => void) {
     app.addEventListener('contextmenu', e => { const cell = (e.target as HTMLElement).closest<HTMLElement>('[data-mine]'); if (cell && this.game === 'mines') { e.preventDefault(); if (this.mineLong === Number(cell.dataset.mine)) return; this.mineHelp = null; this.message = ''; this.mineOpened = []; flagMine(this.state.mines!, Number(cell.dataset.mine)); this.changed(); } });
@@ -51,11 +56,12 @@ export class ArcadeController {
     app.addEventListener('pointerover', e => { if (this.game === 'mines') this.showMineClue(Number((e.target as HTMLElement).closest<HTMLElement>('[data-mine]')?.dataset.mine ?? -1)); });
     app.addEventListener('focusin', e => { if (this.game === 'mines') this.showMineClue(Number((e.target as HTMLElement).closest<HTMLElement>('[data-mine]')?.dataset.mine ?? -1)); });
     app.addEventListener('pointerup', e => this.pointerUp(e));
-    app.addEventListener('pointercancel', () => { this.held.clear(); this.clearPointer(); });
+    app.addEventListener('pointercancel', event => { if(this.game==='ski')this.releaseSkiControl(event.pointerId);else this.clearPointer(); });
+    app.addEventListener('lostpointercapture',event=>{if(this.game==='ski')this.releaseSkiControl((event as PointerEvent).pointerId);});
     app.addEventListener('pointerout', e => { if ((e.target as HTMLElement).id === 'ski-canvas') this.mouse = null; });
-    document.addEventListener('keyup', e => { if (this.game === 'ski') { this.skiKeys.delete(e.key); this.steer = Number(this.skiKeys.has('ArrowRight')) - Number(this.skiKeys.has('ArrowLeft')); this.brake = this.skiKeys.has('ArrowUp') || this.skiKeys.has('ArrowDown'); } });
-    document.addEventListener('visibilitychange', () => { this.last = 0; if (document.hidden) { if (this.game !== 'life') this.running = false; this.steer = 0; this.brake = false; this.held.clear(); this.skiKeys.clear(); this.clearPointer(); if (this.game) this.changed(); } });
-    window.addEventListener('blur', () => { this.steer = 0; this.brake = false; this.held.clear(); this.skiKeys.clear(); this.clearPointer(); });
+    document.addEventListener('keyup', e => { if (this.game === 'ski') { this.skiKeys.delete(this.skiKey(e)); this.steer = Number(this.skiKeys.has('ArrowRight')) - Number(this.skiKeys.has('ArrowLeft')); this.brake = this.skiKeys.has('ArrowUp') || this.skiKeys.has('ArrowDown'); } });
+    document.addEventListener('visibilitychange', () => { this.last = 0; if (document.hidden) { if (this.game !== 'life') this.running = false; this.steer = 0; this.brake = false; this.clearSkiControls(); this.skiKeys.clear(); this.clearPointer(); if (this.game) this.changed(); } });
+    window.addEventListener('blur', () => { this.steer = 0; this.brake = false; this.clearSkiControls(); this.skiKeys.clear(); this.clearPointer();if(this.game==='ski'&&this.running){this.running=false;this.skiCountdown=0;this.changed();} });
   }
   ensure(game: ArcadeGame): void {
     const p = this.state.preferences;
@@ -68,15 +74,21 @@ export class ArcadeController {
     this.skiCountdown = 0;this.cancelLifeTurn();
     cancelAnimationFrame(this.raf); this.raf = 0; this.last = 0; this.running = false; this.thinking = false;
     if (this.timer) clearTimeout(this.timer); this.timer = null;
-    this.clearPointer(); this.game = null; this.held.clear(); this.skiKeys.clear(); this.steer = 0; this.mouse = null; this.brake = false; this.jump = false; this.lifeClock = 0;
+    this.clearPointer(); this.clearSkiControls();this.game = null; this.skiKeys.clear(); this.steer = 0; this.mouse = null; this.brake = false; this.jump = false; this.lifeClock = 0;
     this.message = ''; this.selected = null; this.mineLong = null;
   }
   mount(game: ArcadeGame): void {
     this.ensure(game); this.game = game;
-    if (game === 'life') this.running = this.state.life!.running;
+    if (game === 'life') {this.running = this.state.life!.running;lifeLayout(this.app,this.lifeTab,index=>{this.lifeTab=index;});}
+    if(game==='ski'){
+      const panel=this.app.querySelector<HTMLElement>('.ski-settings-panel')!,children=[...panel.children],help=children.findIndex(e=>e.tagName==='H2'&&e.textContent==='How to play'),done=children.at(-1)!;
+      const host=document.createElement('div');host.id='ski-setup-panels';
+      panelNavigation(host,'Ski setup sections',[{name:'Run & steering',elements:children.slice(0,help)},{name:'How to play',elements:children.slice(help,-1)}],this.skiSetupTab,index=>{this.skiSetupTab=index;});
+      panel.append(done,host);
+    }
     this.app.querySelector<HTMLDetailsElement>('.ski-settings')?.addEventListener('toggle', event => {
       if (this.game === 'ski' && (event.currentTarget as HTMLDetailsElement).open && this.running) {
-        this.running = false; this.last = 0; this.skiKeys.clear(); this.held.clear(); this.steer = 0; this.mouse = null; this.brake = false; this.changed();
+        this.running = false; this.last = 0; this.skiKeys.clear(); this.clearSkiControls(); this.steer = 0; this.mouse = null; this.brake = false; this.changed();
       }
     });
     this.draw(); if (game === 'mines') this.showMineClue(this.mineFocus); if (!this.raf) this.raf = requestAnimationFrame(t => this.frame(t)); this.scheduleLife();
@@ -96,7 +108,7 @@ export class ArcadeController {
     if (!document.hidden) {
       if (this.game === 'ski' && this.running && this.skiCountdown > 0) this.skiCountdown = Math.max(0, this.skiCountdown - dt);
       else if (this.game === 'ski' && this.running) {
-        const s = this.state.ski!, steer = this.held.size ? [...this.held.values()].filter(n => Math.abs(n) <= 1).reduce((a, b) => a + b, 0) : this.state.preferences.skiInput === 'mouse' && this.mouse !== null ? Math.max(-1, Math.min(1, (this.mouse - s.x) / 70)) : this.steer;
+        const s = this.state.ski!,steering=[...this.held.values()].filter(n=>Math.abs(n)<=1), steer = steering.length ? steering.reduce((a,b)=>a+b,0) : this.state.preferences.skiInput === 'mouse' && this.mouse !== null ? Math.max(-1, Math.min(1, (this.mouse - s.x) / 70)) : this.steer;
         const before = { tumble: s.tumble, jump: s.jump, gates: s.gates, misses: s.misses, score: s.score, yeti: s.yeti?.phase, status: s.status };
         stepSki(s, { steer, brake: this.brake || [...this.held.values()].includes(2), jump: this.jump, fast: this.fast }, dt); this.jump = false;
         const notice = s.status === 'caught' && before.status !== 'caught' ? 'Yeti lunch. At least the skis are crunchy.' : s.yeti?.phase === 'windup' && before.yeti !== 'windup' ? 'He is about to pounce! Change your line!' : s.yeti?.phase === 'recover' && before.yeti !== 'recover' ? 'Missed! Make your escape!' : !before.yeti && s.yeti ? 'YETI! Fast mode or dodge the leap!' : !before.tumble && s.tumble ? 'Oof! Skis, limbs and snow everywhere.' : before.tumble && !s.tumble ? 'Back on your feet. Point them downhill.' : s.misses > before.misses ? 'Missed gate · +3 seconds' : s.gates > before.gates ? 'Clean gate · +50' : before.jump && !s.jump && !s.crash ? `Landed · +${s.score - before.score}` : !before.jump && s.jump ? s.jumpPeak > 50 ? 'Big air! Carve for trick points.' : 'Airborne · carve for trick points' : '';
@@ -175,6 +187,7 @@ export class ArcadeController {
       if (action === 'run' && (s.status === 'ready' || s.status === 'skiing' || s.status === 'caught' && s.captureAge < SKI_CAPTURE_DURATION)) { if (s.status === 'ready') s.status = 'skiing'; if (!this.running) this.app.querySelector<HTMLDetailsElement>('.ski-settings')?.removeAttribute('open'); this.running = !this.running; this.last = 0; }
       if (action === 'fast') this.fast = !this.fast;
       if (action === 'run') this.skiCountdown = this.running && s.status === 'skiing' ? 1.8 : 0;
+      if(action==='run'){this.clearSkiControls();this.skiKeys.clear();this.steer=0;this.brake=false;this.mouse=null;}
       if (action === 'jump' && this.running && this.skiCountdown <= 0) this.jump = true;
     } else if (game === 'tetravex') {
       if (action === 'tetra-colours') this.tetraColours = !this.tetraColours;
@@ -237,17 +250,21 @@ export class ArcadeController {
   }
   keydown(e: KeyboardEvent): void {
     if (!this.game || e.ctrlKey || e.metaKey || e.altKey) return;
+    if(this.game==='life'&&e.key.toLowerCase()==='p'&&!(e.target as HTMLElement).closest('input,select,textarea')){e.preventDefault();if(!e.repeat&&this.state.life!.mode!=='colonies')this.action('run');return;}
     if (this.game === 'tetravex' && e.key.startsWith('Arrow')) {
       const from = place((e.target as HTMLElement).dataset.tilePlace ?? '');
       if (from) { e.preventDefault(); const size = this.state.tetravex!.size, x = from.index % size, y = Math.floor(from.index / size); let area = from.area, col = Math.max(0, Math.min(size - 1, x + (e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0))); const row = Math.max(0, Math.min(size - 1, y + (e.key === 'ArrowDown' ? 1 : e.key === 'ArrowUp' ? -1 : 0))); if (e.key === 'ArrowRight' && x === size - 1 && area === 'board') { area = 'tray'; col = 0; } else if (e.key === 'ArrowLeft' && !x && area === 'tray') { area = 'board'; col = size - 1; } this.app.querySelector<HTMLElement>(`[data-tile-place="${area}:${row * size + col}"]`)?.focus(); return; }
     }
     if (this.game === 'mines' && e.key.toLowerCase() === 'p' && !e.repeat) { e.preventDefault(); this.action('pause'); return; }
     if (this.game === 'ski') {
+      if((e.target as HTMLElement).closest('input,select,textarea'))return;
+      if((e.target as HTMLElement).closest('button')&&['Space','Enter'].includes(e.code))return;
       if (this.app.querySelector<HTMLDetailsElement>('.ski-settings')?.open) { if (e.key === 'Escape') { e.preventDefault(); this.action('close-setup'); } return; }
-      if (e.key.startsWith('Arrow') || e.code === 'Space' || ['f', 'p'].includes(e.key.toLowerCase())) e.preventDefault();
-      if (e.key.startsWith('Arrow')) { this.skiKeys.add(e.key); this.mouse = null; this.steer = Number(this.skiKeys.has('ArrowRight')) - Number(this.skiKeys.has('ArrowLeft')); }
-      if (e.key === 'ArrowUp' || e.key === 'ArrowDown') this.brake = true;
-      if (e.code === 'Space' && !e.repeat) this.action('jump'); if (e.key.toLowerCase() === 'f' && !e.repeat) this.action('fast'); if (e.key.toLowerCase() === 'p' && !e.repeat) this.action('run');
+      const key=this.skiKey(e);
+      if (key.startsWith('Arrow') || e.code === 'Space' || ['f','p','Escape','Enter'].includes(key)) e.preventDefault();
+      if (key.startsWith('Arrow')) { this.skiKeys.add(key); this.mouse = null; this.steer = Number(this.skiKeys.has('ArrowRight')) - Number(this.skiKeys.has('ArrowLeft')); }
+      if (key === 'ArrowUp' || key === 'ArrowDown') this.brake = true;
+      if (e.code === 'Space' && !e.repeat) this.action('jump'); if (key==='f' && !e.repeat) this.action('fast'); if (['p','Escape','Enter'].includes(key) && !e.repeat){this.clearSkiControls();this.skiKeys.clear();this.steer=0;this.brake=false;this.action('run');}
     } else if (this.game === 'life' && (e.target as HTMLElement).id === 'life-canvas') {
       const s = this.state.life!, x = this.lifeFocus % s.width, y = Math.floor(this.lifeFocus / s.width);
       if (this.lifeBrush === 'pan' && e.key.startsWith('Arrow')) { e.preventDefault(); this.app.querySelector('.life-stage')?.scrollBy({ left: e.key === 'ArrowLeft' ? -80 : e.key === 'ArrowRight' ? 80 : 0, top: e.key === 'ArrowUp' ? -80 : e.key === 'ArrowDown' ? 80 : 0, behavior: 'smooth' }); return; }
@@ -267,13 +284,20 @@ export class ArcadeController {
     const s = this.state.life!, canvas = this.app.querySelector<HTMLCanvasElement>('#life-canvas')!, rect = canvas.getBoundingClientRect();
     const x = Math.floor((e.clientX - rect.left) / rect.width * s.width), y = Math.floor((e.clientY - rect.top) / rect.height * s.height);
     if (x < 0 || y < 0 || x >= s.width || y >= s.height || !this.paint) return;
-    const at = y * s.width + x; this.lifeFocus = at; if (this.paint.last === at) return; this.paint.last = at;
-    if (editLife(s, at, this.paint.value, this.paint.first)) this.paint.first = false;
+    const at = y * s.width + x; this.lifeFocus = at; if (this.paint.last === at) return;
+    let fromX=this.paint.last<0?x:this.paint.last%s.width,fromY=this.paint.last<0?y:Math.floor(this.paint.last/s.width);
+    const dx=Math.abs(x-fromX),dy=-Math.abs(y-fromY),sx=fromX<x?1:-1,sy=fromY<y?1:-1;let error=dx+dy;
+    while(true){if(editLife(s,fromY*s.width+fromX,this.paint.value,this.paint.first))this.paint.first=false;if(fromX===x&&fromY===y)break;const twice=2*error;if(twice>=dy){error+=dy;fromX+=sx;}if(twice<=dx){error+=dx;fromY+=sy;}}
+    this.paint.last = at;
     this.draw(); this.stats();
   }
+  private skiKey(event:KeyboardEvent):string{return ({KeyA:'ArrowLeft',KeyD:'ArrowRight',KeyW:'ArrowUp',KeyS:'ArrowDown'} as Record<string,string>)[event.code]??(event.key.length===1?event.key.toLowerCase():event.key);}
+  private releaseSkiControl(id:number){const control=this.skiControls.get(id);this.held.delete(id);this.skiControls.delete(id);if(control&&![...this.skiControls.values()].includes(control))control.classList.remove('held');}
+  private clearSkiControls(){const controls=[...this.skiControls];this.skiControls.clear();this.held.clear();for(const [id,control] of controls){control.classList.remove('held');if(control.hasPointerCapture(id))control.releasePointerCapture(id);}}
   private pointerDown(e: PointerEvent): void {
     const target = e.target as HTMLElement, control = target.closest<HTMLElement>('[data-ski-control]');
-    if (control && this.game === 'ski') { if (!this.running) return; const value = control.dataset.skiControl; this.mouse = null; if (value === 'jump') { if (this.skiCountdown <= 0) this.jump = true; } else this.held.set(e.pointerId, value === 'brake' ? 2 : value === 'left' ? -1 : 1); control.setPointerCapture(e.pointerId); e.preventDefault(); return; }
+    if(this.game==='life'&&target.id==='life-canvas'&&(this.paint||this.lifePan||e.button>0))return;
+    if (control && this.game === 'ski') { if (!this.running||e.button>0) return; const value = control.dataset.skiControl; this.mouse = null; if (value === 'jump') { if (this.skiCountdown <= 0) this.jump = true; } else this.held.set(e.pointerId, value === 'brake' ? 2 : value === 'left' ? -1 : 1);this.skiControls.set(e.pointerId,control);control.classList.add('held'); control.setPointerCapture(e.pointerId); e.preventDefault(); return; }
     const mine = target.closest<HTMLElement>('[data-mine]');
     if (mine && this.game === 'mines' && e.pointerType === 'touch') { this.clearPointer(); this.mineLong = null; const at = Number(mine.dataset.mine); this.press = { x: e.clientX, y: e.clientY, timer: setTimeout(() => { this.press = null; this.mineLong = at; this.mineHelp = null; this.message = ''; this.mineOpened = []; flagMine(this.state.mines!, at); this.changed(); }, 450) }; }
     if (target.id === 'life-canvas' && this.game === 'life' && this.lifeBrush === 'pan') { const stage = target.parentElement!; this.lifePan = { pointer: e.pointerId, x: e.clientX, y: e.clientY, left: stage.scrollLeft, top: stage.scrollTop }; target.setPointerCapture(e.pointerId); target.focus(); e.preventDefault(); return; }
@@ -304,7 +328,7 @@ export class ArcadeController {
   private pointerUp(e: PointerEvent): void {
     if (this.lifePan?.pointer === e.pointerId) this.lifePan = null;
     if (this.press) { clearTimeout(this.press.timer); this.press = null; }
-    this.held.delete(e.pointerId);
+    this.releaseSkiControl(e.pointerId);
     if (this.paint?.pointer === e.pointerId) { this.paint = null; this.changed(); }
     const drag = this.tileDrag;
     if (drag?.pointer === e.pointerId) {

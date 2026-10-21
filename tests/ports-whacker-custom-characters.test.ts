@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { loadCustomCharacters, opaqueBounds, removeCustomCharacter, saveCustomCharacter, validatePngHeader } from "../src/arcade-ports/whacker/custom-characters.ts";
+import { loadCustomCharacters, opaqueBounds, removeCustomCharacter, saveCustomCharacter, validatePngHeader, validateImageHeader } from "../src/arcade-ports/whacker/custom-characters.ts";
 import { loadSettings, saveSettings } from "../src/arcade-ports/whacker/storage.ts";
 
 function storage(value?: string, blocked = false) {
@@ -12,6 +12,17 @@ function storage(value?: string, blocked = false) {
   return data;
 }
 const character = { id: "custom:person" as const, name: "My person", image: "data:image/png;base64,iVBORw0KGgo=" };
+
+test('baseline and progressive JPG headers validate dimensions before decoding',()=>{
+  for(const marker of [192,194]){
+    const bytes=new Uint8Array([255,216,255,224,0,4,0,0,255,marker,0,8,8,1,224,2,128,0]);
+    assert.deepEqual(validateImageHeader(bytes.buffer),{width:640,height:480});
+    const view=new DataView(bytes.buffer);view.setUint16(15,9000);
+    assert.throws(()=>validateImageHeader(bytes.buffer),/too large/);
+  }
+  assert.throws(()=>validateImageHeader(new Uint8Array([255,216,255,192,0,20,0]).buffer),/valid PNG or JPG/);
+  assert.throws(()=>validateImageHeader(new TextEncoder().encode('<svg/>').buffer),/valid PNG or JPG/);
+});
 
 test("PNG headers reject disguised non-PNG files and excessive dimensions", () => {
   const bytes = new Uint8Array(33);

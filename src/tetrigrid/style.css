@@ -56,6 +56,17 @@
 .tg-records strong{color:var(--text);margin-left:7px;font-variant-numeric:tabular-nums}.tg-records span{display:block;margin:5px 0 0 22px;font-size:11px}
 .tg-page .tg-mobile-records{display:none}
 .tg-touch button.pressed{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.tg-settings-grid{display:block}
+.tg-settings-grid>section[hidden]{display:none}
+.tg-page .tg-settings{position:fixed;inset:78px 14px 14px;max-width:650px;z-index:35}
+.tg-settings .action-panel-heading{position:sticky;top:0;background:var(--surface);z-index:1;padding-bottom:8px}
+@media(max-width:780px){
+ .tg-page .tg-touch{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;width:100%}
+ .tg-page .tg-touch button{min-height:44px;min-width:0;padding:7px;font-size:15px}
+ .tg-page .tg-touch [data-action-hold="hard"]{grid-column:4;grid-row:1/span 2;font-size:13px}
+ .tg-page .tg-touch [data-action-hold="hold"]{font-size:11px}
+ .tg-page .action-controls{flex-direction:column-reverse}
+}
 @media(max-height:780px){.tg-companion .tg-mini-stats{display:none}.tg-page .tg-mobile-records{display:inline-block}}
 @media(max-width:1000px){
   .tg-companion{display:none}.blocks-page.tg-page .tg-play-area{--tg-companion:0px;--tg-gutter:calc(var(--tg-side) + var(--tg-gap))}.tg-page .tg-mobile-records{display:inline-block}

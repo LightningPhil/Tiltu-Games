@@ -78,6 +78,7 @@ function init() {
     renderer.setSize(window.innerWidth, window.innerHeight); renderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
     presentation = new FlightRenderer(renderer); presentation.resize(window.innerWidth, window.innerHeight, settings.quality);
     renderer.domElement.setAttribute('aria-label', 'Neon Horizon flight view'); renderer.domElement.id = 'flight-view';
+    renderer.domElement.tabIndex=0;
     document.body.appendChild(renderer.domElement);
     if (diagnostics) {
         const output = document.createElement('output'); output.id = 'render-stats'; output.style.cssText = 'position:fixed;bottom:0;left:0;z-index:200;background:#020a12dd;color:#b4f7db;padding:5px;font:11px monospace;pointer-events:none'; document.body.append(output);
@@ -371,7 +372,7 @@ function startGame(seed?: number) {
     document.body.classList.remove('damaged', 'boosting', 'emp-active');
     document.body.classList.toggle('training', run.mode === 'practice');
     document.body.classList.toggle('cruising', run.mode === 'cruise');
-    el('start').blur(); el('retry').blur();
+    el('start').blur(); el('retry').blur();renderer.domElement.focus({preventScroll:true});
     el('save-score').textContent = 'SAVE CALLSIGN';
     if (run.mode !== 'cruise') { spawnEnemy(0, 420, 0, true); spawnEnemy(0, 650, 28, true); spawnEnemy(0, 850, -35, true); }
     const intro = settings.autoFire ? 'Auto cannons armed · line up the diamond · brake for precision'

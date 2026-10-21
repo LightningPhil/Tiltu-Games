@@ -10,6 +10,7 @@ import type { PatienceVariant } from './collection/patience-collection.ts';
 import { collectionGraphic } from './collection-art.ts';
 import { patiencePicker } from './collection/view.ts';
 import './style.css';
+import './arcade-controls.css';
 import './visuals.css';
 import './collection/collection.css';
 import './club-plus/plus.css';

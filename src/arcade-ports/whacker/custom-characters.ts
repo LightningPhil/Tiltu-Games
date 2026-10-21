@@ -25,6 +25,31 @@ export function validatePngHeader(bytes: ArrayBuffer) {
   return { width, height };
 }
 
+export function validateImageHeader(bytes:ArrayBuffer){
+  const data=new Uint8Array(bytes),view=new DataView(bytes);
+  if(data[0]===137)return validatePngHeader(bytes);
+  if(data.length<4||data[0]!==255||data[1]!==216)throw new Error('Choose a valid PNG or JPG image.');
+  let offset=2;
+  while(offset+3<data.length){
+    if(data[offset++]!==255)break;
+    while(data[offset]===255)offset++;
+    const marker=data[offset++];
+    if(marker===217||marker===218)break;
+    if(marker===1||(marker>=208&&marker<=215))continue;
+    if(offset+2>data.length)break;
+    const length=view.getUint16(offset);
+    if(length<2||offset+length>data.length)break;
+    if([192,193,194,195,197,198,199,201,202,203,205,206,207].includes(marker)){
+      if(length<8)break;
+      const height=view.getUint16(offset+3),width=view.getUint16(offset+5);
+      if(!width||!height||width>8192||height>8192||width*height>16_777_216)throw new Error('That JPG is too large. Use an image with at most 16 million pixels and sides under 8192 pixels.');
+      return {width,height};
+    }
+    offset+=length;
+  }
+  throw new Error('Choose a valid PNG or JPG image.');
+}
+
 export function opaqueBounds(pixels: Uint8ClampedArray, width: number, height: number) {
   let left = width, top = height, right = -1, bottom = -1;
   for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
@@ -79,30 +104,33 @@ export function removeCustomCharacter(id: CustomCharacterId) {
 }
 
 /** Resize and trim in the browser, without flattening alpha or sending the photo anywhere. */
-export async function prepareCustomPng(file: File) {
-  if (file.size > MAX_UPLOAD_BYTES) throw new Error("Choose a PNG smaller than 8 MB.");
-  validatePngHeader(await file.slice(0, 33).arrayBuffer());
+export async function prepareCustomImage(file: File) {
+  if (file.size > MAX_UPLOAD_BYTES) throw new Error("Choose a PNG or JPG smaller than 8 MB.");
+  validateImageHeader(await file.arrayBuffer());
   const url = URL.createObjectURL(file);
   try {
     const image = new Image();
     image.src = url;
-    try { await image.decode(); } catch { throw new Error("That PNG couldn’t be opened. Try another image."); }
+    try { await image.decode(); } catch { throw new Error("That image couldn’t be opened. Try another PNG or JPG."); }
     const work = document.createElement("canvas");
     const scale = Math.min(1, 512 / image.naturalWidth, 512 / image.naturalHeight);
     work.width = Math.max(1, Math.round(image.naturalWidth * scale));
     work.height = Math.max(1, Math.round(image.naturalHeight * scale));
     const context = work.getContext("2d", { willReadFrequently: true });
-    if (!context) throw new Error("This browser couldn’t prepare the PNG.");
+    if (!context) throw new Error("This browser couldn’t prepare the image.");
     context.drawImage(image, 0, 0, work.width, work.height);
     const bounds = opaqueBounds(context.getImageData(0, 0, work.width, work.height).data, work.width, work.height);
     if (!bounds) throw new Error("That PNG is completely transparent. Choose one with a visible character.");
     const output = document.createElement("canvas");
     output.width = 384; output.height = 448;
     const outputContext = output.getContext("2d");
-    if (!outputContext) throw new Error("This browser couldn’t prepare the PNG.");
+    if (!outputContext) throw new Error("This browser couldn’t prepare the image.");
     const fit = Math.min(352 / bounds.width, 416 / bounds.height);
     const width = bounds.width * fit, height = bounds.height * fit;
     outputContext.drawImage(work, bounds.left, bounds.top, bounds.width, bounds.height, (384 - width) / 2, (448 - height) / 2, width, height);
     return output.toDataURL("image/png");
   } finally { URL.revokeObjectURL(url); }
 }
+
+// Existing integrations may still use the old name. Stored images remain PNG.
+export const prepareCustomPng=prepareCustomImage;

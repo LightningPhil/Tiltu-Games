@@ -9,6 +9,10 @@ import {view as voidView} from './void/view.ts';
 import {view as whackerView} from './whacker/view.ts';
 import {view as horizonView} from './horizon/view.ts';
 import {view as ballisticsView} from './ballistics/view.ts';
+import {voidNavigation} from './void/navigation.ts';
+import {whackerNavigation} from './whacker/navigation.ts';
+import {horizonNavigation} from './horizon/panels.ts';
+import {ballisticsNavigation} from './ballistics/navigation.ts';
 import './void/style.css';
 import './whacker/style.css';
 import './horizon/style.css';
@@ -38,19 +42,23 @@ export class PortedArcadeController {
     if(game==='void'){
       const intro=view.querySelector('.title-intro'),launch=view.querySelector('#launch-btn'),resume=view.querySelector('#resume-run-btn');
       if(intro&&launch){const actions=document.createElement('div');actions.className='port-launch-actions';actions.append(launch);if(resume)actions.append(resume);intro.after(actions);}
+      voidNavigation(view);
     }
     if(game==='horizon'){
       const intro=view.querySelector('.intro'),launch=view.querySelector('#start'),cruise=view.querySelector('#cruise-button');
       if(intro&&launch){const actions=document.createElement('div');actions.className='port-launch-actions';actions.append(launch);if(cruise)actions.append(cruise);intro.after(actions);}
+      horizonNavigation(view);
     }
     if(game==='ballistics'){
       const title=view.querySelector('.title-row'),modes=view.querySelector('.mode-list');
       if(title&&modes){modes.classList.add('port-mode-actions');title.after(modes);}
+      ballisticsNavigation(view);
     }
     if(game==='whacker'){
       // Keep the original garden/characters; place setup, guide and records beside it like the collection's other games.
       const sidebar=view.querySelector('.sidebar'),leaderboard=view.querySelector('.leaderboard');if(sidebar&&leaderboard)sidebar.append(leaderboard);
       const setup=view.querySelector('#setup-panel'),start=view.querySelector('#start');if(setup&&start)setup.prepend(start);
+      whackerNavigation(view);
     }
     scope=new PortScope(game,view,this.state.actionArcade[game]!,this.saveOnly);this.instances.set(game,scope);scope.activate();
     try{scope.hooks=configs[game].create(scope);scope.resize();}

@@ -19,6 +19,8 @@ export class PatrolController {
   private held=new Map<string,string>();private pointers=new Map<number,string>();
   private mouseFire=false;
   private settings=false;private confirmReset=false;
+  private settingsTab:'controls'|'options'|'sound'='controls';
+  private pointerControls=new Map<number,HTMLElement>();
   private difficulty=2;
   private audio=new ArcadeAudio();private lastShot=0;
   private patrolMissions=false;private stickId:number|null=null;private stick={x:0,y:0};
@@ -38,6 +40,7 @@ export class PatrolController {
     root.addEventListener('contextmenu',e=>{if(this.game==='salvage'&&e.target===this.canvas)e.preventDefault();});
     window.addEventListener('pointerup',e=>this.pointerEnd(e.pointerId));
     window.addEventListener('pointercancel',e=>this.pointerEnd(e.pointerId));
+    root.addEventListener('lostpointercapture',e=>this.pointerEnd((e as PointerEvent).pointerId));
     root.addEventListener('input',e=>{
       const target=e.target;if(target instanceof HTMLInputElement&&target.id==='action-volume'){
         this.state.actionArcade.volume=Number(target.value)/100;this.configureAudio();
@@ -52,12 +55,13 @@ export class PatrolController {
   private configureAudio():void {const s=this.state.actionArcade;this.audio.configure(s.music,s.volume,s.effects);}
   private session():SalvageSession|null {return this.game?this.state.actionArcade[this.game]:null;}
   private running():boolean {const s=this.session();return !!s&&!s.paused&&['playing','clearing','flying'].includes(s.phase);}
-  private clearInput():void {this.held.clear();this.pointers.clear();this.mouseFire=false;this.stickId=null;this.stick={x:0,y:0};const thumb=this.root.querySelector<HTMLElement>('.patrol-stick-thumb');if(thumb)thumb.style.transform='';}
+  private clearInput():void {this.held.clear();this.pointers.clear();this.mouseFire=false;this.stickId=null;this.stick={x:0,y:0};const captured=[...this.pointerControls];this.pointerControls.clear();for(const [id,control] of captured)if(control.hasPointerCapture(id))control.releasePointerCapture(id);const thumb=this.root.querySelector<HTMLElement>('.patrol-stick-thumb');if(thumb)thumb.style.transform='';}
   private pause():void {
     const s=this.session();this.clearInput();this.audio.pause();if(!s||s.paused)return;s.paused=true;this.changed();
   }
   leave():void {const s=this.session();if(s)s.paused=true;if(this.docking&&this.game==='salvage')this.state.actionArcade.salvage!.x=this.state.actionArcade.salvage!.y=900;this.docking=null;this.clearInput();this.audio.pause();cancelAnimationFrame(this.frame);this.frame=0;this.canvas=null;this.canvasSession=null;this.game=null;this.settings=false;this.confirmReset=false;this.patrolMissions=false;}
   mount():void {
+    const touch=this.root.querySelector('.patrol-touch-flight'),world=this.root.querySelector('.patrol-world');if(touch&&world)world.after(touch);
     const game='salvage';this.ensure();cancelAnimationFrame(this.frame);const previous=this.canvas;this.canvas=this.root.querySelector<HTMLCanvasElement>('#action-canvas');this.palette=readArcadePalette();
     if(game==='salvage'){const f=this.state.actionArcade.salvage!;if(this.canvasSession===f)transferPatrolScene(previous,this.canvas);this.canvasSession=f;this.heard={shots:f.stats.shots,kills:f.kills,scans:f.mission.beacons.filter(b=>b.scanned).length};}
     this.last=performance.now();this.accumulator=0;this.hudClock=0;this.paint();this.updateHud();
@@ -125,6 +129,7 @@ export class PatrolController {
   }
   action(action:string):void {
     if(!this.game||this.docking)return;const s=this.session()!;
+    if(action.startsWith('settings-tab-')){const tab=action.slice(13);if(['controls','options','sound'].includes(tab)){this.settingsTab=tab as typeof this.settingsTab;this.changed();}return;}
     if(action==='play'){void this.play();return;}
     if(action==='pause'){if(this.running())this.pause();else void this.play();return;}
     if(action==='settings'){this.pause();this.settings=!this.settings;this.confirmReset=false;this.changed();return;}
@@ -165,7 +170,8 @@ export class PatrolController {
   }
   keydown(e:KeyboardEvent):void {
     if(!this.game||e.ctrlKey||e.metaKey||e.altKey)return;
-    if((e.target as HTMLElement).closest('button')&&(e.code==='Enter'||e.code==='Space'&&!this.running()))return;
+    if((e.target as HTMLElement).closest('input,select,textarea'))return;
+    if((e.target as HTMLElement).closest('button')&&['Enter','Space'].includes(e.code))return;
     const action=patrolKey(e.code,e.key);if(!action)return;e.preventDefault();if(e.repeat)return;
     if(action==='escape'){if(this.settings){this.action('close-settings');return;}if(this.patrolMissions){this.action('close-missions');return;}if(this.confirmReset){this.action('cancel-new');return;}if(this.running())this.pause();return;}
     if(action==='pause'){this.action(this.running()?'pause':'play');return;}
@@ -186,15 +192,15 @@ export class PatrolController {
   private pointerDown(e:PointerEvent):void {
     if(!this.game)return;const target=e.target as HTMLElement;
     if(e.button!==0)return;const hold=target.closest<HTMLButtonElement>('[data-action-hold]');
-    const stick=target.closest<HTMLButtonElement>('[data-patrol-stick]');if(stick&&this.running()){e.preventDefault();this.stickId=e.pointerId;stick.setPointerCapture(e.pointerId);this.updateStick(e);return;}
+    const stick=target.closest<HTMLButtonElement>('[data-patrol-stick]');if(stick&&this.running()){if(this.stickId!==null)return;e.preventDefault();this.stickId=e.pointerId;this.pointerControls.set(e.pointerId,stick);stick.setPointerCapture(e.pointerId);this.updateStick(e);return;}
     if(hold?.disabled)return;
     if(hold&&this.running()){
-      e.preventDefault();this.pointers.set(e.pointerId,hold.dataset.actionHold!);hold.setPointerCapture(e.pointerId);
+      e.preventDefault();this.pointers.set(e.pointerId,hold.dataset.actionHold!);this.pointerControls.set(e.pointerId,hold);hold.setPointerCapture(e.pointerId);
       if(this.game==='salvage'&&hold.dataset.actionHold==='fire')this.firePatrol();
     }else if(target===this.canvas)this.canvas!.focus({preventScroll:true});
   }
 
   private updateStick(e:PointerEvent):void {const pad=this.root.querySelector<HTMLElement>('[data-patrol-stick]'),thumb=this.root.querySelector<HTMLElement>('.patrol-stick-thumb');if(!pad)return;const r=pad.getBoundingClientRect(),radius=r.width*.33;let x=(e.clientX-r.left-r.width/2)/radius,y=(e.clientY-r.top-r.height/2)/radius;const length=Math.hypot(x,y);if(length>1){x/=length;y/=length;}this.stick={x:Math.abs(x)<.1?0:x,y:Math.abs(y)<.1?0:y};if(thumb)thumb.style.transform=`translate(${x*radius}px,${y*radius}px)`;}
-  private pointerEnd(id:number):void {this.pointers.delete(id);if(id===this.stickId){this.stickId=null;this.stick={x:0,y:0};const thumb=this.root.querySelector<HTMLElement>('.patrol-stick-thumb');if(thumb)thumb.style.transform='';}}
-  render():string {this.ensure();return renderPatrol(this.state.actionArcade.salvage!,this.state.actionArcade,{settings:this.settings,missions:this.patrolMissions,confirmReset:this.confirmReset,difficulty:this.difficulty,docking:!!this.docking});}
+  private pointerEnd(id:number):void {this.pointers.delete(id);this.pointerControls.delete(id);if(id===this.stickId){this.stickId=null;this.stick={x:0,y:0};const thumb=this.root.querySelector<HTMLElement>('.patrol-stick-thumb');if(thumb)thumb.style.transform='';}}
+  render():string {this.ensure();return renderPatrol(this.state.actionArcade.salvage!,this.state.actionArcade,{settings:this.settings,settingsTab:this.settingsTab,missions:this.patrolMissions,confirmReset:this.confirmReset,difficulty:this.difficulty,docking:!!this.docking});}
 }

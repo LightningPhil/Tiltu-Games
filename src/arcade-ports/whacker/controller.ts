@@ -8,7 +8,7 @@ import { CHARACTERS, accessorySVG, characterSVG, mixedSVG } from "./characters.t
 import { GameAudio } from "./audio.ts";
 import { gardenScene, turfSVG } from "./scenery.ts";
 import { legacyScores, loadSettings, saveScore, saveSettings, topScores } from "./storage.ts";
-import { loadCustomCharacters, prepareCustomPng, removeCustomCharacter, saveCustomCharacter } from "./custom-characters.ts";
+import { loadCustomCharacters, prepareCustomImage, removeCustomCharacter, saveCustomCharacter } from "./custom-characters.ts";
 export function createGame(scope:PortScope):PortHooks {
 bindScope(scope);
 // BEGIN GAME RUNTIME
@@ -150,13 +150,13 @@ el<HTMLInputElement>("custom-file").addEventListener("change", async event => {
   pendingImage = null;
   el("upload-draft").hidden = true;
   if (!file) return;
-  el("upload-status").textContent = "Preparing your PNG…";
+  el("upload-status").textContent = "Preparing your image…";
   try {
-    const image = await prepareCustomPng(file);
+    const image = await prepareCustomImage(file);
     if (generation !== uploadGeneration) return;
     pendingImage = image;
     el<HTMLImageElement>("custom-preview").src = image;
-    el<HTMLInputElement>("custom-name").value = file.name.replace(/\.png$/i, "").slice(0, 24);
+    el<HTMLInputElement>("custom-name").value = file.name.replace(/\.(png|jpe?g)$/i, "").slice(0, 24);
     el("upload-draft").hidden = false;
     el("upload-status").textContent = "Looking good! Give your character a name, then save.";
     el<HTMLInputElement>("custom-name").focus({ preventScroll: true });
@@ -257,7 +257,6 @@ function startRound() {
   holes[0].button.disabled = false;
   holes[0].button.focus({ preventScroll: true });
   render();
-  if (matchMedia("(max-width: 800px)").matches) score.closest(".scoreboard")!.scrollIntoView({ behavior: reducedMotion ? "instant" : "smooth", block: "start" });
 }
 
 function flash(hole: number, text: string, result: string) {

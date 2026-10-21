@@ -1,0 +1,15 @@
+.arcade-panel-tabs{display:flex;gap:6px;flex-wrap:wrap;align-items:center;padding:8px 0;flex-shrink:0}
+.arcade-panel-tabs button{min-height:40px;padding:8px 14px;border:1px solid var(--line);background:var(--raised);color:var(--text);border-radius:8px;font:inherit;font-size:12px;cursor:pointer}
+.arcade-panel-tabs button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.arcade-tab-panel[hidden]{display:none!important}
+#app .arcade-panel-tabs{flex-wrap:nowrap}
+#app .arcade-panel-tabs button{flex:1;min-width:0;padding:8px 7px;font-size:11px;letter-spacing:0}
+#app .arcade-panel-tabs button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+#app .arcade-panel-tabs button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.arcade-stick{width:100px;height:100px;position:relative;display:grid;place-items:center;border:1px solid var(--line);border-radius:50%;background:radial-gradient(circle,var(--raised),var(--surface));touch-action:none;user-select:none;cursor:grab;flex-shrink:0}
+.arcade-stick::before{content:'＋';position:absolute;color:var(--muted);font-size:65px;line-height:1;opacity:.3}
+.arcade-stick .stick-knob{width:42px;height:42px;border-radius:50%;border:2px solid var(--accent);background:var(--raised);box-shadow:0 3px 10px #0005;transform:translate(var(--stick-x,0px),var(--stick-y,0px));pointer-events:none}
+.arcade-stick.held .stick-knob{background:var(--accent);box-shadow:0 0 16px color-mix(in srgb,var(--accent) 30%,transparent)}
+.arcade-stick:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+[data-hold-control]{touch-action:none;user-select:none;-webkit-user-select:none}
+[data-hold-control].held{background:var(--accent)!important;color:var(--accent-ink)!important}

@@ -74,7 +74,7 @@ export class Input {
         canvas.addEventListener('contextmenu', event => event.preventDefault());
         window.addEventListener('pointerup', event => { if (event.button === 0) { this.pointerFire = false; this.endDrag(); } });
         window.addEventListener('mouseup', event => { if (event.button === 0) { this.pointerFire = false; this.endDrag(); } });
-        window.addEventListener('pointercancel', () => this.clear());
+        window.addEventListener('pointercancel', event => { if(event.target===canvas){this.pointerFire=false;this.endDrag();} });
         document.addEventListener('mousemove', event => {
             if (!this.active() || document.pointerLockElement !== canvas) return;
             // Relative mouse aim has no velocity acceleration; smoothing removes event-rate jitter.
@@ -92,6 +92,7 @@ export class Input {
     key(event: KeyboardEvent, pressed: boolean) {
         if (!pressed) this.keys.delete(event.code);
         if (event.target instanceof HTMLInputElement || event.target instanceof HTMLSelectElement || event.target instanceof HTMLTextAreaElement) return;
+        if((event.target as HTMLElement)?.tagName==='BUTTON'&&['Space','Enter'].includes(event.code))return;
         if (pressed && !event.repeat && (event.code === 'KeyP' || event.code === 'Escape')) {
             event.preventDefault();
             if (event.code !== 'Escape' || this.active() || performance.now() - this.lastUnlockPause > 250) this.pause();
@@ -179,7 +180,7 @@ export class Input {
             knob.style.transform = `translate(calc(-50% + ${this.touch.x * 34}px), calc(-50% + ${this.touch.y * 34}px))`;
         };
         stick.addEventListener('pointerdown', event => {
-            if (!this.active() || this.stickPointer !== null) return;
+            if (!this.active() || this.stickPointer !== null || event.button>0) return;
             this.stickPointer = event.pointerId; stick.setPointerCapture(this.stickPointer); move(event); event.preventDefault();
         });
         stick.addEventListener('pointermove', event => { if (this.stickPointer === event.pointerId) move(event); });

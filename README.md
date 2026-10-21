@@ -43,7 +43,7 @@ npm run preview
 
 Vite's development and preview servers are local development tools. They are not needed by the deployed games. `dist_single/index.html` contains the game, with scripts, styles, artwork and browser workers inlined. The output also includes `LICENSE.txt` and `THIRD_PARTY_NOTICES.txt` for convenient reference.
 
-The browser smoke tests check every lobby entry, representative gameplay, saves, mobile layout, offline play and the `/Tiltu-Games/` hosting path:
+The browser tests check every lobby entry, representative gameplay, saves, offline play and the `/Tiltu-Games/` hosting path. They also exercise all nine Arcade & worlds games at phone, landscape and desktop sizes, including independent touch controls, settings navigation and JPG character imports:
 
 ```sh
 npx playwright install chromium

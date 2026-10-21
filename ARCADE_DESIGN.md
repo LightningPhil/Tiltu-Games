@@ -1,13 +1,21 @@
 # The arcade collection
 
-Tiltu’s Games contains 54 games. TetriGrid, Archive Patrol, Neon Void, Whack-a-Party!, Neon Horizon and Neon Synth Ballistics live in **Arcade & worlds**, share the collection’s five themes and navigation, and work in the offline HTML. Their playfields fit the viewport; longer setup panels scroll independently. Soundtracks are synthesized locally. No network services or runtime downloads are needed.
+Tiltu’s Games contains 54 games. The nine games in **Arcade & worlds** are TetriGrid, Archive Patrol, Neon Void, Whack-a-Party!, Neon Horizon, Neon Synth Ballistics, Snake, Downhill Skiing and Conway’s Game of Life. They share the collection’s five themes and navigation and work in the offline HTML. Their playfields fit the viewport; longer setup panels scroll independently. Soundtracks are synthesized locally. No network services or runtime downloads are needed.
+
+## Controls and screen layout
+
+Each game keeps play actions visible and divides longer configuration into named panels. Neon Void has a separate strip below the arena with FIRE on the left, abilities in the middle and a thumb stick on the right. Archive Patrol also keeps its flight controls outside the field. Independent pointer capture lets steering continue when another finger releases an action. Pause, cancellation and focus loss clear held input.
+
+Whack-a-Party! separates Party, Pace, Guests, Records and Help, and gives the garden the full play area during a round. Guests accepts PNG and JPG/JPEG, validates file signatures and dimensions before decoding, and stores prepared characters in the existing PNG gallery format. Neon Horizon divides the flight deck into Fly, Controls, Look, Sound and Guide; a HUD button toggles extra instruments on phones. Ballistics uses a phone Arsenal selector for all ten weapons, separate move/aim/action buttons, and cancellation discards a charged shot.
+
+TetriGrid places both rotations, Hold and Drop in its touch pad and separates Play and Sound settings. Snake has direct Start/Pause/Resume actions and responds during a swipe. Skiing uses larger thumb buttons, WASD aliases and pauses on focus loss. Life separates Play, World, Patterns, Snapshots and Help; its fitted field respects both available width and height, and fast paint strokes interpolate cells between pointer samples.
 
 ## Four standalone game ports
 
 `src/arcade-ports/` contains collection-owned copies of the gameplay, rendering, audio, settings and view modules from `apps/neon-void`, `apps/whack-a`, `apps/neon-horozon` and `apps/neon-synth-ballistics`. Those original apps are retained unchanged. There are no iframes, standalone HTML loaders or runtime imports from another app. `scripts/import-arcade-sources.mjs` records the one-time source extraction; subsequent adaptations are maintained directly in the collection modules, so rerunning that script would overwrite them.
 
 - **Neon Void:** thirty-wave, three-act expedition, six commanders and final fleet; endless continuation; checkpoint resupply, repair and fitting economy; three unlockable ships, nine weapon mounts, ordnance and system upgrades; career records; any-wave practice; pointer/touch flight; nine synthesized tracks and the ending/victory scores.
-- **Whack-a-Party!:** eight illustrated animals and mixed zoo; locally prepared custom PNG characters and gallery; three paces; timed/practice rounds; protected sleepy targets, hats, crowns, combos and fever; configurable tap allowances and miss delay; character-specific sound, records and accessible keyboard/touch controls.
+- **Whack-a-Party!:** eight illustrated animals and mixed zoo; locally prepared custom PNG/JPG characters and gallery; three paces; timed/practice rounds; protected sleepy targets, hats, crowns, combos and fever; configurable tap allowances and miss delay; character-specific sound, records and accessible keyboard/touch controls.
 - **Neon Horizon:** procedural 3D city, seeded routes, flight school, sector interception, endless hunt and peaceful cruise; three difficulty settings; mouse stick, relative mouse, keyboard, gamepad and touch input; full flight attitude, collision, combat and effects; detailed/retro visuals, three cameras, comfort settings and eight synthesized tracks. Three.js 0.128.0 is bundled locally, with its MIT notice retained in the source HTML and offline build.
 - **Neon Synth Ballistics:** 3-vs-3 rovers, destructible terrain, ten weapons/tools, wind, retreat and parachutes; three CPU settings, shared-device play and unlimited firing range; map codes and recent maps; squad/unit names, turn lengths and sudden death; camera/minimap controls; three synthesized tracks and touch controls.
 
@@ -57,8 +65,9 @@ The renderer includes shaded ships, engine trails, parallax stars, nebulae, a cr
 
 ## Validation
 
-- `npm test --workspace @single-file-games/grid-club`: collection regressions, the ported TetriGrid gameplay/storage/audio tests, integration saves and handling tests, and Archive Patrol mechanics.
-- `npm run build --workspace @single-file-games/grid-club`: strict TypeScript and a single-file offline build.
+- `npm test`: collection regressions, the ported TetriGrid gameplay/storage/audio tests, integration saves and handling tests, and Archive Patrol mechanics.
+- `npm run build`: strict TypeScript and a single-file offline build.
+- `npm run test:browser`: the production HTML, all 54 lobby entries, offline use, and all nine arcade playfields at 320 × 640, 844 × 390 and 1280 × 800. Individual control checks cover multi-touch release, charged-shot cancellation, JPG import and persistence, settings navigation, Snake swipes, skiing focus loss and continuous Life strokes.
 - `/tests/tetrigrid-playground.html`: 150 theme/viewport/state combinations, hover geometry, all four modes, holds, scoring, records, restart cancellation, save restoration and touch cancellation. Add `?bundle` for the offline build.
 - `/tests/tetrigrid-audio.html`: complete native Web Audio renders of all five soundtracks, including a sample-by-sample Classic House comparison against the preserved original audio fixture.
 - `/tests/patrol-playground.html`: 100 layouts, real mission/combat/docking/checkpoint flows, touch controls and adaptive audio checks. Add `?bundle` for the offline build.

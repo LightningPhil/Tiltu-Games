@@ -168,6 +168,11 @@
 .snake-dpad .button:nth-child(2) { grid-row:2;grid-column:1; }
 .snake-dpad .button:nth-child(3) { grid-row:2;grid-column:2; }
 .snake-dpad .button:nth-child(4) { grid-row:2;grid-column:3; }
+.snake-run-actions{display:grid;grid-template-columns:1fr;gap:5px;min-width:110px}
+.snake-controls .snake-dpad{grid-template-columns:repeat(3,50px);grid-template-rows:repeat(2,46px);gap:5px}
+.snake-controls .snake-dpad .button{min-height:46px;touch-action:none}
+.snake-run-actions>.button{min-height:40px;padding:7px 12px;font-size:11px}
+@media(max-height:520px) and (min-width:601px){.snake-run-actions{display:flex;min-width:0}.snake-page .snake-controls{flex-wrap:nowrap}}
 .patience-collection-picker { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin:0 0 14px; }
 .patience-collection-picker .eyebrow { font-size:9px; }
 .patience-collection-picker>div { display:flex; gap:6px; }

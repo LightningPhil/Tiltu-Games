@@ -125,6 +125,16 @@ test('several fingers on a fire button do not leave it stuck or release each oth
         send(fire, 'lostpointercapture', { pointerId: 3 }); assert.equal(input.sample(0.01, null).fire, false);
     });
 });
+
+test('cancelling an action finger leaves an independent steering finger active',async()=>{
+    await withDom(({input,elements,window})=>{
+        const stick=elements.get('touch-stick'),fire=elements.get('touch-fire');
+        send(stick,'pointerdown',{pointerId:1,clientX:100,clientY:50});
+        send(fire,'pointerdown',{pointerId:2});
+        send(fire,'pointercancel',{pointerId:2});send(window,'pointercancel',{pointerId:2});
+        const current=input.sample(.01,null);assert.equal(current.fire,false);assert.equal(current.yaw,-1);
+    });
+});
 test('a browser unlock followed by the same Escape key cannot instantly resume flight', async () => {
     await withDom(({ document, toggles }) => {
         send(document, 'pointerlockchange'); assert.equal(toggles(), 1);

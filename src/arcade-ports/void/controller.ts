@@ -13,6 +13,7 @@ import { END_SEQUENCE, ShipExplosion } from './ending.ts';
 import { playVictorySting } from './victory-audio.ts';
 import { FlightPointer, fitFlightArena, compactShop } from './flight-controls.ts';
 import { effectsRandom } from './effects-random.ts';
+import { VirtualStick, holdControl } from '../../arcade-controls.ts';
 export function createGame(scope:PortScope):PortHooks {
 bindScope(scope);
 // BEGIN GAME RUNTIME
@@ -150,7 +151,7 @@ const Game = {
     practice:false,practiceOrigin:null,practiceWave:30,practiceLoadout:'recommended',
     ending:null,lastEnemyExplosion:null,
     shipId:'vanguard',lastClearedWave:0,careerBank:{kills:0,dashes:0,pulses:0},
-    pulseCharge: 25, bannerTimer: 0, labels: [], rings: [], pointer: new FlightPointer(),touchMode:false,layout:null,
+    pulseCharge: 25, bannerTimer: 0, labels: [], rings: [], pointer: new FlightPointer(),touchMode:false,layout:null,stick:null,fireControl:null,touchFire:false,
     shopPhase: 'fighting', shopTab:'weapons', shopPage:0,salvagePending:null,
     player: null, enemies: [], crates: [], bullets: [], missiles: [], particles: [], drops: [], beacon: null,
     coins: 0,
@@ -161,6 +162,8 @@ const Game = {
     init() {
         this.profile = loadProfile(undefined,Boolean(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches));
         this.touchMode=Boolean(window.matchMedia?.('(pointer: coarse)').matches);
+        this.stick=new VirtualStick(document.getElementById('void-stick'));
+        this.fireControl=holdControl(document.getElementById('fire-btn'),held=>{this.touchFire=held;});
         this.resize(); window.addEventListener('resize', () => this.resize()); this.createStars();
         window.visualViewport?.addEventListener('resize',()=>this.resize());
         if(window.ResizeObserver){const observer=new ResizeObserver(()=>this.resize());for(const selector of ['.flight-hud','.flight-bottom'])observer.observe(document.querySelector(selector));}
@@ -225,7 +228,7 @@ const Game = {
     },
     resize() {
         const width=window.innerWidth,height=window.innerHeight,oldWidth=WIDTH;
-        const side=height<=540&&width/height>=1.3;
+        const side=false;
         document.body.classList.toggle('touch-controls',this.touchMode);document.body.classList.toggle('compact-landscape',side);
         const hud=scope.rect(document.querySelector('.flight-hud')),footer=scope.rect(document.querySelector('.flight-bottom')); 
         const bounds=side?{left:(hud?.right||120)+8,right:(footer?.left||width-120)-8,top:8,bottom:height-8}:
@@ -338,7 +341,8 @@ const Game = {
     },
     renderCareer() {
         const career=this.profile.career,checkpoint=this.profile.checkpoint;
-        document.getElementById('hero-designation').textContent=`${getShip(this.profile.settings.ship).name} / EXPEDITION FIGHTER`;
+        const designation=document.getElementById('hero-designation');
+        if(designation)designation.textContent=`${getShip(this.profile.settings.ship).name} / EXPEDITION FIGHTER`;
         document.getElementById('ship-picker').innerHTML=Object.entries(SHIPS).map(([id,ship])=>{
             const unlocked=shipUnlocked(this.profile,id),selected=this.profile.settings.ship===id;
             return `<button data-ship="${id}" class="${selected?'selected':''}" aria-pressed="${selected}" ${unlocked?'':'disabled'}><strong style="color:${ship.color}">${ship.name}</strong><span>${unlocked?ship.description:`CLEAR WAVE ${ship.unlock} TO UNLOCK`}</span></button>`;
@@ -401,7 +405,7 @@ const Game = {
         this.stats.score+=points;this.pulseCharge=Math.min(100,this.pulseCharge+ABILITIES.pulsePerKill);
         createFloatingText(enemy.x,enemy.y,`+${points}`,enemy.color);
     },
-    clearKeys() { Object.keys(this.keys).forEach(key => this.keys[key] = false); this.pointer.end(); },
+    clearKeys() { Object.keys(this.keys).forEach(key => this.keys[key] = false); this.pointer.end(); this.stick?.reset();this.fireControl?.reset();this.touchFire=false; },
     togglePause() {
         if (!this.active || (this.paused && !this.manualPause)) return;
         this.manualPause = !this.manualPause; this.paused = this.manualPause;
@@ -1052,6 +1056,7 @@ class Player {
         if (Game.keys.s || Game.keys.ArrowDown) dy = 1;
         if (Game.keys.a || Game.keys.ArrowLeft) dx = -1;
         if (Game.keys.d || Game.keys.ArrowRight) dx = 1;
+        if(!dx&&!dy&&Game.stick){dx=Game.stick.x;dy=Game.stick.y;}
         if(Game.pointer.active&&!dx&&!dy){const px=Game.pointer.x-this.x,py=Game.pointer.y-this.y,d=Math.hypot(px,py);if(d>1){const step=Math.min(1,d/this.speedBase);dx=px/d*step;dy=py/d*step;}}
         const moveLen=Math.hypot(dx,dy);if(moveLen>1){dx/=moveLen;dy/=moveLen;}
         if(moveLen>.05){this.lastDX=dx;this.lastDY=dy;}
@@ -1067,7 +1072,7 @@ class Player {
         this.y = Math.max(this.radius, Math.min(HEIGHT - this.radius, this.y));
 
         this.fireTimer -= dt;
-        const firing=Game.keys[' ']||Game.pointer.active||Game.profile.settings.autoFire;
+        const firing=Game.keys[' ']||Game.touchFire||Game.pointer.active||Game.profile.settings.autoFire;
         this.updateTurrets(dt);
         if(!firing)this.pendingShots=[];
         else {

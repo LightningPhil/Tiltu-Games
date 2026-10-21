@@ -11,6 +11,7 @@ import type { MatchMode } from './settings.ts';
 import { Renderer } from './renderer.ts';
 import { CPUController } from './ai.ts';
 import { weaponIcon } from './icons.ts';
+import {holdControl} from '../../arcade-controls.ts';
 export function createGame(scope:PortScope):PortHooks {
 bindScope(scope);
 // BEGIN GAME RUNTIME
@@ -44,6 +45,8 @@ let jetting = false;
 let mixPreviewTimer = 0;
 let cpu = new CPUController();
 const keys = new Set<string>();
+const touchKeys=new Set<string>(),heldControls:{reset:()=>void}[]=[];
+const keyDown=(key:string)=>keys.has(key)||touchKeys.has(key);
 const stage = el('stage');
 const renderer = new Renderer(el('game-layer') as HTMLCanvasElement, el('minimap') as HTMLCanvasElement);
 
@@ -56,6 +59,10 @@ const cards = WEAPONS.map((weapon, id) => {
     card.addEventListener('click', () => { if (humanCanPlay() && battle.equip(id)) { AudioEngine.ui(); card.scrollIntoView({ block: 'nearest', inline: 'nearest' }); } card.blur(); updateHUD(); });
     el('weapon-panel').append(card); return card;
 });
+const weaponSelect=document.createElement('select');weaponSelect.id='weapon-select';weaponSelect.setAttribute('aria-label','Arsenal');
+weaponSelect.innerHTML=WEAPONS.map((weapon,id)=>`<option value="${id}">${weapon.name}</option>`).join('');
+const arsenal=document.createElement('label');arsenal.className='mobile-arsenal';arsenal.append('Arsenal',weaponSelect);el('weapon-panel').before(arsenal);
+weaponSelect.addEventListener('change',()=>{if(humanCanPlay()&&battle.equip(Number(weaponSelect.value)))AudioEngine.ui();updateHUD();});
 const rosterButtons = battle.units.map(unit => {
     const card = document.createElement('button');
     const name = document.createElement('span'), hp = document.createElement('span'); hp.className = 'roster-hp';
@@ -66,6 +73,7 @@ const rosterButtons = battle.units.map(unit => {
 
 function humanCanPlay() { return started && !inMenu && !paused && !awaitingReady && battle.phase !== 'over' && !(mode === 'solo' && battle.team === 1); }
 function clearInput() {
+    for(const control of heldControls)control.reset();touchKeys.clear();
     keys.clear(); battle.charging = false; battle.power = 0; controlTap = false; jetting = false; AudioEngine.charge(0);
     for (const id of pointers.keys()) if (stage.hasPointerCapture(id)) stage.releasePointerCapture(id);
     pointers.clear(); gestureStart = null; gesturePan = false; pinchDistance = 0; stage.classList.remove('panning');
@@ -274,14 +282,14 @@ function trapFocus(e: KeyboardEvent) {
     if (e.shiftKey && (document.activeElement === first || !modal.contains(document.activeElement))) { e.preventDefault(); last.focus(); }
     else if (!e.shiftKey && (document.activeElement === last || !modal.contains(document.activeElement))) { e.preventDefault(); first.focus(); }
 }
-function pressFire() {
+function pressFire(touch=false) {
     if (!humanCanPlay()) return;
     if ([3, 7, 8, 9].includes(battle.weapon)) battle.fire();
-    else if (battle.weapon === 5) keys.add('Space');
+    else if (battle.weapon === 5) (touch?touchKeys:keys).add('Space');
     else if ([4, 6].includes(battle.weapon)) battle.message = 'CLICK THE BATTLEFIELD TO CHOOSE A TARGET';
     else battle.startCharge();
 }
-function releaseFire() { keys.delete('Space'); if (humanCanPlay() && battle.charging) battle.fire(); }
+function releaseFire(touch=false) { (touch?touchKeys:keys).delete('Space'); if (humanCanPlay() && battle.charging) battle.fire(); }
 window.addEventListener('keydown', e => {
     if (e.code === 'Escape' && !e.repeat) {
         e.preventDefault();
@@ -294,6 +302,7 @@ window.addEventListener('keydown', e => {
     if (awaitingReady && e.code === 'Enter' && !e.repeat) { e.preventDefault(); ready(); return; }
     if (modalElement()) { trapFocus(e); return; }
     if (editing) return;
+    if((e.target as HTMLElement).tagName==='BUTTON'&&['Space','Enter'].includes(e.code))return;
     if (e.code === 'KeyM' && !e.repeat && !e.ctrlKey && !e.metaKey && !e.altKey) { e.preventDefault(); toggleMute(); return; }
     if (started && !paused && !inMenu && !awaitingReady && !e.repeat && !e.ctrlKey && !e.metaKey && !e.altKey) {
         if (e.code === 'KeyZ') { e.preventDefault(); overview(); return; }
@@ -379,11 +388,16 @@ stage.addEventListener('pointerleave', () => { if (!pointers.size) pointer = nul
 stage.addEventListener('wheel', e => { if (!e.ctrlKey && started && !inMenu && !paused && !awaitingReady) { e.preventDefault(); const box = stage.getBoundingClientRect(); renderer.camera.zoomAt(e.clientX - box.left, e.clientY - box.top, Math.exp(-e.deltaY * 0.0015), performance.now()); } }, { passive: false });
 stage.addEventListener('contextmenu', e => e.preventDefault());
 for (const control of document.querySelectorAll<HTMLButtonElement>('#touch-controls button')) {
-    control.addEventListener('pointerdown', e => { if (!humanCanPlay()) return; e.preventDefault(); control.setPointerCapture(e.pointerId); if (control.dataset.hold) keys.add(control.dataset.hold); if (control.dataset.action === 'jump') battle.jump(); if (control.dataset.action === 'fire') pressFire(); });
-    control.addEventListener('pointerup', () => { if (control.dataset.hold) keys.delete(control.dataset.hold); if (control.dataset.action === 'fire') releaseFire(); });
-    const cancel = () => { if (control.dataset.hold) keys.delete(control.dataset.hold); if (control.dataset.action === 'fire') { keys.delete('Space'); battle.charging = false; battle.power = 0; } };
-    control.addEventListener('pointercancel', cancel);
-    control.addEventListener('lostpointercapture', cancel);
+    control.dataset.holdControl='';let previous=false;
+    heldControls.push(holdControl(control,(held,cancelled)=>{
+      if(held&&!humanCanPlay())return;
+      if(control.dataset.hold){if(held)touchKeys.add(control.dataset.hold);else touchKeys.delete(control.dataset.hold);}
+      if(held&&!previous){if(control.dataset.action==='jump')battle.jump();if(control.dataset.action==='fire')pressFire(true);}
+      if(!held&&previous&&control.dataset.action==='fire'){
+        if(cancelled){touchKeys.delete('Space');battle.charging=false;battle.power=0;AudioEngine.charge(0);}else releaseFire(true);
+      }
+      previous=held;
+    }));
 }
 
 function processEvents() {
@@ -443,7 +457,7 @@ function showResults() {
 }
 function step() {
     const controls = mode === 'solo' && battle.team === 1 ? cpu.update(battle, battle.options.difficulty) : {
-        left: keys.has('ArrowLeft'), right: keys.has('ArrowRight'), up: keys.has('ArrowUp'), down: keys.has('ArrowDown'), jet: keys.has('ShiftLeft') || keys.has('ShiftRight') || (battle.weapon === 5 && keys.has('Space')),
+        left: keyDown('ArrowLeft'), right: keyDown('ArrowRight'), up: keyDown('ArrowUp'), down: keyDown('ArrowDown'), jet: keyDown('ShiftLeft') || keyDown('ShiftRight') || (battle.weapon === 5 && keyDown('Space')),
     };
     battle.step(controls); jetting = !!controls.jet && battle.canAct && battle.weapon === 5 && battle.active.fuel > 0;
     processEvents(); renderer.tick(battle, preferences); bannerTicks = Math.max(0, bannerTicks - 1);
@@ -488,7 +502,10 @@ function updateHUD() {
         card.disabled = !humanCanPlay() || !battle.canAct || battle.charging || !battle.hasAmmo(id) || (battle.shotgunShots > 0 && id !== 8);
         const ammo = mode === 'practice' || battle.inventories[battle.team][id] === -1 ? '∞' : id === 5 && battle.jetUsed ? 'ON' : id === 8 && battle.shotgunShots > 0 ? '1 LEFT' : `×${battle.inventories[battle.team][id]}`;
         if (card.querySelector('.weapon-ammo')!.textContent !== ammo) card.querySelector('.weapon-ammo')!.textContent = ammo;
+        const option=weaponSelect.options[id];option.disabled=card.disabled;
+        const label=`${WEAPONS[id].name} · ${ammo}`;if(option.text!==label)option.text=label;
     });
+    weaponSelect.value=String(battle.weapon);weaponSelect.disabled=!humanCanPlay()||!battle.canAct||battle.charging;
     const touch = touchLayout(), fire = touch ? 'FIRE' : 'SPACE';
     const powerLabel = [3, 7, 8, 9].includes(battle.weapon) ? `TAP ${fire} TO USE` : [4, 6].includes(battle.weapon) ? `${touch ? 'TAP' : 'CLICK'} TO TARGET` : battle.weapon === 5 ? `HOLD ${touch ? 'JET' : 'SHIFT'} TO FLY` : battle.charging ? `POWER / ${Math.round(battle.power / MAX_POWER * 100)}%` : `HOLD ${fire} TO CHARGE`;
     text('power-label', powerLabel); el('power-fill').style.width = `${battle.power / MAX_POWER * 100}%`;

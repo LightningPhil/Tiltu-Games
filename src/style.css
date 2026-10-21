@@ -765,6 +765,18 @@ dialog.review-dialog { width: min(680px, calc(100vw - 24px)); max-width: 680px; 
 .ski-settings > summary::-webkit-details-marker { display: none; }
 .ski-settings-panel { position: absolute; z-index: 50; top: calc(100% + 8px); right: 0; width: min(360px, calc(100vw - 32px)); max-height: calc(100vh - 130px); max-height: calc(100dvh - 130px); overflow-y: auto; overscroll-behavior: contain; padding: 18px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow); }
 .ski-settings-panel h2 { font-size: 18px; margin-bottom: 14px; }
+.ski-settings-panel>[data-arcade="close-setup"]{position:sticky;top:0;z-index:2;margin:0 0 6px;background:var(--raised)}
+.ski-controls .button.held{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+@media(max-width:700px){
+ .ski-arena .ski-controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+ .ski-arena .ski-controls .button{min-height:46px;font-size:12px}
+ .ski-controls [data-ski-control="left"]{grid-column:1;grid-row:1}
+ .ski-controls [data-ski-control="brake"]{grid-column:2;grid-row:1}
+ .ski-controls [data-ski-control="right"]{grid-column:3;grid-row:1}
+ .ski-controls [data-ski-control="jump"]{grid-column:1;grid-row:2}
+ .ski-controls .ski-fast-toggle{grid-column:2;grid-row:2}
+ .ski-controls [data-arcade="run"],.ski-controls [data-arcade="new"]{grid-column:3;grid-row:2}
+}
 .ski-settings-panel label { margin-top: 12px; }
 .ski-setup-toggle { display: none; }
 .play-page:not(.ski-page) > .page-heading { padding: 18px 0 16px; }
@@ -873,6 +885,50 @@ dialog.review-dialog { width: min(680px, calc(100vw - 24px)); max-width: 680px; 
 #app[data-game="life"] .status-card { order: 6; }
 .life-experiments { padding: 12px 0; border-top: 1px solid var(--line); }
 .life-experiments summary { color: var(--accent); font-size: 12px; }
+#app[data-game="life"]{height:100dvh;display:grid;grid-template-rows:auto minmax(0,1fr);overflow:hidden}
+#app[data-game="life"]>.app-footer{display:none}
+#app[data-game="life"] .life-page{display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:8px;min-height:0;height:100%;max-width:1200px;padding:10px 16px}
+#app[data-game="life"] .page-heading{padding:0;margin:0;min-height:34px}
+#app[data-game="life"] .page-heading h1{font-size:24px}
+#app[data-game="life"] .page-heading :is(.eyebrow,.chip){display:none}
+#life-workbench{display:flex;flex-direction:column;min-height:0}
+#life-workbench>.arcade-tab-panel{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain}
+#life-workbench>.arcade-tab-panel:first-of-type{overflow:hidden}
+#app[data-game="life"] .arena{display:grid;grid-template-rows:auto auto minmax(0,1fr) auto;gap:7px;min-height:0;height:100%;padding:0}
+#app[data-game="life"] .arena>.puzzle-stats{grid-row:1;margin:0;padding:8px 12px}
+#app[data-game="life"] .arena>.life-console{grid-row:2;margin:0;padding:7px 10px;font-size:11px}
+#app[data-game="life"] .arena>.life-view{grid-row:3;min-height:0;container-type:size;display:grid;place-items:center}
+#app[data-game="life"] .life-view>.life-stage{width:min(100cqw,calc(100cqh * 10 / 7));height:min(100cqh,calc(100cqw * 7 / 10));margin:0;aspect-ratio:auto;max-height:none;overflow:auto}
+#app[data-game="life"] .arena>.arcade-toolbar{grid-row:4;margin:0;gap:6px}
+#app[data-game="life"] .arena>.arcade-toolbar>span:not(.colony-legend){display:none}
+#app[data-game="life"] .status-card{padding:6px 10px;margin:0;max-height:60px;overflow:auto}
+#app[data-game="life"] .status-card h2{font-size:11px;margin:0}
+#app[data-game="life"] .status-card p{font-size:10px;margin:2px 0 0}
+#app[data-game="life"] .status-card .status-icon{display:none}
+#life-workbench :is(.life-library,.life-experiments,.rules-card){margin:0;padding:12px 0;border:0}
+#life-workbench :is(.life-library,.life-experiments,.rules-card)>summary{display:none}
+#life-workbench .settings-card{max-width:680px;margin:auto}
+@media(max-height:500px) and (min-width:601px){
+ #app[data-game="life"] .life-page{grid-template-rows:minmax(0,1fr);gap:0;padding-block:4px}
+ #app[data-game="life"] .life-page>.page-heading,#app[data-game="life"] .life-page>.status-card{display:none}
+ #app[data-game="life"] .arena{grid-template-columns:1fr 1fr;grid-template-rows:auto minmax(0,1fr) auto;gap:4px}
+ #app[data-game="life"] .arena>.puzzle-stats{grid-column:1;grid-row:1;padding:4px 10px}
+ #app[data-game="life"] .arena>.life-console{grid-column:2;grid-row:1;padding:4px 10px}
+ #app[data-game="life"] .arena>.life-view{grid-column:1/-1;grid-row:2}
+ #app[data-game="life"] .arena>.arcade-toolbar{grid-column:1/-1;grid-row:3;gap:4px}
+ #app[data-game="life"] .arena>.arcade-toolbar .button{min-height:34px;padding:5px 8px;font-size:10px}
+ #app[data-game="life"] .life-quick-tool select{min-height:34px;font-size:10px;max-width:160px}
+}
+@media(max-width:700px){
+ #app[data-game="life"] .life-page{padding:8px 12px;gap:6px}
+ #app[data-game="life"] .page-heading h1{font-size:21px}
+ #app[data-game="life"] .arena>.arcade-toolbar{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+ #app[data-game="life"] .arena>.arcade-toolbar .button{min-height:40px;padding:6px;font-size:10px}
+ #app[data-game="life"] .life-quick-tool{grid-column:1/-1;font-size:11px}
+ #app[data-game="life"] .life-quick-tool select{flex:1;max-width:none;min-width:0}
+ #app[data-game="life"] .arena>.puzzle-stats strong{font-size:20px}
+ #app[data-game="life"] .status-card{max-height:46px}
+}
 .coloured-edges { --edge-lightness: 31%; --edge-ink: #fff; }
 :root[data-theme="classic"] .coloured-edges, :root[data-theme="woodland"] .coloured-edges { --edge-lightness: 82%; --edge-ink: #24343f; }
 .coloured-edges .edge-tile path.tile-face { fill: hsl(var(--edge-hue) 44% var(--edge-lightness)); }

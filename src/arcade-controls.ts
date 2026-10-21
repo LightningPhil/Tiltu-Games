@@ -64,7 +64,7 @@ export function panelNavigation(host:HTMLElement,label:string,groups:{name:strin
   const select=(index:number)=>{panels.forEach(({panel,button},i)=>{panel.hidden=i!==index;button.setAttribute('aria-selected',String(i===index));button.tabIndex=i===index?0:-1;});onSelect?.(index);};
   panels.forEach(({button},index)=>{
     button.addEventListener('click',()=>select(index));
-    button.addEventListener('keydown',event=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;event.preventDefault();const next=event.key==='Home'?0:event.key==='End'?panels.length-1:(index+(event.key==='ArrowRight'?1:-1)+panels.length)%panels.length;select(next);panels[next].button.focus();});
+    button.addEventListener('keydown',event=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;event.preventDefault();event.stopPropagation();const next=event.key==='Home'?0:event.key==='End'?panels.length-1:(index+(event.key==='ArrowRight'?1:-1)+panels.length)%panels.length;select(next);panels[next].button.focus();});
   });
   host.append(nav,...panels.map(item=>item.panel));select(initial);
 }

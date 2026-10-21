@@ -11,6 +11,9 @@ import { collectionGraphic } from './collection-art.ts';
 import { patiencePicker } from './collection/view.ts';
 import './style.css';
 import './arcade-controls.css';
+import './game-workspace.css';
+import './card-workspace.css';
+import {GameWorkspace} from './game-workspace.ts';
 import './visuals.css';
 import './collection/collection.css';
 import './club-plus/plus.css';
@@ -810,8 +813,9 @@ function renderSudoku(): string {
     <div class="status-card ${solved ? 'result-card' : ''}" role="status" aria-live="polite" aria-atomic="true"><span class="status-icon" aria-hidden="true">${solved ? '✦' : s?.paused ? 'Ⅱ' : '▦'}</span><div><h2>${solved ? 'Puzzle complete!' : generating ? 'One moment…' : s?.paused ? 'Paused.' : 'One number at a time.'}</h2><p>${escape(detail)}</p></div>${solved ? '<button class="button primary" id="play-again">New puzzle ↗</button>' : ''}</div><div class="game-meta"><span>${s && !s.paused ? `Selected: row ${Math.floor(s.selected / s.size) + 1}, column ${s.selected % s.size + 1}` : 'Your progress is kept here'}</span><span>${prefs.notes ? '✎ Pencil mode' : 'Number mode'}</span></div></section></div></main>`;
 }
 
+const gameWorkspace=new GameWorkspace(app);
 function render(): void {
-  const scrollPositions = ['.mine-scroll', '.life-stage'].map(selector => { const el = app.querySelector(selector); return { selector, left: el?.scrollLeft ?? 0, top: el?.scrollTop ?? 0 }; });
+  const scrollPositions = ['.mine-scroll', '.life-stage','.workspace-surface','.workspace-board','.workspace-hand'].map(selector => { const el = app.querySelector(selector); return { selector, left: el?.scrollLeft ?? 0, top: el?.scrollTop ?? 0 }; });
   const focus = document.activeElement as HTMLElement;
   const blackjackFocus = !!focus?.closest('.blackjack-actions');
   const drafts = [...app.querySelectorAll<HTMLInputElement>('input[id]:not([type=range]):not([type=checkbox]):not([type=radio]):not([type=file])')].map(el => ({ id: el.id, value: el.value }));
@@ -830,10 +834,12 @@ function render(): void {
   const game = state.preferences.game;
   const collectionKey = collectionRoute(state);
   app.dataset.game = game;
+  delete app.dataset.workspace;
   app.dataset.boardSize = isMatch(game) && largeBoards[game] ? 'large' : 'fit';
   document.title = `${game === 'home' ? `${GAMES.length-1} games, one place to play` : names[game]} · Tiltu’s Games`;
   app.innerHTML = `${renderHeader()}${isPlus(game) ? plus.render(game) : collectionKey ? collection.render(collectionKey) : game === 'home' ? renderHome() : game === 'sudoku' ? renderSudoku() : game === 'chess' || game === 'go' ? renderAdvanced(game) : game === 'blackjack' ? blackjackPage(state.blackjack, message, renderMotionSetting(), countingTutor.render()) : game === 'patience' ? patiencePage(state.patience ??= newPatience(state.preferences.patienceDraw), state.preferences.patienceDraw, patienceSelected, cardHint, message, renderMotionSetting(), autoFoundations) : isActionGame(game) ? actionArcade.render(game) : isArcade(game) ? arcade.render(game) : game === 'poker' ? pokerRoom.render() : renderDuel(game as DuelGame)}<footer class="app-footer"><span>© 2026 Philip Leichauer <b>·</b> All rights reserved.</span><button class="license-link" id="license-info">License & notices</button><span>${storageOK ? 'Progress saved on this browser' : 'Storage unavailable · progress kept for this visit'}</span></footer>`;
   if (game === 'patience' && !collectionKey) { const heading = app.querySelector('.page-heading h1'); if (heading) heading.insertAdjacentHTML('afterend', '<p class="game-subtitle">Klondike</p>'); const arena=app.querySelector('.arena'); arena?.insertAdjacentHTML('afterbegin',patiencePicker('klondike')); }
+  gameWorkspace.mount(game);
   boardArtwork.mount(app);
   if (isPlus(game)) plus.mount();
   if (collectionKey) collection.mount(collectionKey);

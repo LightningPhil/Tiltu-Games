@@ -1,0 +1,158 @@
+#app[data-workspace=true]{height:100dvh;display:grid;grid-template-rows:auto minmax(0,1fr);overflow:hidden}
+#app[data-workspace=true]>.app-footer{display:none}
+#app .game-workspace{width:100%;max-width:1440px;height:100%;min-height:0;display:grid;grid-template-rows:auto minmax(0,1fr);gap:6px;margin:0 auto;padding:8px 18px 10px}
+#app .game-workspace .page-heading{padding:0;margin:0;min-height:28px;gap:8px}
+#app .game-workspace .page-heading h1{font-size:22px;letter-spacing:-.035em;margin:0}
+#app .game-workspace .page-heading :is(.eyebrow,.chip,.game-subtitle){display:none}
+#game-workspace{display:flex;flex-direction:column;min-height:0}
+#game-workspace>.arcade-panel-tabs{padding:0 0 6px;gap:6px}
+#game-workspace>.arcade-panel-tabs button{min-height:40px;flex:0 1 150px;font-size:12px}
+#game-workspace>.arcade-tab-panel{min-height:0;flex:1;overflow:auto;overscroll-behavior:contain}
+#game-workspace>.arcade-tab-panel:first-of-type{overflow:hidden}
+#app .game-workspace .arena{display:grid;grid-template-rows:auto minmax(0,1fr) auto auto auto auto;gap:6px;height:100%;min-height:0;padding:0;margin:0;max-width:none}
+.workspace-stats{grid-row:1;display:flex;gap:8px;min-width:0}
+#app .workspace-stats>.puzzle-stats{flex:1;margin:0;padding:5px 10px;min-height:40px;border-radius:8px}
+#app .workspace-stats .puzzle-stats strong{font-size:16px;line-height:1.2}
+#app .workspace-stats .puzzle-stats span{font-size:9px}
+#app .workspace-stats .memory-scores{margin:0;flex:1;gap:5px}
+#app .workspace-stats .memory-scores>span{padding:6px;font-size:10px}
+#app .workspace-stats .players{display:flex;width:100%;margin:0;gap:6px}
+#app .workspace-stats .player-card{flex:1;min-width:0;padding:5px 8px;gap:7px;min-height:42px}
+#app .workspace-stats .player-card>div{min-width:0}
+#app .workspace-stats .player-card strong{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+#app .workspace-stats .player-card span{font-size:9px;white-space:nowrap;display:block;overflow:hidden;text-overflow:ellipsis}
+#app .workspace-stats .player-card>b{font-size:14px;flex-shrink:0}
+#app .workspace-stats .player-card>b small{display:none}
+#app .workspace-stats :is(.player-avatar,.plus-token){width:23px;height:23px;flex:0 0 23px;font-size:16px}
+#app .game-workspace .workspace-surface{grid-row:2;min-width:0;min-height:0;container-type:size;display:grid;place-items:center;overflow:auto;overscroll-behavior:contain;touch-action:pan-x pan-y;border-radius:10px}
+#app[data-workspace=true] .game-workspace .workspace-board{width:var(--workspace-fit-width,min(100cqw,calc((100cqh - var(--board-head,0px)) * var(--board-ratio,1))));max-width:none;min-width:0;margin:0;height:auto;flex-shrink:0;box-sizing:border-box}
+#app .game-workspace .workspace-surface.is-enlarged{display:block}
+#app .game-workspace .workspace-surface.is-panning{cursor:grab;touch-action:none}
+#app .game-workspace .workspace-surface.is-panning:active{cursor:grabbing}
+#app .game-workspace .workspace-surface.is-panning *{cursor:inherit;touch-action:none}
+#app .game-workspace .workspace-surface.is-enlarged>.workspace-board{width:max(100%,var(--workspace-large-width,680px));max-width:none;margin:auto}
+.workspace-inputs{grid-row:3;min-width:0}
+.workspace-actions{grid-row:4;display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+#app .workspace-actions>.button{min-height:40px;flex:1;padding:7px 8px;font-size:11px;white-space:nowrap;min-width:44px}
+.workspace-feedback{grid-row:5;max-height:140px;overflow:auto}
+.workspace-inputs:empty,.workspace-stats:empty,.workspace-feedback:empty{display:none}
+#app .game-workspace .arena>.status-card{grid-row:6;max-height:50px;padding:6px 10px;margin:0;overflow:auto;gap:6px;min-height:0;border-radius:8px}
+#app .game-workspace .status-card .status-icon{display:none}
+#app .game-workspace .status-card h2{font-size:11px;margin:0;line-height:1.3}
+#app .game-workspace .status-card p{font-size:10px;line-height:1.4;margin:2px 0 0}
+#app .workspace-feedback .hint-card{padding:8px;margin:0;gap:8px}
+#app .workspace-feedback .hint-card .eyebrow{display:none}
+#app .workspace-feedback .hint-card p{font-size:12px;margin:0}
+#app .workspace-feedback .coach-advice{margin:0;padding:8px;font-size:12px}
+#app .workspace-feedback .coach-advice h3{font-size:13px;margin:0 0 5px}
+#app .workspace-feedback .score-panel{padding:7px;margin:0;gap:8px}
+#app .workspace-feedback .score-panel strong{font-size:17px}
+#app .workspace-feedback .score-panel p,#app .workspace-feedback .score-panel small{font-size:10px;line-height:1.4}
+.workspace-guidance{display:block;font-size:11px;line-height:1.4;padding:5px 8px;background:var(--surface);border:1px solid var(--line);border-radius:7px}
+.workspace-options{max-width:900px;padding:12px 6px;margin:auto;display:flex;flex-direction:column;gap:12px}
+#app .workspace-options .settings-card{width:100%;margin:0;padding:14px}
+#app .workspace-options .rules-card{padding:12px;margin:0}
+#app .workspace-options .rules-card>summary{display:none}
+#app .workspace-options :is(.candidate-help,.plus-number-inspector,.collection-toolbar,.arcade-toolbar,.sudoku-focusbar,.mahjong-inspector,.tetra-inspector,.game-meta){margin:0}
+#app .workspace-options>.button{align-self:flex-start;min-height:44px}
+#app .workspace-inputs :is(.number-pad,.plus-number-pad){display:grid;grid-template-columns:repeat(var(--workspace-digits,9),minmax(0,1fr));max-width:none;margin:0;gap:4px}
+#app .workspace-inputs :is(.number-pad,.plus-number-pad) button{min-height:44px;min-width:0;padding:4px;font-size:19px}
+#app .workspace-inputs .number-pad small{display:none}
+#app .workspace-inputs .tan-piece-picker{margin:0;gap:5px}
+#app .workspace-inputs .tan-piece-button{flex:1;min-width:0;min-height:40px}
+#app .workspace-inputs .word-list{display:flex;flex-direction:row;flex-wrap:wrap;gap:5px 12px;padding:8px;max-height:90px;overflow:auto}
+#app .workspace-inputs .word-list>span{font-size:11px}
+#app .workspace-inputs .race-cast-panel{margin:0;padding:4px 8px;min-height:44px;gap:8px;flex-wrap:nowrap}
+#app .workspace-inputs .binary-cast{width:84px;flex:0 1 84px;gap:3px}
+#app .workspace-inputs .ur-binary-die{width:19px;height:28px;flex:1;min-width:0}
+#app .workspace-inputs .race-cast-panel .button{min-height:44px;padding:6px 12px;margin-left:auto}
+#app .workspace-inputs .race-cast-art{height:32px;min-width:0}
+#app .workspace-inputs .race-cast-art>svg{width:30px;height:30px}
+#app .workspace-inputs .race-cast-panel strong{font-size:20px;line-height:1}
+#app .workspace-inputs .race-cast-panel span{font-size:9px}
+#app .workspace-inputs .race-reserves{margin:0 0 5px;gap:6px}
+#app .workspace-inputs .race-reserves:not(:has(button:not(:disabled))),#app .workspace-inputs .race-reserve:not(:has(button:not(:disabled))){display:none}
+#app .workspace-inputs:has(.race-cast-panel button:not(:disabled)) .race-reserves{display:none}
+#app .workspace-inputs .race-reserve{padding:5px;gap:4px}
+#app .workspace-inputs .race-reserve>span{font-size:9px}
+#app .workspace-inputs .reserve-counter{width:32px;height:36px;padding:0}
+#app .workspace-inputs .bg-dashboard{margin:0;padding:5px 8px}
+#app .workspace-inputs .bg-off{margin:3px 0;font-size:9px}
+#app .workspace-inputs .hex-colour-key{margin:0;font-size:11px}
+#app .game-workspace .four-board{aspect-ratio:7/6;padding:10px;gap:7px}
+#app .game-workspace .plus-nim-board{padding:10px;gap:6px;aspect-ratio:1.5;display:grid;grid-template-rows:repeat(var(--nim-piles,3),minmax(0,1fr))}
+#app .game-workspace .nim-pile{padding:6px;min-height:0;display:grid;grid-template-rows:auto minmax(0,1fr);gap:5px}
+#app .game-workspace .nim-pile>div:first-child{font-size:11px;line-height:1.2}
+#app .game-workspace .nim-pile b{font-size:18px}
+#app .game-workspace .nim-objects{gap:4px;display:flex;flex-wrap:nowrap;align-items:center}
+#app .game-workspace .nim-stone{flex:0 1 38px;width:38px;min-height:36px;min-width:0}
+#app .game-workspace .domino-line.workspace-board{height:100%;width:100%;min-height:0;margin:0;padding:12px;display:flex;align-content:center;justify-content:center;align-items:center;flex-wrap:wrap;gap:6px;overflow:auto;background:var(--felt);color:var(--felt-text);border:1px solid var(--line);border-radius:12px}
+#app .workspace-inputs .plus-domino-rival{font-size:10px;min-height:0;margin:0}
+#app .workspace-inputs .plus-domino-rival{display:flex;justify-content:space-between;align-items:center;padding:0 3px;line-height:1.3}
+#app .workspace-inputs .plus-domino-rival>div{display:none}
+#app .workspace-inputs .domino-end-summary{font-size:10px;gap:8px}
+#app .workspace-inputs .domino-end-summary{line-height:1.3}
+#app .workspace-inputs .domino-end-summary b{font-size:15px}
+#app .workspace-inputs .plus-domino-hand{margin:0;padding:6px 1px 3px;gap:4px;flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;scroll-snap-type:x proximity}
+#app .workspace-inputs .hand-domino{flex:0 0 38px;width:38px;height:72px;scroll-snap-align:center}
+#app .workspace-inputs .hand-domino.selected-domino{transform:translateY(-3px);outline-offset:0}
+#app .workspace-stats .workspace-domino-ends{font-size:9px;display:flex;flex-direction:column}
+#app .workspace-stats .workspace-domino-ends>b{font-size:16px;line-height:1.2}
+.workspace-senet{--board-ratio:3.333333!important}
+#app .game-workspace .sudoku-board{aspect-ratio:1}
+#app .game-workspace .plus-number-cell{min-height:0;line-height:1;font-size:clamp(16px,4cqw,30px)}
+#app .game-workspace .futo-sign{min-height:0;line-height:1;font-size:20px}
+#app .game-workspace .sky-clue{line-height:1;min-height:20px}
+#app .game-workspace .tetra-tables{grid-template-columns:1fr 1fr;gap:10px;padding:0;overflow:visible}
+#app .game-workspace .tetra-tables h2{font-size:11px;margin:0 0 6px}
+#app .game-workspace .tetra-tables .tetra-grid{padding:4px;gap:3px}
+.workspace-tile-tables{--board-ratio:2!important;--board-head:30px}
+#app .game-workspace .mine-window{max-width:none;min-width:0}
+#app .game-workspace .mine-clue-guide{display:none}
+#app .game-workspace .mine-window .retro-titlebar{display:none}
+#app .game-workspace .mine-scroll{padding:0 6px 6px}
+#app .game-workspace .mine-dashboard{padding:6px;min-height:0}
+#app .game-workspace .mine-board{max-width:none;width:100%;grid-template-columns:repeat(var(--mine-cols),minmax(0,1fr))}
+#app .game-workspace .mine-cell{width:100%;height:auto;aspect-ratio:1;min-height:0}
+#app .game-workspace .nonogram-board{aspect-ratio:1;--clue-size:14px}
+#app .game-workspace .memory-grid{padding:10px;gap:8px}
+#app .game-workspace .mahjong-board{overflow:visible}
+#app .workspace-inputs .mahjong-inspector{margin:0;padding:6px 10px;min-height:0}
+#app .workspace-inputs .mahjong-inspector>span{width:36px;height:46px}
+@media(max-width:700px){
+ #app .game-workspace{padding:6px 10px 8px;gap:4px}
+ #app .game-workspace .page-heading h1{font-size:20px}
+ #game-workspace>.arcade-panel-tabs button{flex:1;min-height:40px;padding:6px}
+ #app .workspace-actions>.button{min-height:44px;font-size:10px;padding:6px}
+ #app .workspace-options select,#app .workspace-options input{font-size:16px;min-height:44px}
+ #app .game-workspace .board-loading{padding:10px;min-height:0}
+ #app .game-workspace .board-loading h2{font-size:18px}
+ #app .game-workspace .workspace-tile-tables{--board-ratio:.5!important;--board-head:48px}
+ #app .game-workspace .workspace-tile-tables .tetra-tables{grid-template-columns:1fr;gap:8px}
+}
+@media(max-width:360px){
+ .workspace-actions{gap:4px}
+ #app .workspace-actions>.button{padding:6px 3px}
+}
+@media(max-width:700px) and (orientation:portrait){
+ .workspace-senet{--board-ratio:.3!important}
+ #app .game-workspace .senet-board.workspace-board{aspect-ratio:3/10}
+ #app .game-workspace .senet-house{left:calc((100 - var(--senet-y)) * 1% - 100% / 3)!important;top:calc(var(--senet-x) * 1%)!important;width:calc(100% / 3);height:10%}
+ #app .game-workspace .senet-board .race-counter{left:calc((100 - var(--senet-y)) * 1%)!important;top:calc(var(--senet-x) * 1%)!important;width:29%;height:8.7%}
+ #app .game-workspace .senet-house small{font-size:10px;top:2px;left:3px}
+}
+@media(max-height:500px) and (min-width:601px){
+ #app .game-workspace{padding:4px 12px;grid-template-rows:minmax(0,1fr)}
+ #app .game-workspace>.page-heading{display:none}
+ #game-workspace>.arcade-panel-tabs button{min-height:34px}
+ #app .game-workspace .arena{grid-template-columns:minmax(0,1fr) minmax(220px,32%);grid-template-rows:auto auto auto minmax(0,1fr) auto;gap:5px 12px}
+ #app .game-workspace .workspace-surface{grid-column:1;grid-row:1/-1}
+ .workspace-stats{grid-column:2;grid-row:1}
+ .workspace-inputs{grid-column:2;grid-row:2}
+ .workspace-actions{grid-column:2;grid-row:3}
+ .workspace-feedback{grid-column:2;grid-row:4}
+ #app .game-workspace .arena>.status-card{grid-column:2;grid-row:5}
+ #app .workspace-actions>.button{flex-basis:28%;min-height:38px}
+ #app .workspace-inputs :is(.number-pad,.plus-number-pad){grid-template-columns:repeat(5,minmax(0,1fr))}
+ #app .workspace-inputs :is(.number-pad,.plus-number-pad) button{min-height:38px;font-size:16px}
+}

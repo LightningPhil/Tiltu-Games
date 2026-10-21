@@ -4,6 +4,7 @@ dist/
 playwright-report/
 test-results/
 .arcade-review/
+.tabletop-review/
 *.log
 .env
 .env.*

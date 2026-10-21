@@ -4,6 +4,14 @@ Fifty-four games, five shared themes, one offline HTML file. Choose a game in th
 
 The nine games in **Arcade & worlds** are **TetriGrid**, **Archive Patrol**, **Neon Void**, **Whack-a-Party!**, **Neon Horizon**, **Neon Synth Ballistics**, **Snake**, **Downhill Skiing** and **Conway’s Game of Life**. They share the app’s themes and navigation. Settings, help, records and libraries use separate panels to keep play controls close to the game. Soundtracks are synthesized locally. This repository contains the collection's own gameplay and audio modules; no other repository is needed to build it. Internal game and storage identifiers retain compatibility with existing saves.
 
+## Playing on phones and larger screens
+
+Puzzles, board games and card games share a screen-sized workspace. **Play** keeps the board or table, current turn and essential actions together. On portrait phones, actions sit below play; landscape screens put them alongside it. **Setup** contains new games, variants and preferences, **Help** contains rules and license information, and **Tools** appears when there is additional guidance, history, inspection or tutorial material. Escape returns to Play. Number pads, dice, bids, legal destinations and scoring confirmations remain in Play.
+
+Use **Enlarge** for a dense board. **Pan board** lets you drag the view without playing a move; **Move pieces** restores game input, and Escape also leaves Pan mode. **Fit board** returns to the full-board view. Expert minefields enlarge enough to keep their squares tappable. Senet turns into three tall columns on portrait phones, preserving the numbered route, then returns to its wide board in landscape.
+
+Card hands are laid out in rows on phones so every card can be selected directly. **Larger cards** switches to a sideways-scrolling hand; **Fit hand** shows all cards together again. Passing, bidding, drawing and discarding stay beside the hand. In Patience, tap a card or sequence and choose a highlighted destination or one of the explicit destination buttons; dragging remains available. Use Setup to switch between Klondike, FreeCell and Spider. Patience offers the **Pan board** / **Move pieces** toggle in both table sizes, and long columns scroll within the table.
+
 ## Playing
 
 | Game | Controls and useful tools |
@@ -17,7 +25,7 @@ The nine games in **Arcade & worlds** are **TetriGrid**, **Archive Patrol**, **N
 | Four in a Row | Click a column or use 1–7. Left/right previews columns; Enter drops. Setup offers an optional preview/confirm mode. Hints outline winning and blocking lines. |
 | Draughts | Select a ringed piece and a marked landing. Capture routes show every jump. Flip the board, cycle movable pieces, or watch a tutor suggestion before playing it. |
 | Sudoku | Switch between Cell first and number painting. Notes works with either style. Candidate explanations compare the row, column and box. Shift enters a note; N toggles Notes. |
-| Chess | Select a piece and destination. For castling, select the king and then its rook or legal king destination. Optional attack markers show the opponent’s controlled squares. Captures and material appear beside the board. |
+| Chess | Select a piece and destination. For castling, select the king and then its rook or legal king destination. Optional attack markers show the opponent’s controlled squares. Captures and material appear in Tools. |
 | Go | Inspect groups and liberties, show atari, or enable Preview first to inspect a placement before committing. Two passes open scoring; mark agreed dead groups or resume play. |
 | Blackjack | H hits, S stands, D doubles or deals the next round, P splits. The table tutor explains the current decision. Double and Split show their extra stake; each finished hand shows its net result. |
 | Patience | Choose Klondike, FreeCell or Spider inside the collection. Each keeps its own deal. Click or drag cards and sequences. Destination buttons sit below the table. Arrows navigate columns and face-up runs. D draws, H hints, A moves safe cards home. Auto moves can be stopped; an exposed endgame offers Finish this deal. |
@@ -27,7 +35,7 @@ The nine games in **Arcade & worlds** are **TetriGrid**, **Archive Patrol**, **N
 | Edge Matching | Select a tile or empty destination; click or drag to move. Arrows navigate both grids. Edge colours, a larger tile inspector, animated sorting, undo and explicit one-tile reveals are available. |
 | Poker | C checks/calls, R bets/raises, F folds, D deals. In Draw, 1–5 mark discards, Esc keeps all, E exchanges. Ask the table tutor before deciding; the hand guide includes real examples of all categories. |
 
-Four in a Row, Draughts, Chess and Go have **Review moves**: step through any position or replay a move with the shared animation speed. Review and tutor previews use copies and do not change the live match, its turn or its score. The diagonal arrow toggles a larger board or the screen-fit view. Escape clears chess/Go/Four in a Row selections and previews.
+Four in a Row, Draughts, Chess and Go have **Review moves** in Tools: step through any position or replay a move with the shared animation speed. Review and tutor previews use copies and do not change the live match, its turn or its score. **Enlarge** / **Fit board** changes the board view. In Play, Escape clears chess/Go/Four in a Row selections and previews; from another section, it returns to Play.
 
 ## New collection games
 

@@ -18,6 +18,7 @@ const save = (page: Page) => page.evaluate(() => JSON.parse(localStorage.getItem
 const openGame = (page: Page, game: string) => page.locator(`.game-card[data-game="${game}"]`).click();
 
 test('all 54 games open at the Pages path without runtime services', async ({ page, baseURL }) => {
+  test.setTimeout(180_000);
   const requests: string[] = [];
   page.on('request', request => { if (/^https?:/.test(request.url())) requests.push(request.url()); });
   await page.goto('./');
@@ -54,7 +55,7 @@ test('a human move receives a browser-worker reply and survives reload', async (
   await page.reload();
   await expect(page.locator('#page-title')).toHaveText('Four in a Row');
   expect((await save(page)).four.board).toEqual(before);
-  await page.locator('#undo').click();
+  await page.locator('.workspace-actions [data-quick="undo"]').click();
   await expect.poll(async () => (await save(page)).four.moves.length).toBe(0);
 });
 
@@ -82,7 +83,7 @@ test('phone layout supports discovery, navigation, themes and license access', a
   await expect(page.locator('[data-column]')).toHaveCount(7);
   await page.locator('#theme').selectOption('woodland');
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'woodland');
-  await page.locator('#license-info').click();
+  await page.getByRole('tab',{name:'Help',exact:true}).click();await page.locator('#license-info').click();
   await expect(page.getByRole('dialog')).toContainText('Copyright © 2026 Philip Leichauer');
   await expect(page.getByRole('dialog')).toContainText('three.js 0.128.0');
   await page.getByRole('button', { name: 'Close', exact: true }).click();

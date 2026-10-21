@@ -1,0 +1,134 @@
+#app[data-workspace=true] .game-workspace .workspace-card-field{width:100%;height:100%;min-height:0;max-width:none;margin:0;padding:10px;border-radius:12px;overflow:auto;background-color:var(--felt);color:var(--felt-text)}
+#app .workspace-stats>.plus-table-scores{flex:1;display:flex;gap:6px;margin:0;padding:5px 10px;min-height:42px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+#app .workspace-stats .plus-table-scores>div{flex:1;text-align:center;padding:0;min-width:0;font-size:10px}
+#app .workspace-stats .plus-table-scores strong{font-size:16px;line-height:1.2}
+#app .workspace-stats .plus-table-scores span{font-size:9px}
+#app .workspace-stats>.table-bankroll{flex:1;margin:0;padding:5px 10px;gap:8px;min-height:45px;border:1px solid var(--line);background:var(--surface);color:var(--text)}
+#app .workspace-stats .table-bankroll>span{font-size:9px}
+#app .workspace-stats .table-bankroll strong{font-size:15px;line-height:1.2}
+#app .workspace-stats .table-bankroll label{font-size:9px;margin:0}
+#app .workspace-stats .table-bankroll select{min-height:36px;font-size:12px;padding:4px 8px}
+#app .workspace-stats .workspace-crib-score{width:100%;display:flex;justify-content:space-around;align-items:center;min-height:42px;margin:0;padding:5px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);font-size:11px}
+#app .workspace-stats .workspace-crib-score strong{font-size:16px}
+#app .workspace-inputs .workspace-hand-heading{display:flex;justify-content:space-between;align-items:center;margin:0 0 5px;font-size:11px;color:var(--text);gap:8px}
+#app .workspace-inputs .workspace-hand-heading>span{font-size:10px}
+#app .workspace-inputs .workspace-hand{display:grid;grid-template-columns:repeat(var(--hand-columns,13),minmax(0,1fr));gap:5px;min-height:0;margin:0;padding:4px;width:min(100%,calc(var(--hand-count,13) * 68px + 12px));max-width:980px;margin-inline:auto;border:1px solid var(--line);border-radius:9px;background:var(--surface)}
+#app .workspace-hand :is(.plus-hand-card,.crib-card-button){display:block;width:100%;height:auto;min-width:0;margin:0;padding:0;flex:none;transform:none;border-radius:5px;touch-action:manipulation}
+#app .workspace-hand .plus-hand-card.can-play-card:after{width:auto;right:0}
+#app .workspace-hand :is(.plus-hand-card,.crib-card-button)>.playing-card{width:100%;--card-width:100%;font-size:12px;pointer-events:none;transform:none}
+#app .workspace-hand .card-corner{font-size:12px;left:3px;top:3px;gap:1px}
+#app .workspace-hand .card-corner.bottom-corner{left:auto;top:auto;right:3px;bottom:3px}
+#app .workspace-hand .card-pips{font-size:12px;inset:24% 18%}
+#app .workspace-hand .card-corner .card-suit{width:10px;height:10px}
+#app .workspace-hand .card-court{inset:26% 20%}
+#app .workspace-hand .card-court b{font-size:13px}
+#app .workspace-hand .ace-pip{font-size:24px}
+#app .workspace-hand :is(.picked-card,.discard-selected){outline:3px solid var(--accent);outline-offset:0;box-shadow:0 0 10px color-mix(in srgb,var(--accent) 45%,transparent)}
+#app .workspace-hand .crib-card-button>small{font-size:9px;margin:3px 0;color:var(--text)}
+#app .workspace-inputs.large-hand .workspace-hand{display:flex;width:100%;overflow-x:auto;justify-content:flex-start;scroll-snap-type:x proximity}
+#app .workspace-inputs.large-hand .workspace-hand>button{width:68px;flex:0 0 68px;scroll-snap-align:center}
+#app .workspace-inputs.large-hand .workspace-hand:after{content:'›';align-self:center;color:var(--accent);font-size:25px;padding:8px}
+#app .workspace-inputs .workspace-hand-note{font-size:10px;color:var(--muted);margin:3px 0 0}
+#app .workspace-actions>.button{white-space:normal;line-height:1.2;overflow-wrap:normal}
+#app .workspace-actions>.blackjack-actions{display:contents}
+#app .workspace-actions .blackjack-actions>.button{min-height:44px;flex:1;padding:6px;font-size:12px;min-width:52px}
+#app .workspace-actions .blackjack-actions>.button small{display:block;font-size:9px;line-height:1.2}
+#app .workspace-actions .blackjack-actions>.button kbd{display:none}
+#app .workspace-actions>[hidden]{display:none!important}
+#app .game-workspace .blackjack-table{display:flex;flex-direction:column;justify-content:space-around;gap:8px}
+#app .game-workspace .blackjack-table .dealer-area{padding:0;margin:0;border:0}
+#app .game-workspace .hand-heading{margin:0 0 5px;gap:8px}
+#app .game-workspace .hand-heading h2{font-size:12px;margin:0}
+#app .game-workspace .hand-heading>span,#app .game-workspace .hand-heading>strong{font-size:12px}
+#app .game-workspace .blackjack-hand-cards{min-height:72px;gap:5px;padding:2px 1px;justify-content:flex-start;flex-wrap:nowrap;overflow-x:auto}
+#app .game-workspace .blackjack-table .playing-card{--card-width:60px;font-size:12px}
+#app .game-workspace .blackjack-table .table-lettering{padding:3px 0;margin:0;font-size:10px}
+#app .game-workspace .blackjack-table .table-lettering small{font-size:8px}
+#app .game-workspace .blackjack-hands{gap:8px}
+#app .game-workspace .blackjack-player-hand{padding:6px;margin:0;min-width:0}
+#app .game-workspace .hand-total-note{font-size:9px;min-height:0;margin:2px 0 4px}
+#app .game-workspace .hand-stake{margin-top:4px;font-size:10px;gap:5px}
+#app .game-workspace .hand-stake .table-chip{width:26px;height:26px}
+#app .game-workspace .split-table .blackjack-hands{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+#app .game-workspace .split-table .playing-card{--card-width:43px;font-size:10px}
+#app .game-workspace .split-table .blackjack-hand-cards{min-height:62px}
+#app .game-workspace .empty-player-hand{padding:5px}
+#app .game-workspace .card-placeholder{--card-width:60px}
+#app .game-workspace .plus-trick-stage{border:1px solid var(--line);background:radial-gradient(ellipse,var(--felt),color-mix(in srgb,var(--felt) 85%,#000));min-height:0}
+#app .game-workspace .plus-trick-stage .plus-opponents{position:absolute;top:7px;left:7px;right:7px;gap:5px}
+#app .game-workspace .plus-trick-stage .plus-seat{padding:4px;gap:1px}
+#app .game-workspace .plus-trick-stage .plus-seat>strong{font-size:10px}
+#app .game-workspace .plus-trick-stage .plus-seat>small{font-size:8px}
+#app .game-workspace .plus-trick-stage .plus-hidden-fan{display:none}
+#app .game-workspace .plus-trick-stage .trick-seat-2{top:54px}
+#app .game-workspace .plus-trick-stage .trick-seat-0{bottom:7px}
+#app .game-workspace .plus-trick-card>.playing-card{width:55px;--card-width:55px;font-size:11px}
+#app .game-workspace .plus-trick-stage .empty-trick{white-space:normal;text-align:center;width:75%;top:64%}
+#app .game-workspace .plus-trick-stage .trump-label{top:56%;font-size:10px}
+#app .game-workspace .bid-picker.workspace-board{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));align-content:center;gap:8px;min-height:0;background:var(--surface)}
+#app .game-workspace .bid-picker.workspace-board>.button{min-height:50px;padding:7px;font-size:16px}
+#app .game-workspace .plus-gin-table{display:flex;flex-direction:column;justify-content:space-around;gap:10px}
+#app .game-workspace .gin-rival{padding-bottom:5px;font-size:11px}
+#app .game-workspace .gin-rival .plus-hidden-fan{height:35px}
+#app .game-workspace .gin-piles{margin:0;gap:12px}
+#app .game-workspace .gin-note{margin:0;font-size:11px;max-width:130px}
+#app .game-workspace .gin-note p{font-size:10px;margin:4px 0 0;line-height:1.5}
+#app .game-workspace .gin-piles>button{width:60px}
+#app .game-workspace .gin-piles .playing-card{width:60px;--card-width:60px}
+#app .game-workspace .crib-table{display:flex;flex-direction:column;justify-content:space-around;gap:10px}
+#app .game-workspace .crib-table>h3{display:none}
+#app .game-workspace .crib-table-top{gap:8px;padding:0 0 10px}
+#app .game-workspace .crib-table-top h3{font-size:10px;margin-bottom:5px}
+#app .game-workspace .crib-table .playing-card{width:48px;--card-width:48px;font-size:10px}
+#app .game-workspace .pegging-lane{margin:0;padding:8px;min-height:70px;gap:8px;overflow:auto}
+#app .game-workspace .pegging-count{font-size:10px}
+#app .game-workspace .pegging-count strong{font-size:23px}
+#app .game-workspace .crib-show{overflow:auto}
+#app .game-workspace .poker-table{display:flex;flex-direction:column;justify-content:space-around;gap:8px}
+#app .game-workspace .poker-opponent-row{gap:12px}
+#app .game-workspace .poker-pot{min-width:70px;font-size:10px}
+#app .game-workspace .poker-pot strong{font-size:16px}
+#app .game-workspace .poker-community{min-height:64px;gap:5px;padding:4px 0;margin:0}
+#app .game-workspace .poker-table .playing-card{--card-width:54px;font-size:11px}
+#app .game-workspace .poker-community .card-placeholder{--card-width:48px;width:48px;min-width:0}
+#app .game-workspace .poker-community .card-placeholder small{font-size:8px}
+#app .workspace-inputs .poker-decision-bar{margin:0;padding:7px;font-size:11px;line-height:1.4}
+#app[data-workspace=true] .game-workspace .workspace-patience-table{--card-gap:5px;--fan-step:clamp(18px,2.8dvh,25px);--collection-fan:23px;padding:10px 8px;overflow:auto;min-height:0;border-radius:10px}
+#app .workspace-surface.is-enlarged>.workspace-patience-table{width:max(100%,760px);height:auto;min-height:100%;overflow:visible}
+#app .game-workspace :is(.patience-top,.freecell-top,.spider-top){position:sticky;top:0;z-index:80;background:var(--felt);margin-bottom:14px;padding-bottom:6px}
+#app .workspace-options .patience-collection-picker{margin:0;padding:0}
+#app .workspace-options .patience-collection-picker button{flex:1}
+#app[data-game=patience] .game-workspace .page-heading>div,#app .poker-page.game-workspace .page-heading>div{display:flex;align-items:baseline;gap:10px;min-width:0}
+#app[data-game=patience] .game-workspace .page-heading .game-subtitle,#app .poker-page.game-workspace .page-heading .game-subtitle{display:block;margin:0;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#app .workspace-feedback :is(.card-destinations,.card-destination-list){padding:7px;margin:0;gap:5px;font-size:11px}
+#app .workspace-feedback :is(.card-destinations,.card-destination-list) .button{min-height:40px;font-size:11px}
+@media(max-width:700px){
+ #app .workspace-inputs .workspace-hand{grid-template-columns:repeat(var(--hand-small-columns,7),minmax(0,1fr));gap:4px}
+ #app .workspace-inputs.large-hand .workspace-hand{display:flex}
+ #app .game-workspace .workspace-patience-table{--collection-fan:21px;--fan-step:21px}
+ #app .game-workspace .collection-playing-card .card-corner{font-size:10px}
+ #app .game-workspace .patience-board .card-corner{font-size:10px;gap:0;top:2px}
+ #app .workspace-stats .table-bankroll select{font-size:16px;min-height:40px}
+}
+@media(max-height:500px) and (min-width:601px){
+ #app .workspace-inputs .workspace-hand{grid-template-columns:repeat(var(--hand-small-columns,7),minmax(0,1fr));gap:3px;padding:3px}
+ #app .workspace-actions>.button{flex-basis:0;min-width:44px}
+ #app .workspace-stats>.plus-table-scores{padding:3px 8px;min-height:40px}
+ #app .workspace-stats .plus-table-scores span,#app .workspace-stats .plus-table-scores small{font-size:8px;line-height:1.1}
+ #app .workspace-stats .plus-table-scores strong{font-size:14px;line-height:1.1}
+ #app .workspace-inputs .workspace-hand-heading{line-height:1.2}
+ #app .workspace-inputs.large-hand .workspace-hand{display:flex}
+ #app .workspace-hand .card-corner{font-size:10px;gap:0;left:2px;top:2px}
+ #app .game-workspace .plus-trick-stage .trick-seat-2{top:42px}
+ #app .game-workspace .plus-trick-card>.playing-card{width:45px;--card-width:45px;font-size:10px}
+ #app .game-workspace .plus-trick-stage .plus-seat>small{display:none}
+ #app .game-workspace .poker-table{display:grid;grid-template-columns:1fr 1fr;align-items:center;align-content:space-evenly}
+ #app .game-workspace .poker-opponent-row{grid-column:1/-1}
+ #app .game-workspace .poker-table>.hand-heading{display:none}
+ #app .game-workspace .poker-community{grid-column:1;grid-row:2}
+ #app .game-workspace .poker-hero{grid-column:2;grid-row:2}
+ #app .game-workspace .blackjack-table{flex-direction:row;align-items:center;justify-content:space-around}
+ #app .game-workspace .blackjack-table>.dealer-area{max-width:45%;min-width:0}
+ #app .game-workspace .blackjack-table>.table-lettering{display:none}
+ #app .game-workspace .blackjack-table>.blackjack-hands{max-width:53%;min-width:0}
+}

@@ -11,10 +11,18 @@ const shorter:Record<string,string>={'A little hint':'Hint','Explain a move':'Hi
 const boardActions=new Set(['race-roll','roll','double','accept','decline','pass','clear','four-hint','inspect-go','go-place','go-cancel','drop','clear-drop','suggest','flip-chess','flip-draughts','abstract:-1']);
 const actionLabels:Record<string,string>={draw:'Draw',auto:'Home','four-hint':'Hint',suggest:'Hint','gin-pass':'Pass','gin-discard':'Discard','abstract:-1':'Swap colours'};
 
+/** Touch browsers can consume the click following a pan; activate mode buttons on release. */
+function workspacePress(button:HTMLButtonElement,action:()=>void){
+ let touched=false;
+ button.addEventListener('pointerdown',()=>{touched=false;});
+ button.addEventListener('pointerup',event=>{if(button.disabled||event.pointerType!=='touch'||!event.isPrimary)return;const r=button.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)return;event.preventDefault();touched=true;action();});
+ button.addEventListener('click',event=>{if(touched&&event.detail>0){touched=false;event.preventDefault();event.stopPropagation();return;}touched=false;action();});
+}
+
 /** One viewport-sized workspace; settings never displace the active board. */
 export class GameWorkspace {
  private tabs=new Map<string,string>();private zoom=new Map<string,boolean>();private game:Game='home';private selectPlay:(()=>void)|null=null;
- private resize:ResizeObserver|null=null;
+ private resize:ResizeObserver|null=null;private busy:MutationObserver|null=null;
  private pan=new Map<string,boolean>();private panPointer:{id:number;surface:HTMLElement;board:HTMLElement;x:number;y:number;left:number;top:number;inside:number}|null=null;
  constructor(private root:HTMLElement){
   root.addEventListener('click',event=>{if((event.target as Element).closest('.workspace-surface.is-panning')){event.preventDefault();event.stopImmediatePropagation();return;}const target=(event.target as Element).closest<HTMLElement>('button');if(!target)return;const action=target.dataset.plus??target.dataset.collection??target.dataset.arcade??target.dataset.patience??target.dataset.bj??target.dataset.poker;if(target.id==='new-game'||['new','deal','refill','next-picture','numbered-deal'].includes(action??'')||target.dataset.patienceVariant)this.tabs.set(this.game,'Play');if(target.dataset.patienceVariant){this.pan.set(this.game,false);this.zoom.set(this.game,false);}},true);
@@ -25,7 +33,7 @@ export class GameWorkspace {
   root.addEventListener('keydown',event=>{if(this.selectPlay&&this.tabs.get(this.game)!=='Play')event.stopPropagation();});
  }
  mount(game:Game){
-  this.resize?.disconnect();this.resize=null;this.panPointer=null;this.game=game;this.selectPlay=null;
+  this.resize?.disconnect();this.resize=null;this.busy?.disconnect();this.busy=null;this.panPointer=null;this.game=game;this.selectPlay=null;
   if(!['Puzzles','Board games','Card games'].includes(GAME_CATEGORY[game]))return;
   const main=this.root.querySelector<HTMLElement>('main')!,arena=main.querySelector<HTMLElement>('.arena'),layout=main.querySelector('.play-layout'),sidebar=main.querySelector<HTMLElement>('.sidebar');
   if(!arena||!layout||!sidebar)return; // A generated puzzle may still be preparing.
@@ -97,10 +105,14 @@ export class GameWorkspace {
   const zoom=document.createElement('button');zoom.type='button';zoom.className='button';zoom.dataset.workspaceZoom='';
   const pan=document.createElement('button');pan.type='button';pan.className='button';pan.dataset.workspacePan='';
   const setPan=(active:boolean)=>{this.pan.set(game,active);surface.classList.toggle('is-panning',active);pan.textContent=active?'Move pieces':'Pan board';pan.setAttribute('aria-pressed',String(active));};
-  pan.addEventListener('click',()=>setPan(!this.pan.get(game)));setPan(this.pan.get(game)??false);
+  workspacePress(pan,()=>setPan(!this.pan.get(game)));setPan(this.pan.get(game)??false);
   const setZoom=(enlarged:boolean)=>{this.zoom.set(game,enlarged);surface.classList.toggle('is-enlarged',enlarged&&!cards.hand);inputs.classList.toggle('large-hand',enlarged&&cards.hand);const note=inputs.querySelector<HTMLElement>('.workspace-hand-note');if(note)note.hidden=!enlarged;zoom.textContent=cards.hand?enlarged?'Fit hand':'Larger cards':enlarged?'Fit board':'Enlarge';zoom.setAttribute('aria-pressed',String(enlarged));pan.hidden=cards.hand||!enlarged&&!cards.table;if(!enlarged&&!cards.table)setPan(false);this.fitBoard(surface,board);};
-  zoom.addEventListener('click',()=>setZoom(!this.zoom.get(game)));setZoom(this.zoom.get(game)??false);actions.append(zoom,pan);
+  workspacePress(zoom,()=>setZoom(!this.zoom.get(game)));setZoom(this.zoom.get(game)??false);actions.append(zoom,pan);
   arena.replaceChildren(stats,surface,inputs,actions,feedback,...(status?[status]:[]));
+  // A completed card animation rebuilds the table; do not begin a pan during that transition.
+  const idleControls=[...actions.querySelectorAll<HTMLButtonElement>('button:not([data-patience="stop"])')].map(button=>({button,disabled:button.disabled}));
+  const updateBusy=()=>{const busy=arena.getAttribute('aria-busy')==='true'||board.getAttribute('aria-busy')==='true';for(const control of idleControls)control.button.disabled=busy||control.disabled;};
+  this.busy=new MutationObserver(updateBusy);this.busy.observe(arena,{subtree:true,attributes:true,attributeFilter:['aria-busy']});updateBusy();
   const host=document.createElement('div');host.id='game-workspace';
   const groups=[{name:'Play',elements:[arena]},...(tools.children.length?[{name:'Tools',elements:[tools]}]:[]),{name:'Setup',elements:[setup]},{name:'Help',elements:[help]}];
   panelNavigation(host,'Game sections',groups,Math.max(0,groups.findIndex(group=>group.name===this.tabs.get(game))),index=>this.tabs.set(game,groups[index].name));

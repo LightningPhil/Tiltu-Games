@@ -3,11 +3,11 @@
 #app .workspace-stats .plus-table-scores>div{flex:1;text-align:center;padding:0;min-width:0;font-size:10px}
 #app .workspace-stats .plus-table-scores strong{font-size:16px;line-height:1.2}
 #app .workspace-stats .plus-table-scores span{font-size:9px}
-#app .workspace-stats>.table-bankroll{flex:1;margin:0;padding:5px 10px;gap:8px;min-height:45px;border:1px solid var(--line);background:var(--surface);color:var(--text)}
+#app .workspace-stats>.table-bankroll{flex:1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:center;margin:0;padding:5px 10px;gap:8px;min-height:45px;border:1px solid var(--line);background:var(--surface);color:var(--text)}
 #app .workspace-stats .table-bankroll>span{font-size:9px}
 #app .workspace-stats .table-bankroll strong{font-size:15px;line-height:1.2}
-#app .workspace-stats .table-bankroll label{font-size:9px;margin:0}
-#app .workspace-stats .table-bankroll select{min-height:36px;font-size:12px;padding:4px 8px}
+#app .workspace-stats .table-bankroll label{display:grid;min-width:0;gap:3px;font-size:9px;line-height:1.2;margin:0}
+#app .workspace-stats .table-bankroll select{width:100%;min-width:0;min-height:36px;font-size:12px;padding:4px 8px}
 #app .workspace-stats .workspace-crib-score{width:100%;display:flex;justify-content:space-around;align-items:center;min-height:42px;margin:0;padding:5px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);font-size:11px}
 #app .workspace-stats .workspace-crib-score strong{font-size:16px}
 #app .workspace-inputs .workspace-hand-heading{display:flex;justify-content:space-between;align-items:center;margin:0 0 5px;font-size:11px;color:var(--text);gap:8px}

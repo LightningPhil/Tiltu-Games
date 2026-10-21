@@ -27,7 +27,7 @@
 #app .game-workspace .workspace-surface{grid-row:2;min-width:0;min-height:0;container-type:size;display:grid;place-items:center;overflow:auto;overscroll-behavior:contain;touch-action:pan-x pan-y;border-radius:10px}
 #app[data-workspace=true] .game-workspace .workspace-board{width:var(--workspace-fit-width,min(100cqw,calc((100cqh - var(--board-head,0px)) * var(--board-ratio,1))));max-width:none;min-width:0;margin:0;height:auto;flex-shrink:0;box-sizing:border-box}
 #app .game-workspace .workspace-surface.is-enlarged{display:block}
-#app .game-workspace .workspace-surface.is-panning{cursor:grab;touch-action:none}
+#app .game-workspace .workspace-surface.is-panning{cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
 #app .game-workspace .workspace-surface.is-panning:active{cursor:grabbing}
 #app .game-workspace .workspace-surface.is-panning *{cursor:inherit;touch-action:none}
 #app .game-workspace .workspace-surface.is-enlarged>.workspace-board{width:max(100%,var(--workspace-large-width,680px));max-width:none;margin:auto}

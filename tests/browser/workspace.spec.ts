@@ -7,8 +7,8 @@ import {hopMoves} from '../../src/club-plus/hop.ts';
 import {turnMoves} from '../../src/collection/turn-games.ts';
 import {backgammonMoves} from '../../src/collection/backgammon.ts';
 import {draughtsMoves} from '../../src/rules.ts';
-import {patienceMoves} from '../../src/patience.ts';
-import {freeCellMoves,spiderMoves} from '../../src/collection/patience-collection.ts';
+import {newPatience,patienceMoves} from '../../src/patience.ts';
+import {newFreeCell,newSpider,freeCellMoves,spiderMoves} from '../../src/collection/patience-collection.ts';
 const test=base.extend<{runtimeChecks:void}>({runtimeChecks:[async({page},use)=>{const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});await use();expect(errors,'browser runtime errors').toEqual([]);},{auto:true}]});
 test.use({hasTouch:true,actionTimeout:15_000});
 const puzzles=Object.keys(GAME_CATEGORY).filter(key=>GAME_CATEGORY[key as keyof typeof GAME_CATEGORY]==='Puzzles');
@@ -112,6 +112,7 @@ test('card tables support passing, bidding, drawing, discarding and pegging by t
  test.setTimeout(180_000);await page.setViewportSize({width:390,height:844});
  const save=()=>page.evaluate(()=>JSON.parse(localStorage.getItem('grid-club-v1')!));
  await open(page,'hearts');
+ await page.locator('[data-workspace-zoom]').tap();await expect(page.locator('.workspace-inputs')).toHaveClass(/large-hand/);await page.locator('[data-workspace-zoom]').tap();await expect(page.locator('.workspace-inputs')).not.toHaveClass(/large-hand/);
  for(let i=0;i<3;i++)await page.locator('.workspace-hand .plus-hand-card').nth(i).tap();
  await page.locator('[data-plus="hearts-pass"]').tap();await expect(page.locator('.workspace-hand .plus-hand-card:not(:disabled)').first()).toBeEnabled({timeout:20_000});
  await page.locator('.workspace-hand .plus-hand-card:not(:disabled)').first().tap();await expect.poll(async()=>(await save()).plus.hearts.hands[0].length).toBe(12);
@@ -125,11 +126,14 @@ test('card tables support passing, bidding, drawing, discarding and pegging by t
 
 test('all three Patience variants support tap destinations and panning without moving cards',async({page,context})=>{
  test.setTimeout(120_000);await page.setViewportSize({width:390,height:844});const save=()=>page.evaluate(()=>JSON.parse(localStorage.getItem('grid-club-v1')!));
- await open(page,'patience');await page.locator('.workspace-actions [data-patience="draw"]').tap();await expect.poll(async()=>(await save()).patience.waste.length).toBe(1);
- let state=await save(),move=patienceMoves(state.patience)[0];for(let i=0;!move&&i<24;i++){await page.locator('.workspace-actions [data-patience="draw"]').tap();state=await save();move=patienceMoves(state.patience)[0];}
+ await open(page,'patience');
+ // Known valid saved deals keep this input test independent of random opening moves.
+ await page.evaluate(deals=>{const s=JSON.parse(localStorage.getItem('grid-club-v1')!);s.patience=deals.patience;s.collection.freecell=deals.freecell;s.collection.spider=deals.spider;localStorage.setItem('grid-club-v1',JSON.stringify(s));},{patience:newPatience(1,Array.from({length:52},(_,i)=>i)),freecell:newFreeCell(42),spider:newSpider(1,42)});
+ await page.reload();await page.locator('.workspace-actions [data-patience="draw"]').tap();await expect.poll(async()=>(await save()).patience.waste.length).toBe(1);
+ const state=await save(),move=patienceMoves(state.patience)[0];
  expect(move).toBeTruthy();const source=page.locator(`[data-card-source="${move.from.pile}:${move.from.index}:${move.from.at}"]`),r=(await source.boundingBox())!;await source.tap({position:{x:r.width/2,y:8}});await page.locator(`.workspace-feedback [data-patience="move:${move.to.pile}:${move.to.index}"]`).tap();await expect.poll(async()=>(await save()).patience.moves).toBeGreaterThan(state.patience.moves);
- await page.locator('[data-workspace-zoom]').tap();await page.locator('[data-workspace-pan]').tap();const surface=(await page.locator('.workspace-surface').boundingBox())!,cdp=await context.newCDPSession(page),finger={id:1,x:surface.x+surface.width*.8,y:surface.y+surface.height*.5},before=(await save()).patience.moves;
- await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[finger]});await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{...finger,x:finger.x-130}]});await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+ await page.locator('[data-workspace-zoom]').tap();await page.locator('[data-workspace-pan]').tap();await expect(page.locator('[data-workspace-pan]')).toHaveAttribute('aria-pressed','true');const surface=(await page.locator('.workspace-surface').boundingBox())!,cdp=await context.newCDPSession(page),finger={id:1,x:surface.x+surface.width*.8,y:surface.y+surface.height*.5},before=(await save()).patience.moves;
+ await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[finger]});await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{...finger,x:finger.x-130}]});await expect.poll(()=>page.locator('.workspace-surface').evaluate(e=>e.scrollLeft)).toBeGreaterThan(0);await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
  expect(await page.locator('.workspace-surface').evaluate(e=>e.scrollLeft)).toBeGreaterThan(0);expect((await save()).patience.moves).toBe(before);await page.locator('[data-workspace-pan]').tap();await expect(page.locator('[data-workspace-pan]')).toHaveAttribute('aria-pressed','false');await page.locator('[data-workspace-pan]').tap();await page.keyboard.press('Escape');await expect(page.locator('[data-workspace-pan]')).toHaveAttribute('aria-pressed','false');await page.locator('[data-workspace-zoom]').tap();
  for(const variant of ['freecell','spider']){
   await page.getByRole('tab',{name:'Setup',exact:true}).tap();await page.locator(`[data-patience-variant="${variant}"]`).tap();await page.keyboard.press('Escape');

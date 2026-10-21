@@ -1,0 +1,32 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>Grid Club collection practice</title><style>body{font:17px system-ui;background:#101a27;color:#eef7fa;max-width:760px;margin:40px auto;padding:20px}select,button{font:inherit;padding:12px;margin:8px}a{color:#72edee}</style>
+<h1>Collection practice positions</h1><p>This page replaces practice data only on Grid Club’s isolated port 5193. Personal games in the offline file stay separate.</p>
+<label>Position<select id="fixture"><option value="noughts">Noughts and Crosses · one move to win</option><option value="reversi">Reversi · opening</option><option value="morris">Morris · close a mill</option><option value="morris-fly">Morris · flying</option><option value="dots">Dots and Boxes · two boxes</option><option value="kalah">Kalah · capture</option><option value="backgammon">Backgammon · bar and hit</option><option value="backgammon-double">Backgammon · computer offers a double</option><option value="backgammon-off">Backgammon · bear off and win</option><option value="mahjong">Mahjong · two final tiles</option><option value="sliding">15 Puzzle · one slide left</option><option value="pegs">Peg Solitaire · one jump left</option><option value="nonograms">Nonogram · last square</option><option value="cribbage">Cribbage · the 29 hand</option><option value="cribbage-peg">Cribbage · pegging</option><option value="freecell">FreeCell · all aces available</option><option value="freecell-win">FreeCell · final kings</option><option value="spider">Spider · complete a run</option><option value="spider-win">Spider · eighth run</option><option value="snake">Snake · apple ahead</option></select></label><button id="load">Load position</button><p id="status"></p><a href="/">Play practice position →</a>
+<script type="module">
+import {freshState,saveState} from '../src/state.ts';
+import {newTurnGame} from '../src/collection/turn-games.ts';
+import {newBackgammon,offerBackgammonDouble} from '../src/collection/backgammon.ts';
+import {newMahjong} from '../src/collection/mahjong.ts';
+import {newPegs,newSliding,newNonogram} from '../src/collection/puzzles.ts';
+import {newCribbage,discardCribbage,cutCribbage} from '../src/collection/cribbage.ts';
+import {newFreeCell,newSpider} from '../src/collection/patience-collection.ts';
+import {newSnake} from '../src/collection/snake.ts';
+document.querySelector('#load').onclick=()=>{
+ if(location.port!=='5193'){document.querySelector('#status').textContent='Use Grid Club’s isolated port 5193.';return;}
+ const s=freshState(),id=document.querySelector('#fixture').value,key=id.split('-')[0];s.preferences.game=['freecell','spider'].includes(key)?'patience':key;s.preferences.motion='relaxed';
+ if(['noughts','reversi','morris','dots','kalah'].includes(key))s.collection[key]=newTurnGame(key,'local');
+ if(key==='noughts'){Object.assign(s.collection.noughts,{board:[1,1,0,-1,-1,0,0,0,0],turn:1});}
+ if(key==='morris'){const t=s.collection.morris;t.board.fill(0);[0,1].forEach(i=>t.board[i]=1);[3,4,5,6].forEach(i=>t.board[i]=-1);t.reserve=[7,5];if(id.endsWith('fly')){t.board[2]=1;t.reserve=[0,0];}}
+ if(key==='dots'){const t=s.collection.dots,n=t.size,start=2*n*(n+1);t.board.fill(1,0,start);for(let i=2;i<n*n;i++)t.board[start+i]=i%2?1:-1;t.board[start]=t.board[start+1]=0;t.board[n*(n+1)+1]=0;}
+ if(key==='kalah'){const t=s.collection.kalah;t.board=[1,0,1,0,0,0,20,1,0,0,0,5,0,20];}
+ if(key==='backgammon'){const t=s.collection.backgammon=newBackgammon('local',3,42);t.board.fill(0);t.board[22]=-1;t.board[17]=-2;t.board[5]=14;t.bar=[1,0];t.off=[0,12];t.phase='move';t.dice=t.rolled=[2,3];if(id.endsWith('off')){t.board.fill(0);t.board[0]=1;t.board[23]=-15;t.bar=[0,0];t.off=[14,0];t.dice=t.rolled=[1,2];}if(id.endsWith('double')){Object.assign(t,newBackgammon('computer',3,42));t.phase='roll';t.turn=-1;offerBackgammonDouble(t);}}
+ if(key==='mahjong'){const t=s.collection.mahjong=newMahjong('flat',42);t.tiles.forEach(tile=>tile.removed=true);const a=t.tiles[0],b=t.tiles[1];a.removed=b.removed=false;a.face=34;b.face=37;t.solution=[[0,1]];t.moves=71;}
+ if(key==='sliding'){const t=s.collection.sliding=newSliding(4);t.board=Array.from({length:16},(_,i)=>(i+1)%16);[t.board[14],t.board[15]]=[t.board[15],t.board[14]];t.start=t.board.slice();}
+ if(key==='pegs'){const t=s.collection.pegs=newPegs();t.board.fill(0);t.board[14]=t.board[15]=1;t.start=t.board.slice();}
+ if(key==='nonograms'){const t=s.collection.nonograms=newNonogram(0);t.cells=t.solution.map(n=>n?1:-1);t.cells[1]=0;}
+ if(key==='cribbage'){const t=s.collection.cribbage=newCribbage(3,42);discardCribbage(t,t.hands[0].slice(0,2));cutCribbage(t);if(id.endsWith('peg')){t.turn=0;}else{const hand=[4,17,43,36],starter=30,remaining=Array.from({length:52},(_,i)=>i).filter(c=>!hand.includes(c)&&c!==starter);t.hands=[[],[]];t.kept=[hand,remaining.slice(0,4)];t.crib=remaining.slice(4,8);t.starter=starter;t.stock=remaining.slice(8);t.played=[...hand.map(card=>({card,player:0})),...t.kept[1].map(card=>({card,player:1}))];t.phase='show';t.dealer=1;t.showIndex=-1;t.sequence=[];t.history=[];}}
+ if(key==='freecell'){s.preferences.patienceVariant='freecell';const t=s.collection.freecell=newFreeCell(42);if(id.endsWith('win')){t.columns=Array.from({length:8},(_,i)=>i<4?[i*13+12]:[]);t.cells=[null,null,null,null];t.foundations=Array.from({length:4},(_,i)=>Array.from({length:12},(_,n)=>i*13+n));}else{const aces=[0,13,26,39],rest=Array.from({length:52},(_,i)=>i).filter(c=>!aces.includes(c));t.columns=Array.from({length:8},(_,i)=>i<4?[...rest.splice(0,12),aces[i]]:[]);}}
+ if(key==='spider'){s.preferences.patienceVariant='spider';const t=s.collection.spider=newSpider(1,42);t.stock=[];t.completed=[];const runs=Array.from({length:8},(_,i)=>Array.from({length:13},(_,n)=>i*13+12-n));if(id.endsWith('win')){t.completed=runs.slice(0,7);t.columns=Array.from({length:10},()=>[]);t.columns[0]=runs[7].slice(0,12).map(id=>({id,up:true}));t.columns[1]=[{id:runs[7][12],up:true}];}else{t.columns=Array.from({length:10},(_,i)=>i<7?runs[i].map(id=>({id,up:true})):[]);t.columns[7]=runs[7].slice(0,12).map(id=>({id,up:true}));t.columns[8]=[{id:runs[7][12],up:true}];}}
+ if(key==='snake'){const t=s.collection.snake=newSnake(1,false,100,42);t.food=t.body[0]+1;}
+ const ok=saveState(s);document.querySelector('#status').textContent=ok?'Practice position ready.':'Practice storage unavailable.';
+};
+</script></html>

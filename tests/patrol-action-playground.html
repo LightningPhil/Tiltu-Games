@@ -1,0 +1,74 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>Archive Patrol action playtests</title>
+<style>body{font:14px system-ui;background:#101a27;color:#edf6fa;margin:16px}button{font:inherit;padding:9px;margin:4px}iframe{display:block;border:1px solid #567;margin:15px 0}pre{white-space:pre-wrap}</style>
+<h1>Archive Patrol action playtests</h1><p>Isolated port 5193. Add ?bundle to test the offline build.</p>
+<button id="handling">Check manual flight and EMP</button><button id="load">Launch briefing</button><button id="layouts">Check 100 layouts</button><button id="features">Check caches, power-ups, pause and upgrades</button><pre id="report">Ready.</pre><iframe title="Archive Patrol action" width="1240" height="800"></iframe>
+<script type="module">
+import {loadState,saveState,THEMES} from '../src/state.ts';
+import {newSalvage,populateSector} from '../src/archive-patrol.ts';
+const frame=document.querySelector('iframe'),report=document.querySelector('#report'),results=[];
+const url=new URLSearchParams(location.search).has('bundle')?'/dist_single/index.html':'/';
+const check=(v,m)=>{if(!v)throw Error(m);},wait=ms=>new Promise(r=>setTimeout(r,ms));
+async function until(fn,m,seconds=55){const end=performance.now()+seconds*1000;while(!fn()){if(performance.now()>end)throw Error(m);await wait(45);}}
+async function load(scene='ready',width=1240,height=800,theme='tron'){
+ if(location.port!=='5193')throw Error('Use isolated local port 5193.');frame.src='about:blank';await new Promise(r=>frame.onload=r);
+ const state=loadState(),s=state.actionArcade.salvage=newSalvage(2,729);state.preferences.game='salvage';state.preferences.theme=theme;state.actionArcade.music=false;
+ if(scene==='flight'){s.phase='flying';s.paused=true;}
+ if(scene==='hangar'){s.arcade.wave=3;s.arcade.cleared=true;s.ships=[];s.delivered=s.quota;s.credits=340;s.phase='docked';}
+ if(scene==='lost'){s.phase='lost';s.hull=0;s.credits=222;s.delivered=7;s.arcade.wave=2;}
+ if(scene==='cache'){s.angle=0;s.ships=[{id:90,kind:'raider',x:1500,y:1500,vx:0,vy:0,angle:0,hp:100,maxHp:100,cooldown:20}];s.rocks=[];s.relics=[];s.arcade.caches=[{id:91,x:1040,y:650,hp:30,maxHp:30,volatile:false,hit:0}];s.phase='flying';}
+ if(scene==='power'){s.arcade.overdrive=12;s.arcade.magnet=20;s.phase='flying';}
+ if(scene==='complete'){s.sector=6;s.arcade.wave=3;s.arcade.cleared=true;s.mission.bossRequired=true;s.mission.bossDefeated=true;s.delivered=s.quota;s.ships=[];s.phase='complete';}
+ if(scene==='handling'||scene==='emp'){s.rocks=[];s.relics=[];s.arcade.caches=[];s.phase='flying';s.x=900;s.y=650;
+   s.angle=scene==='handling'?Math.PI/2:0;s.ships=scene==='handling'?[{id:90,kind:'raider',x:1600,y:1600,vx:0,vy:0,angle:0,hp:500,maxHp:500,cooldown:20}]:[
+   {id:90,kind:'raider',x:1080,y:650,vx:0,vy:0,angle:0,hp:500,maxHp:500,cooldown:10},
+   {id:91,kind:'raider',x:680,y:650,vx:0,vy:0,angle:0,hp:500,maxHp:500,cooldown:10},
+   {id:92,kind:'carrier',x:1260,y:680,vx:0,vy:0,angle:0,hp:900,maxHp:900,cooldown:10}];}
+ saveState(state);frame.width=width;frame.height=height;frame.src=url+'?patrol-action='+Date.now();await new Promise(r=>frame.onload=r);await until(()=>frame.contentDocument.querySelector('#action-canvas'),'Game did not mount');await wait(60);return frame.contentDocument;
+}
+function action(d,a){const b=d.querySelector(`[data-action-arcade="${a}"]`);check(b&&!b.disabled,'Unavailable '+a);b.click();}
+function key(d,code,down=true){d.querySelector('canvas').dispatchEvent(new frame.contentWindow.KeyboardEvent(down?'keydown':'keyup',{bubbles:true,cancelable:true,key:code,code}));}
+function tap(d,code){key(d,code);key(d,code,false);}
+async function run(label,fn){report.textContent=label+'…';try{results.push({label,result:await fn()});}catch(e){results.push({label,error:String(e)});}report.textContent=JSON.stringify(results,null,2);}
+document.querySelector('#load').onclick=()=>run('Briefing',async()=>{await load();return 'Ready';});
+document.querySelector('#handling').onclick=()=>run('Manual flight and EMP',async()=>{
+ let d=await load('handling');action(d,'play');key(d,'ArrowUp');await wait(550);key(d,'ArrowUp',false);tap(d,'KeyP');await wait(100);
+ let snap=loadState().actionArcade.salvage;check(snap.y>665&&Math.abs(snap.x-900)<1,'Up did not accelerate along the downward-facing nose');const speed=Math.hypot(snap.vx,snap.vy);check(speed>50&&speed<200,'Acceleration snapped to full speed');
+ action(d,'play');await wait(300);tap(d,'KeyP');await wait(100);snap=loadState().actionArcade.salvage;check(Math.hypot(snap.vx,snap.vy)>speed*.7,'Release did not coast');
+ action(d,'play');key(d,'ArrowDown');await wait(500);key(d,'ArrowDown',false);tap(d,'KeyP');await wait(100);snap=loadState().actionArcade.salvage;check(snap.vy>=0&&snap.vy<speed*.2,'Down did not brake without reversing');
+ const heading=snap.angle;action(d,'play');key(d,'ArrowRight');await wait(300);key(d,'ArrowRight',false);tap(d,'KeyP');await wait(100);snap=loadState().actionArcade.salvage;check(snap.angle>heading+.35,'Right did not turn clockwise from the ship perspective');
+ const heldHeading=snap.angle;action(d,'play');const bounds=d.querySelector('canvas').getBoundingClientRect();d.querySelector('canvas').dispatchEvent(new frame.contentWindow.PointerEvent('pointermove',{bubbles:true,pointerType:'mouse',clientX:bounds.left+25,clientY:bounds.top+25}));key(d,'Space');await wait(500);key(d,'Space',false);tap(d,'KeyP');await wait(100);snap=loadState().actionArcade.salvage;
+ check(snap.stats.shots>=2,'Space did not fire');check(Math.abs(snap.angle-heldHeading)<.4,'Mouse overrode manual steering');check(d.querySelector('[data-action-arcade=zoom]').textContent==='80%','Default view not widened');
+ action(d,'settings');check(!d.querySelector('[data-action-arcade=toggle-assist]')&&!d.querySelector('#action-flight'),'Obsolete aim/axis settings remain');
+ d=await load('handling');action(d,'play');key(d,'KeyW');key(d,'ArrowUp');await wait(250);key(d,'KeyW',false);await wait(300);key(d,'ArrowUp',false);tap(d,'KeyP');await wait(100);snap=loadState().actionArcade.salvage;check(snap.y>665&&Math.abs(snap.x-900)<1,'W and Up did not share forward thrust or releasing one alias stopped the other');
+ action(d,'play');key(d,'KeyS');await wait(500);key(d,'KeyS',false);tap(d,'KeyP');await wait(100);snap=loadState().actionArcade.salvage;check(snap.vy>=0&&snap.vy<25,'S did not brake like Down');
+ const beforeD=snap.angle;action(d,'play');key(d,'KeyD');await wait(300);key(d,'KeyD',false);tap(d,'KeyP');await wait(100);snap=loadState().actionArcade.salvage;check(snap.angle>beforeD+.35,'D did not turn right like Right');
+ const beforeA=snap.angle;action(d,'play');key(d,'KeyA');await wait(500);key(d,'KeyA',false);tap(d,'KeyP');await wait(100);snap=loadState().actionArcade.salvage;check(snap.angle<beforeA-.3,'A did not turn left like Left');
+ d=await load('handling');action(d,'play');key(d,'KeyW');key(d,'Space');key(d,'ShiftLeft');await wait(200);tap(d,'KeyE');await wait(350);key(d,'KeyW',false);key(d,'Space',false);key(d,'ShiftLeft',false);tap(d,'KeyP');await wait(100);snap=loadState().actionArcade.salvage;check(snap.stats.boosts===1&&snap.stats.shots>=2&&snap.pulseCooldown>17,'Thrust, primary fire, Shift boost and E EMP did not work together');
+ d=await load('emp');action(d,'play');tap(d,'KeyE');await wait(550);tap(d,'KeyP');await wait(100);snap=loadState().actionArcade.salvage;
+ check(snap.ships.find(v=>v.id===90).disabledFor>4,'Forward raider was not disabled');check(snap.ships.find(v=>v.id===92).disabledFor>2,'Forward carrier was not disabled');check(!snap.ships.find(v=>v.id===91).disabledFor,'EMP hit a rear target');check(snap.ships.find(v=>v.id===90).hp===500,'EMP dealt direct damage');check(snap.pulseCooldown>17&&snap.energy===100,'EMP used incorrect charging resource');
+ const charge=d.querySelector('#action-emp').textContent;await wait(250);check(d.querySelector('#action-emp').textContent===charge,'EMP charged while paused');
+ d=await load('emp');action(d,'play');const c=d.querySelector('canvas'),r=c.getBoundingClientRect();c.dispatchEvent(new frame.contentWindow.MouseEvent('mousedown',{bubbles:true,button:2,clientX:r.left+r.width/2,clientY:r.top+r.height/2}));await wait(350);check(d.querySelector('[data-action-arcade=pulse]').disabled,'Right click did not launch EMP');tap(d,'KeyP');
+ d=await load('emp');action(d,'play');const mouseCanvas=d.querySelector('canvas'),mr=mouseCanvas.getBoundingClientRect();const mouse=(type,button)=>mouseCanvas.dispatchEvent(new frame.contentWindow.MouseEvent(type,{bubbles:true,cancelable:true,button,clientX:mr.left+mr.width/2,clientY:mr.top+mr.height/2}));
+ mouse('mousedown',0);await wait(180);mouse('mousedown',2);mouse('mouseup',2);await wait(300);check(d.querySelector('[data-action-arcade=pulse]').disabled,'Secondary failed while holding main mouse gun');const heldShots=Number(mouseCanvas.dataset.shots);check(heldShots>=2,'Right mouse release interrupted primary fire');mouse('mouseup',0);await wait(250);check(Number(mouseCanvas.dataset.shots)<=heldShots+1,'Main gun did not stop after mouse release');tap(d,'KeyP');
+ d=await load('emp',360,800);action(d,'play');action(d,'pulse');await wait(150);check([...d.querySelectorAll('[data-action-arcade=pulse]')].every(b=>b.disabled&&b.textContent.includes('s')),'Touch and toolbar EMP do not share their recharge state');tap(d,'KeyP');
+ for(const [width,height] of [[1240,800],[860,480],[360,800],[320,640]]){d=await load('emp',width,height);action(d,'play');for(const fireEMP of [false,true]){if(fireEMP)tap(d,'KeyE');await wait(150);check(d.documentElement.scrollWidth<=width+1&&d.documentElement.scrollHeight<=height+1,'Updated control labels overflow at '+width+'x'+height);const bar=d.querySelector('.patrol-toolbar').getBoundingClientRect();check(bar.bottom<=height+1,'Controls clipped at '+width+'x'+height);}tap(d,'KeyP');}
+ return ['WASD and arrows share movement','mixed aliases release independently','E EMP / Shift boost / Space fire together','left and right mouse guns work together','touch and toolbar EMP share charge','ready/recharging controls fit four viewports','ship-relative arrows','gradual acceleration and coasting','braking without reversing','inertial steering','mouse cannot aim','forward Space fire','80% wider view','no aim assist option','travelling directional EMP','raider and carrier disable durations','rear targets unaffected','no direct EMP damage or energy cost','paused EMP charge','secondary mouse button'];
+});
+
+document.querySelector('#features').onclick=()=>run('Features',async()=>{
+ let d=await load('cache');action(d,'play');const bounds=d.querySelector('canvas').getBoundingClientRect();d.querySelector('canvas').dispatchEvent(new frame.contentWindow.PointerEvent('pointermove',{bubbles:true,pointerType:'mouse',clientX:bounds.left+20,clientY:bounds.bottom-20}));key(d,'Space');await until(()=>d.querySelector('#action-credits').textContent!=='0','Cache did not break and bank cores');key(d,'Space',false);check(d.querySelector('#patrol-powerups').textContent.includes('MAGNET'),'Magnet did not activate');tap(d,'KeyP');check(d.querySelector('.patrol-pause'),'Pause failed');
+ d=await load('power');action(d,'play');check(d.querySelector('#patrol-powerups').textContent.includes('OVERDRIVE'),'Power-up UI missing');tap(d,'KeyP');const timers=d.querySelector('#patrol-powerups').textContent;await wait(250);check(d.querySelector('#patrol-powerups').textContent===timers,'Power-up decayed while paused');
+ const view=d.querySelector('canvas');d.querySelector('#theme').value='classic';d.querySelector('#theme').dispatchEvent(new frame.contentWindow.Event('change',{bubbles:true}));check(d.documentElement.dataset.theme==='classic','Shared theme failed');check(d.querySelector('.patrol-pause'),'Theme lost pause state');
+ d=await load('lost');action(d,'retry');tap(d,'KeyP');check(d.querySelector('#action-credits').textContent==='222','Repair lost banked credits');check(d.querySelector('#action-progress').textContent==='7 / 12','Repair lost collected cores');check(d.querySelector('canvas').dataset.wave==='2','Repair reset the wave');
+ return ['repair and rejoin retains banked loot and wave progress','keyboard shooting breaks a supply cache','cores bank immediately and activate Magnet','Overdrive/Magnet status','pause freezes power-ups','shared theme retains pause'];
+});
+document.querySelector('#layouts').onclick=()=>run('Layouts',async()=>{
+ const out=[];for(const [width,height] of [[1240,800],[360,800],[320,640],[860,480]])for(const theme of THEMES)for(const scene of ['ready','flight','hangar','lost','complete']){
+   const d=await load(scene,width,height,theme);if(scene==='flight')action(d,'play');await wait(45);const c=d.querySelector('canvas'),r=c.getBoundingClientRect(),bar=d.querySelector('.patrol-toolbar').getBoundingClientRect(),before=[r.x,r.y,r.width,r.height,d.defaultView.scrollY];
+   for(const e of d.querySelectorAll('button,canvas'))e.dispatchEvent(new frame.contentWindow.PointerEvent('pointermove',{bubbles:true,pointerType:'mouse',clientX:10,clientY:10}));await wait(25);const after=c.getBoundingClientRect();
+   check(d.documentElement.scrollWidth<=width+1&&d.documentElement.scrollHeight<=height+1,`${scene} ${theme} ${width}×${height} page overflow`);check(bar.bottom<=height+1&&r.width>140&&r.height>100,`${scene} ${width}×${height} controls clipped`);check([after.x,after.y,after.width,after.height,d.defaultView.scrollY].every((v,i)=>Math.abs(v-before[i])<.5),'Hover moved the board');
+   if(scene==='hangar'){const launch=d.querySelector('[data-action-arcade=sector]').getBoundingClientRect();check(launch.bottom<=r.bottom+1&&launch.top>=r.top-1,`Launch next sector clipped at ${width}×${height}`);}
+   out.push({scene,theme,width,height,canvas:[Math.round(r.width),Math.round(r.height)]});if(scene==='flight')tap(d,'KeyP');report.textContent=`Layouts ${out.length}/100`;
+ }return {checked:out.length,layouts:out};
+});
+</script></html>

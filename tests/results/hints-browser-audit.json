@@ -1,0 +1,289 @@
+{
+  "date": "2026-10-18T20:26:40.381Z",
+  "bundle": "dist_single/index.html",
+  "sha256": "c9e0ac8ef82854b6cb813df42cc893c15534f522ab6974fc85a0e20879c2ab7b",
+  "total": 70,
+  "passed": 70,
+  "checks": [
+    {
+      "passed": true,
+      "name": "Snakes and Ladders"
+    },
+    {
+      "passed": true,
+      "name": "Senet"
+    },
+    {
+      "passed": true,
+      "name": "Ludo"
+    },
+    {
+      "passed": true,
+      "name": "Dominoes"
+    },
+    {
+      "passed": true,
+      "name": "Chinese Chequers"
+    },
+    {
+      "passed": true,
+      "name": "Royal Game of Ur"
+    },
+    {
+      "passed": true,
+      "name": "Gomoku"
+    },
+    {
+      "passed": true,
+      "name": "Halma"
+    },
+    {
+      "passed": true,
+      "name": "Fox and Geese"
+    },
+    {
+      "passed": true,
+      "name": "Hnefatafl"
+    },
+    {
+      "passed": true,
+      "name": "Nim"
+    },
+    {
+      "passed": true,
+      "name": "Hex"
+    },
+    {
+      "passed": true,
+      "name": "Hearts"
+    },
+    {
+      "passed": true,
+      "name": "Spades"
+    },
+    {
+      "passed": true,
+      "name": "Gin Rummy"
+    },
+    {
+      "passed": true,
+      "name": "Whist"
+    },
+    {
+      "passed": true,
+      "name": "Matching Pairs"
+    },
+    {
+      "passed": true,
+      "name": "Kakuro"
+    },
+    {
+      "passed": true,
+      "name": "Slitherlink"
+    },
+    {
+      "passed": true,
+      "name": "Hashi"
+    },
+    {
+      "passed": true,
+      "name": "Futoshiki"
+    },
+    {
+      "passed": true,
+      "name": "Skyscrapers"
+    },
+    {
+      "passed": true,
+      "name": "Tangrams"
+    },
+    {
+      "passed": true,
+      "name": "Word Search"
+    },
+    {
+      "passed": true,
+      "name": "Four in a Row"
+    },
+    {
+      "passed": true,
+      "name": "Draughts"
+    },
+    {
+      "passed": true,
+      "name": "Sudoku"
+    },
+    {
+      "passed": true,
+      "name": "Chess"
+    },
+    {
+      "passed": true,
+      "name": "Go"
+    },
+    {
+      "passed": true,
+      "name": "Blackjack"
+    },
+    {
+      "passed": true,
+      "name": "Patience"
+    },
+    {
+      "passed": true,
+      "name": "Minesweeper"
+    },
+    {
+      "passed": true,
+      "name": "Conway’s Game of Life"
+    },
+    {
+      "passed": true,
+      "name": "Downhill Skiing"
+    },
+    {
+      "passed": true,
+      "name": "Edge Matching"
+    },
+    {
+      "passed": true,
+      "name": "Poker"
+    },
+    {
+      "passed": true,
+      "name": "Noughts and Crosses"
+    },
+    {
+      "passed": true,
+      "name": "Reversi"
+    },
+    {
+      "passed": true,
+      "name": "Snake"
+    },
+    {
+      "passed": true,
+      "name": "Backgammon"
+    },
+    {
+      "passed": true,
+      "name": "Mahjong Solitaire"
+    },
+    {
+      "passed": true,
+      "name": "15 Puzzle"
+    },
+    {
+      "passed": true,
+      "name": "Peg Solitaire"
+    },
+    {
+      "passed": true,
+      "name": "Dots and Boxes"
+    },
+    {
+      "passed": true,
+      "name": "Nine Men’s Morris"
+    },
+    {
+      "passed": true,
+      "name": "Kalah"
+    },
+    {
+      "passed": true,
+      "name": "Picture Logic"
+    },
+    {
+      "passed": true,
+      "name": "Cribbage"
+    },
+    {
+      "passed": true,
+      "name": "Patience · freecell"
+    },
+    {
+      "passed": true,
+      "name": "Patience · spider"
+    },
+    {
+      "passed": true,
+      "name": "Poker · omaha"
+    },
+    {
+      "passed": true,
+      "name": "Poker · draw"
+    },
+    {
+      "passed": true,
+      "name": "Dominoes · block"
+    },
+    {
+      "passed": true,
+      "name": "Dominoes · fives"
+    },
+    {
+      "passed": true,
+      "name": "Nim · misere"
+    },
+    {
+      "passed": true,
+      "name": "Nim · subtract"
+    },
+    {
+      "passed": true,
+      "name": "senet · explain a rolled counter move"
+    },
+    {
+      "passed": true,
+      "name": "ur · explain a rolled counter move"
+    },
+    {
+      "passed": true,
+      "name": "ludo · explain a rolled counter move"
+    },
+    {
+      "passed": true,
+      "name": "Backgammon · explain a cube response"
+    },
+    {
+      "passed": true,
+      "name": "slitherlink · apply an explained hint"
+    },
+    {
+      "passed": true,
+      "name": "hashi · apply an explained hint"
+    },
+    {
+      "passed": true,
+      "name": "kakuro · apply an explained hint"
+    },
+    {
+      "passed": true,
+      "name": "Blackjack · live count and ten-card quiz"
+    },
+    {
+      "passed": true,
+      "name": "Sliding puzzle · reject hint from the previous position"
+    },
+    {
+      "passed": true,
+      "name": "sliding · paused hint explains Resume"
+    },
+    {
+      "passed": true,
+      "name": "nonograms · paused hint explains Resume"
+    },
+    {
+      "passed": true,
+      "name": "kakuro · paused hint explains Resume"
+    },
+    {
+      "passed": true,
+      "name": "chess · six interactive tutor lessons"
+    },
+    {
+      "passed": true,
+      "name": "draughts · six interactive tutor lessons"
+    }
+  ]
+}

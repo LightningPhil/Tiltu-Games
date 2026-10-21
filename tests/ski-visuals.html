@@ -1,0 +1,32 @@
+<!doctype html><html lang="en"><meta charset="UTF-8"><title>SkiFree visual checks</title><style>
+*{box-sizing:border-box}body.ski-visual-checks{background:#e8edf0;color:#213449;font:14px system-ui;margin:24px}.ski-visual-checks h1{font-size:22px}.ski-visual-checks label{display:inline-flex;gap:8px;align-items:center;margin:0 16px 14px 0}.ski-visual-checks button,.ski-visual-checks select{font:inherit;padding:7px 12px;width:auto}.ski-visual-checks canvas{image-rendering:pixelated;max-width:100%;height:auto;border:1px solid #a2b4c2;background:white;display:block;margin:12px 0}.ski-visual-checks output{font-family:monospace}.ski-visual-checks input[type=range]{width:240px}
+</style><h1>SkiFree · sprite and animation checks</h1>
+<label>Scene<select id="scene"><option value="scenery">Scenery and carving</option><option value="ramp">Downhill ramp jump</option><option value="crash">Ragdoll and recovery</option><option value="chase">Yeti running</option><option value="pounce">Yeti wind-up and leap</option><option value="feast">Yeti victory</option></select></label>
+<label>Palette<select id="palette"><option value="classic">Classic</option><option value="tron">Neon Tron</option><option value="pulse">Neon Pulse</option><option value="midnight">Midnight</option><option value="woodland">Woodland</option></select></label><button id="play">Play animation</button>
+<p><label>Time<input id="time" type="range" min="0" max="3.3" step="0.02" value="0"><output id="clock">0.00 s</output></label><label>Exact time<input id="at" type="number" min="0" max="3.3" step="0.02" value="0"></label></p>
+<canvas id="slope" width="600" height="500"></canvas><h2>Sprite contact sheet</h2><canvas id="sheet" width="760" height="430"></canvas>
+<script type="module">
+import '../src/style.css';
+import '../src/visuals.css';
+import {newSki,stepSki,crashSkier,newSkiYeti} from '../src/ski.ts';
+import {SkiRenderer} from '../src/ski-renderer.ts';
+import {SkiSprites,blitSprite} from '../src/ski-art.ts';
+document.body.classList.add('ski-visual-checks');
+const scene=document.querySelector('#scene'),theme=document.querySelector('#palette'),slider=document.querySelector('#time'),canvas=document.querySelector('#slope'),sheet=document.querySelector('#sheet'),clock=document.querySelector('#clock'),button=document.querySelector('#play');
+let renderer=new SkiRenderer(), playing=false, last=0, art=null,artPalette='';
+const input={steer:0,brake:false,jump:false,fast:false};
+function render(){
+ const t=Number(slider.value),s=newSki();s.generated=1000000;s.objects=[{kind:'tree',x:75,y:10,passed:false},{kind:'tree',x:510,y:75,passed:false},{kind:'rock',x:145,y:80,passed:false},{kind:'ramp',x:430,y:160,passed:false},{kind:'tree',x:110,y:240,passed:false},{kind:'rock',x:535,y:270,passed:false}];
+ if(scene.value==='scenery'){s.elapsed=t;s.velocity=Math.sin(t*3)*240;}
+ else {s.status='skiing';s.speed=235;s.objects=[];if(scene.value==='ramp')s.objects=[{kind:'ramp',x:300,y:45,passed:false}];if(scene.value==='crash')crashSkier(s,1);
+ if(['chase','pounce','feast'].includes(scene.value)){s.y=6000;s.yeti=newSkiYeti(s);s.yeti.phase=scene.value==='pounce'?'windup':scene.value==='feast'?'feast':'chase';s.yeti.y=s.y-(scene.value==='pounce'?70:115);if(scene.value==='feast')s.status='caught';}
+ for(let elapsed=0;elapsed<t-.00001;elapsed+=1/120)stepSki(s,input,Math.min(1/120,t-elapsed),()=>.5);}
+ document.documentElement.dataset.theme=theme.value;const style=getComputedStyle(document.documentElement),colour=name=>style.getPropertyValue(name).trim(),accent=colour('--accent'),snow={snow:colour('--snow'),shade:colour('--snow-shade'),deep:colour('--snow-deep')};renderer.draw(canvas,s,accent,theme.value,false,snow);clock.textContent=t.toFixed(2)+' s · '+(s.crash?'fall '+s.crash.age.toFixed(2):s.yeti?s.yeti.phase:s.jump?'airborne':s.status);
+ const colors={...snow,outline:'#23394e',jacket:accent,light:['classic','woodland'].includes(theme.value)};if(artPalette!==theme.value){art=new SkiSprites(colors);artPalette=theme.value}const c=sheet.getContext('2d');c.imageSmoothingEnabled=false;c.fillStyle=colors.snow;c.fillRect(0,0,760,430);
+ for(let i=0;i<4;i++){blitSprite(c,art.tree(i),60+i*100,115);blitSprite(c,art.rock(i),60+i*100,170);}blitSprite(c,art.ramp(),475,160);blitSprite(c,art.gate('next'),650,145);
+ for(let i=-3;i<=3;i++)blitSprite(c,art.skier(i,'ski',Math.floor(t*8)%4),70+(i+3)*78,278);
+ for(const [i,phase] of ['run','roar','leap','eat','grin'].entries())blitSprite(c,art.yeti(phase,Math.floor(t*10)%6),80+i*145,421);
+}
+for(const el of [scene,theme])el.addEventListener('change',()=>{slider.value='0';renderer=new SkiRenderer();render()});slider.addEventListener('input',render);document.querySelector('#at').addEventListener('input',e=>{slider.value=e.target.value;render()});button.onclick=()=>{playing=!playing;button.textContent=playing?'Pause animation':'Play animation';last=0};
+function tick(now){if(playing){const dt=last?Math.min(.05,(now-last)/1000):0;slider.value=String((Number(slider.value)+dt)%3.3);render()}last=now;requestAnimationFrame(tick)}render();requestAnimationFrame(tick);
+</script></html>

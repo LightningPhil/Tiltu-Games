@@ -1,0 +1,23 @@
+[
+  {
+    "label": "Features",
+    "result": [
+      "keyboard shooting breaks a supply cache",
+      "cores bank immediately and activate Magnet",
+      "Overdrive/Magnet status",
+      "pause freezes power-ups",
+      "shared theme retains pause"
+    ]
+  },
+  {
+    "label": "Full sector",
+    "result": [
+      "automatic fire / assisted aim",
+      "raider kills and immediate banking",
+      "all three live waves",
+      "automatic loot sweep and upgrade screen",
+      "100-credit weapon upgrade",
+      "direct launch into sector two"
+    ]
+  }
+]

@@ -1,0 +1,15 @@
+[
+  {
+    "label": "Game flows",
+    "result": [
+      "Void: campaign launch and dash",
+      "void: pause/resume, shared theme, navigation/audio isolation and retained state",
+      "Whack-a: live target hit and scored in practice",
+      "whacker: pause/resume, shared theme, navigation/audio isolation and retained state",
+      "Horizon: city, cockpit and cruise launch",
+      "horizon: pause/resume, shared theme, navigation/audio isolation and retained state",
+      "Ballistics: firing range and all ten weapons",
+      "ballistics: pause/resume, shared theme, navigation/audio isolation and retained state"
+    ]
+  }
+]

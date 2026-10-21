@@ -1,0 +1,69 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>Grid Club hint and tutor audit</title>
+<style>body{font:15px system-ui;background:#101a27;color:#eaf6ff;margin:20px}h1{font-weight:550}button{font:inherit;padding:10px 18px;border:1px solid #7693a8;border-radius:8px;color:inherit;background:#23394a}#summary{color:#88e6b5;font-size:20px}pre{white-space:pre-wrap;max-height:180px;overflow:auto}iframe{display:block;width:1240px;max-width:100%;height:850px;border:1px solid #456;border-radius:12px}</style>
+<h1>Hints and tutors · all games</h1><p>Disposable local positions · real controls and workers · deductions distinguished from solution reveals</p><button id="run">Run hint and tutor checks</button><p id="summary">Ready</p><pre id="report" role="status">Ready.</pre><iframe id="game" title="Grid Club hint preview"></iframe>
+<script type="module">
+import {freshState,saveState,STORAGE_KEY} from '../src/state.ts';
+import {GAME_NAMES} from '../src/catalog.ts';
+import {newPlus,isPlus} from '../src/club-plus/store.ts';
+import {newTurnGame} from '../src/collection/turn-games.ts';
+import {newBackgammon,offerBackgammonDouble} from '../src/collection/backgammon.ts';
+import {newCribbage} from '../src/collection/cribbage.ts';
+import {dominoMoves,playDomino} from '../src/club-plus/dominoes.ts';
+import {newPoker,dealPoker,actPoker} from '../src/poker.ts';
+import {newBlackjack} from '../src/blackjack.ts';
+import {newSudoku,generatePuzzle} from '../src/sudoku.ts';
+import {newMines,openMine} from '../src/minesweeper.ts';
+import {newSliding,slidingNeighbours} from '../src/collection/puzzles.ts';
+import {newGo,playGo} from '../src/go.ts';
+import {seededRandom} from '../src/skill.ts';
+import {castRace} from '../src/club-plus/race.ts';
+import {newCountDrill,drillCount,visibleBlackjackCount} from '../src/counting.ts';
+import {CHESS_LESSONS,DRAUGHTS_LESSONS} from '../src/coach.ts';
+const frame=document.querySelector('#game'),summary=document.querySelector('#summary'),report=document.querySelector('#report'),bundle=location.search.includes('bundle'),appURL=bundle?'/dist_single/index.html':'/';
+const pause=ms=>new Promise(r=>setTimeout(r,ms)),doc=()=>frame.contentDocument,check=(v,m)=>{if(!v)throw Error(m);},read=()=>JSON.parse(localStorage.getItem(STORAGE_KEY));let errors=[];
+const load=url=>new Promise((resolve,reject)=>{frame.onload=()=>{if(url!=='about:blank'){const captured=errors;frame.contentWindow.addEventListener('error',e=>captured.push(String(e.error??e.message)));frame.contentWindow.addEventListener('unhandledrejection',e=>captured.push(String(e.reason)));}resolve();};frame.onerror=reject;frame.src=url;});
+const text=()=>[...doc().querySelectorAll('.status-card,.action-feedback,.coach-advice,.hint-card,.patience-table-message,.board-guidance')].map(e=>e.textContent).join('\n');
+async function until(test,message,timeout=15000){const start=performance.now();while(!test()){if(performance.now()-start>timeout)throw Error(message);await pause(50);}}
+function persist(){frame.contentWindow.dispatchEvent(new Event('pagehide'));return read();}
+const fingerprint=s=>JSON.stringify(s,(k,v)=>['elapsed','selected','hints'].includes(k)?undefined:v);
+async function setup(game,configure=()=>{}){
+ await load('about:blank');errors=[];const s=freshState();s.preferences.game=game;s.preferences.motion='quick';s.preferences.tutorChess=s.preferences.tutorDraughts=s.preferences.tutorPoker=true;
+ for(const key of ['four','draughts','chess','go']){s.preferences[key].mode='local';s[key].options.mode='local';}
+ if(['noughts','reversi','dots','morris','kalah'].includes(game))s.collection[game]=newTurnGame(game,'local',1,3);
+ if(game==='backgammon'){const b=newBackgammon('local',1,42);b.phase='move';b.turn=1;b.dice=b.rolled=[1,6];s.collection.backgammon=b;}
+ if(game==='cribbage')s.collection.cribbage=newCribbage(1,42);
+ if(isPlus(game)){const p=newPlus(game,{mode:'local',level:1,size:game==='halma'?10:game==='gomoku'?15:['kakuro','hashi','hex','chinese','fox','tafl'].includes(game)?7:['slitherlink','futoshiki','skyscrapers'].includes(game)?4:undefined},42);s.plus[game]=p;if(game==='dominoes'&&p.turn!==0)playDomino(p,dominoMoves(p)[0]);if(['spades','whist','gin'].includes(game))p.turn=0;}
+ if(game==='sudoku')s.sudoku=newSudoku(generatePuzzle(4,1,seededRandom(42)));
+ if(game==='mines'){s.mines=newMines();openMine(s.mines,40,seededRandom(42));}
+ if(game==='blackjack'){const b=newBlackjack();b.phase='player';b.hands=[{cards:[9,15],bet:25,status:'playing',split:false,splitAces:false,outcome:null}];b.dealer=[30,51];b.shoe=Array.from({length:312},(_,i)=>i).filter(c=>![9,15,30,51].includes(c));s.blackjack=b;}
+ if(game==='poker'){s.poker=newPoker('holdem');dealPoker(s.poker,seededRandom(42));}
+ if(game==='go'){s.go=newGo(9,{mode:'local',level:1,human:1});playGo(s.go,40);playGo(s.go,0);}
+ configure(s);saveState(s);await load(appURL);await until(()=>doc().querySelector('#page-title'),'Page did not render');await pause(100);return s;
+}
+const selectors={four:'[data-quick="four-hint"]',chess:'[data-coach="suggest"]',draughts:'[data-coach="suggest"]',sudoku:'#hint',mines:'[data-arcade="hint"]',tetravex:'[data-arcade="hint"]',poker:'[data-poker="coach"]',patience:'[data-patience="hint"]'};
+const collection=['noughts','reversi','dots','morris','kalah','backgammon','cribbage','mahjong','sliding','pegs','nonograms'];
+async function ask(game,configure){await setup(game,configure);const before=persist(),status=text();
+ if(['snake','ski','life','snakes'].includes(game)){check(doc().querySelector('canvas,[data-plus="race-roll"]'),'Missing playfield/control');check(doc().body.textContent.includes('How to play'),'Missing instructions');return;}
+ if(game==='go'){doc().querySelector('[data-quick="inspect-go"]').click();doc().querySelector('[data-point="40"]').click();await until(()=>/libert/i.test(doc().body.textContent),'Liberty inspector did not explain the group');return;}
+ if(game==='blackjack'){check(doc().querySelector('.blackjack-coach p')?.textContent.length>70,'Blackjack advice missing');check(doc().querySelector('.counting-tutor'),'Count tutor missing');return;}
+ const selector=selectors[game]??(collection.includes(game)?'[data-collection="hint"]':'[data-plus="hint"]');
+ await until(()=>doc().querySelector(selector)&&!doc().querySelector(selector).disabled,'Hint control unavailable');doc().querySelector(selector).click();
+ await until(()=>text()!==status&&!doc().querySelector(selector)?.disabled&&!/Tutor is comparing columns|Tutor thinking|Thinking…/.test(text()),'Hint did not finish');
+ const after=persist();if(game==='nim')check(doc().querySelector('.nim-stone.is-hinted'),'Recommended take is not highlighted');check(text().length>45,'Hint lacks an explanation');check(!/no longer legal|no longer available|could not be prepared|No hint is available/.test(text()),'Stale/invalid advice');
+ if(game!=='tetravex'){const a=before.plus[game]??before.collection[game]??before[game],b=after.plus[game]??after.collection[game]??after[game];check(fingerprint(a)===fingerprint(b),'Requesting advice changed the game position');}
+ else{check(after.tetravex.moves===before.tetravex.moves+1,'Explicit tile reveal did not place exactly one tile');check(/row 1, column 1: top/.test(text()),'Tile edges not explained');}
+}
+const cases=Object.keys(GAME_NAMES).filter(g=>g!=='home').map(game=>({name:GAME_NAMES[game],run:()=>ask(game)}));
+for(const variant of ['freecell','spider'])cases.push({name:`Patience · ${variant}`,run:async()=>{await setup('patience',s=>s.preferences.patienceVariant=variant);const before=text();doc().querySelector('[data-collection="hint"]').click();await until(()=>text()!==before,'Patience hint missing');check(/Move .*column|Move .*foundation|Move .*cell/.test(text()),'Card move/reason missing');}});
+for(const variant of ['omaha','draw'])cases.push({name:`Poker · ${variant}`,run:()=>ask('poker',s=>{s.poker=newPoker(variant);s.preferences.pokerVariant=variant;dealPoker(s.poker,seededRandom(42));if(variant==='draw')while(s.poker.phase==='betting')actPoker(s.poker,s.poker.highest>s.poker.contributions[s.poker.turn]?'call':'check');})});
+for(const variant of ['block','fives'])cases.push({name:`Dominoes · ${variant}`,run:()=>ask('dominoes',s=>{const d=newPlus('dominoes',{mode:'local',variant},42);if(d.turn!==0)playDomino(d,dominoMoves(d)[0]);s.plus.dominoes=d;})});
+for(const variant of ['misere','subtract'])cases.push({name:`Nim · ${variant}`,run:()=>ask('nim',s=>s.plus.nim=newPlus('nim',{mode:'local',variant},42))});
+for(const game of ['senet','ur','ludo'])cases.push({name:`${game} · explain a rolled counter move`,run:()=>ask(game,s=>{const p=s.plus[game];castRace(p,game==='ludo'?[6]:[1,0,0,0]);})});
+cases.push({name:'Backgammon · explain a cube response',run:()=>ask('backgammon',s=>{const b=s.collection.backgammon;b.phase='roll';b.turn=-1;offerBackgammonDouble(b);})});
+for(const game of ['slitherlink','hashi','kakuro'])cases.push({name:`${game} · apply an explained hint`,run:async()=>{await ask(game);const button=doc().querySelector('[data-plus="apply-hint"]');check(button&&!button.disabled,'No applicable guided entry');const before=read().plus[game].moves;button.click();await pause(60);check(persist().plus[game].moves===before+1,'Guided entry did not make exactly one permitted edit');check(!doc().querySelector('.hint-card'),'Applied hint remains stale');}});
+cases.push({name:'Blackjack · live count and ten-card quiz',run:async()=>{await setup('blackjack',s=>{const d=newCountDrill(1,400,seededRandom(42));d.index=d.target=10;d.phase='quiz';s.counting=d;});const live=visibleBlackjackCount(read().blackjack);doc().querySelector('#live-count').value=String(live.running);doc().querySelector('[data-count="live-check"]').click();check(/Correct/.test(doc().querySelector('.counting-tutor').textContent),'Live count marked incorrectly');doc().querySelector('#drill-answer').value=String(drillCount(read().counting));doc().querySelector('[data-count="answer"]').click();check(persist().counting.correct===1,'Quiz answer not graded correctly');check(/Correct! Keep that running count/.test(doc().querySelector('.counting-tutor').textContent),'Quiz does not explain carrying the count');}});
+cases.push({name:'Sliding puzzle · reject hint from the previous position',run:async()=>{await setup('sliding',s=>s.collection.sliding=newSliding(4,seededRandom(1234)));const at=slidingNeighbours(read().collection.sliding.board,4)[0];doc().querySelector('[data-collection="hint"]').click();doc().querySelector(`[data-collection="slide:${at}"]`).click();await until(()=>/position changed/.test(text()),'Old-position hint was not discarded');check(!doc().querySelector('.sliding-tile.is-hinted'),'Old hint still highlights a tile');}});
+for(const game of ['sliding','nonograms','kakuro'])cases.push({name:`${game} · paused hint explains Resume`,run:async()=>{await setup(game);doc().querySelector(game==='kakuro'?'[data-plus="pause"]':'[data-collection="pause"]').click();doc().querySelector(game==='kakuro'?'[data-plus="hint"]':'[data-collection="hint"]').click();await until(()=>/Resume the puzzle/.test(text()),'Paused hint gives no resume explanation');check(!doc().querySelector('.hint-card'),'Paused puzzle offered an unusable reveal');}});
+for(const game of ['chess','draughts'])cases.push({name:`${game} · six interactive tutor lessons`,run:async()=>{await setup(game);doc().querySelector('[data-coach="lesson"]').click();const lessons=game==='chess'?CHESS_LESSONS:DRAUGHTS_LESSONS;for(let i=0;i<lessons.length;i++){const select=doc().querySelector('#lesson-select');select.value=String(i);select.dispatchEvent(new Event('change',{bubbles:true}));doc().querySelector(`[data-lesson-answer="${lessons[i].correct}"]`).click();check(doc().querySelector('.lesson-feedback').textContent.startsWith('Correct.'),'Lesson answer not explained');check(!doc().querySelector('[data-lesson-next]').disabled,'Correct answer did not enable next lesson');}doc().querySelector('[data-lesson-close]').click();}});
+document.querySelector('#run').onclick=async()=>{if(location.port!=='5193'){summary.textContent='Use isolated preview port 5193.';return;}document.querySelector('#run').disabled=true;let passed=0,lines=[];for(const c of cases){summary.textContent=`Checking ${c.name} · ${passed}/${cases.length}`;try{await c.run();check(!errors.length,errors.join('; '));passed++;lines.push(`PASS · ${c.name}`);}catch(e){lines.push(`FAIL · ${c.name}: ${e.message}`);}report.textContent=lines.join('\n');}summary.textContent=`${passed} / ${cases.length} checks passed`;document.querySelector('#run').disabled=false;};
+</script></html>

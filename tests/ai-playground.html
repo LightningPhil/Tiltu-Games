@@ -1,0 +1,96 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>Grid Club computer-player audit</title>
+<style>body{font:15px system-ui;background:#101a27;color:#eaf6ff;margin:20px}h1{font-weight:550}button{font:inherit;padding:10px 18px;border:1px solid #7693a8;border-radius:8px;color:inherit;background:#23394a}#summary{color:#88e6b5;font-size:20px}pre{white-space:pre-wrap;max-height:180px;overflow:auto}iframe{display:block;width:1240px;max-width:100%;height:800px;border:1px solid #456;border-radius:12px}</style>
+<h1>Computer-player play checks</h1><p>Disposable local positions · all five skills · real controllers, workers and move animations</p><button id="run">Run computer-player checks</button><button id="retry">Retry failures</button><p id="summary">Ready</p><pre id="report" role="status">Ready.</pre><iframe id="game" title="Grid Club computer-player preview"></iframe>
+<script type="module">
+import {freshState,saveState,STORAGE_KEY} from '../src/state.ts';
+import {newTurnGame,turnMoves,playTurn} from '../src/collection/turn-games.ts';
+import {newBackgammon} from '../src/collection/backgammon.ts';
+import {newCribbage,discardCribbage,cutCribbage} from '../src/collection/cribbage.ts';
+import {newPlus} from '../src/club-plus/store.ts';
+import {abstractMoves,playAbstract} from '../src/club-plus/abstracts.ts';
+import {hopMoves,moveHop} from '../src/club-plus/hop.ts';
+import {dominoMoves,playDomino} from '../src/club-plus/dominoes.ts';
+import {passHearts,bidSpades,trickLegal,playTrick} from '../src/club-plus/tricks.ts';
+import {passGinOffer,drawGin,newGin} from '../src/club-plus/gin.ts';
+import {flipMemory,resolveMemory} from '../src/club-plus/playful.ts';
+import {newLife,stepLife} from '../src/life.ts';
+import {newPoker,dealPoker,actPoker} from '../src/poker.ts';
+import {seededRandom} from '../src/skill.ts';
+const frame=document.querySelector('#game'),report=document.querySelector('#report'),summary=document.querySelector('#summary');
+const appURL=location.search.includes('bundle')?'/dist_single/index.html':'/',pause=ms=>new Promise(r=>setTimeout(r,ms)),doc=()=>frame.contentDocument;
+const check=(v,m)=>{if(!v)throw Error(m);},read=()=>JSON.parse(localStorage.getItem(STORAGE_KEY));
+let renderErrors=[];
+const load=url=>new Promise((resolve,reject)=>{frame.onload=()=>{if(url!=='about:blank'){const errors=renderErrors;frame.contentWindow.addEventListener('error',e=>errors.push(String(e.error??e.message)));frame.contentWindow.addEventListener('unhandledrejection',e=>errors.push(String(e.reason)));}resolve();};frame.onerror=reject;frame.src=url;});
+function persist(){frame.contentWindow.dispatchEvent(new Event('pagehide'));return read();}
+async function setup(make){await load('about:blank');renderErrors=[];const s=freshState();s.preferences.motion='quick';make(s);saveState(s);await load(appURL);await pause(180);check(doc().querySelector('#page-title'),'App did not render');return s;}
+async function until(predicate,timeout=20000){const start=performance.now();while(!predicate(persist())){if(performance.now()-start>timeout)throw Error('Computer did not complete a permitted action');await pause(100);}await pause(100);}
+const cases=[];const add=(name,run)=>cases.push({name,run});
+for(let level=1;level<=5;level++){
+ for(const game of ['four','draughts','chess','go'])add(`${game} · skill ${level}`,async()=>{
+  await setup(s=>{s.preferences.game=game;Object.assign(s.preferences[game],{mode:'computer',human:-1,level});Object.assign(s[game].options,{mode:'computer',human:-1,level});});
+  check(doc().querySelector('#level')?.options.length===5,'Five skill choices missing');
+  await until(s=>s[game].moves.length>0);
+ });
+ for(const game of ['noughts','reversi','dots','morris','kalah'])add(`${game} · skill ${level}`,async()=>{
+  const s=await setup(s=>{s.preferences.game=game;s.collection[game]=newTurnGame(game,'computer',level,3);playTurn(s.collection[game],turnMoves(s.collection[game])[0]);});
+  check(doc().querySelector('#collection-level')?.options.length===5,'Five skill choices missing');
+  await until(n=>n.collection[game].records.length>s.collection[game].records.length);
+ });
+ add(`Backgammon · skill ${level}`,async()=>{
+  const s=await setup(s=>{s.preferences.game='backgammon';const b=newBackgammon('computer',level,42);b.turn=-1;b.phase='move';b.dice=[1,6];b.rolled=[1,6];s.collection.backgammon=b;});
+  await until(n=>n.collection.backgammon.records.length>s.collection.backgammon.records.length);
+ });
+ add(`Cribbage · skill ${level}`,async()=>{
+  const s=await setup(s=>{s.preferences.game='cribbage';const c=newCribbage(level,42);discardCribbage(c,c.hands[0].slice(0,2));cutCribbage(c);s.collection.cribbage=c;});
+  await until(n=>n.collection.cribbage.played.length>s.collection.cribbage.played.length);
+ });
+ for(const game of ['gomoku','hex','nim','ur','senet','ludo','chinese','halma','fox','tafl','dominoes','hearts','spades','whist','gin','memory'])add(`${game} · skill ${level}`,async()=>{
+  const s=await setup(s=>{
+   s.preferences.game=game;const p=newPlus(game,{mode:'computer',level,size:game==='halma'?10:game==='gomoku'?15:7,opponent:'computer'},42);s.plus[game]=p;
+   if(['gomoku','hex','nim'].includes(game))playAbstract(p,abstractMoves(p)[0]);
+   else if(['ur','senet','ludo'].includes(game))p.turn=1;
+   else if(['chinese','halma','fox','tafl'].includes(game)&&p.turn===0){const m=hopMoves(p)[0];moveHop(p,m.from,m.to);}
+   else if(game==='dominoes'&&p.turn===0)playDomino(p,dominoMoves(p)[0]);
+   else if(game==='hearts'){passHearts(p,p.hands[0].slice(0,3));if(p.turn===0)playTrick(p,trickLegal(p)[0]);}
+   else if(game==='spades')bidSpades(p,3);
+   else if(game==='gin')passGinOffer(p);
+   else if(game==='memory'){flipMemory(p,0);const other=p.deck.findIndex((v,i)=>i!==0&&v!==p.deck[0]);flipMemory(p,other);resolveMemory(p);}
+  });
+  const before=s.plus[game].records.length;await until(n=>n.plus[game].records.length>before&&(game!=='gin'||n.plus.gin.turn===0||n.plus.gin.phase==='summary'));
+ });
+ for(const variant of ['holdem','omaha','draw'])add(`Poker ${variant} · skill ${level}`,async()=>{
+  const s=await setup(s=>{s.preferences.game='poker';s.preferences.pokerVariant=variant;s.preferences.pokerLevel=level;s.poker=newPoker(variant);dealPoker(s.poker,seededRandom(42));if(s.poker.turn===0)actPoker(s.poker,'call');});
+  check(doc().querySelector('#poker-level')?.options.length===5,'Poker skill selector missing');await until(n=>n.poker.log.length>s.poker.log.length);
+ });
+ add(`LifeGenesis · skill ${level}`,async()=>{
+  await setup(s=>{s.preferences.game='life';s.preferences.lifeMode='colonies';s.preferences.lifeLevel=level;s.life=newLife('colonies');stepLife(s.life);});
+  check(doc().querySelector('#life-level')?.options.length===5,'Life skill selector missing');await until(n=>n.life.turn===1&&n.life.generation===2);
+ });
+}
+for(let level=1;level<=5;level++)add(`Gin empty discard pile · computer skill ${level}`,async()=>{
+ await setup(s=>{s.preferences.game='gin';const g=newGin(42);g.level=level;passGinOffer(g);drawGin(g,'discard');s.plus.gin=g;});
+ check(doc().querySelector('.gin-discard .card-placeholder'),'Empty pile has no placeholder');
+ await until(n=>n.plus.gin.turn===0||n.plus.gin.phase==='summary');check(read().plus.gin.discard.length>0,'Computer did not return a legal discard');
+});
+add('Gin empty discard pile · human legal discard',async()=>{
+ const s=await setup(s=>{s.preferences.game='gin';const g=newGin(42);drawGin(g,'discard');s.plus.gin=g;});
+ check(doc().querySelector('.gin-discard .card-placeholder'),'Empty pile has no placeholder');
+ const g=s.plus.gin,card=g.hands[0].find(c=>c!==g.drawn),select=doc().querySelector(`[data-plus="gin-select:${card}"]`);check(select&&!select.disabled,'Cannot select legal discard');select.click();const discard=doc().querySelector('[data-plus="gin-discard"]');check(discard&&!discard.disabled,'Cannot discard');discard.click();await pause(100);check(persist().plus.gin.discard.includes(card),'Human discard did not reach pile');
+});
+for(const action of ['undo','reset','wrap'])add(`LifeGenesis · cancel stale ${action}`,async()=>{
+ await setup(s=>{s.preferences.game='life';s.preferences.lifeMode='colonies';s.preferences.lifeLevel=5;s.life=newLife('colonies');stepLife(s.life);});
+ await pause(500);const control=doc().querySelector(`[data-arcade="${action}"]`);check(control&&!control.disabled,'Missing enabled '+action);control.click();const after=persist().life;
+ await pause(1800);const next=persist().life;
+ if(action==='wrap'){check(next.wrap===after.wrap,'Worker restored stale wrap setting');check(next.generation>=after.generation,'Generation rolled back');}
+ else{check(next.generation===0&&next.turn===1,'Worker overwrote '+action);check(JSON.stringify(next.cells)===JSON.stringify(after.cells),'Worker restored stale cells');}
+});
+add('Navigation cancels LifeGenesis computer work',async()=>{
+ await setup(s=>{s.preferences.game='life';s.preferences.lifeMode='colonies';s.preferences.lifeLevel=5;s.life=newLife('colonies');stepLife(s.life);});
+ await pause(500);const select=doc().querySelector('#game-select');select.value='poker';select.dispatchEvent(new Event('change',{bubbles:true}));const before=persist().life;await pause(1800);check(JSON.stringify(persist().life)===JSON.stringify(before),'A departed computer turn changed the world');
+});
+const results=[];async function run(failedOnly=false){document.querySelector('#run').disabled=true;const only=new URLSearchParams(location.search).get('only'),selected=(failedOnly?cases.filter(c=>results.find(r=>r.name===c.name&&!r.ok)):cases).filter(c=>!only||c.name.toLowerCase().includes(only.toLowerCase()));if(!failedOnly)results.length=0;
+ for(const c of selected){summary.textContent=`Checking ${c.name}…`;const start=performance.now();try{await c.run();await pause(350);check(!renderErrors.length,renderErrors.join('; '));const row={name:c.name,ok:true,ms:Math.round(performance.now()-start)};const i=results.findIndex(v=>v.name===c.name);if(i>=0)results[i]=row;else results.push(row);}catch(e){const row={name:c.name,ok:false,error:String(e)};const i=results.findIndex(v=>v.name===c.name);if(i>=0)results[i]=row;else results.push(row);}report.textContent=results.map(r=>`${r.ok?'PASS':'FAIL'} · ${r.name}${r.error?' · '+r.error:''}`).join('\n');report.scrollTop=report.scrollHeight;}
+ const fails=results.filter(r=>!r.ok);summary.textContent=`${results.length-fails.length} / ${results.length} passed${fails.length?' · '+fails.length+' failures':' · all computer play checks passed'}`;document.querySelector('#run').disabled=false;
+}
+document.querySelector('#run').onclick=()=>run();document.querySelector('#retry').onclick=()=>run(true);
+</script>

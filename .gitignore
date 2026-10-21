@@ -1,0 +1,12 @@
+node_modules/
+dist_single/
+dist/
+playwright-report/
+test-results/
+*.log
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db
+tests/ai-benchmarks/results/run-*.json

@@ -1,0 +1,21 @@
+{
+  "apps/tetra-grid/dist_single/index.html": "940ef17aab0273b5873feb9efab166e746707ab63fb202e587e41c78fc731c72",
+  "apps/tetra-grid/index.html": "0183384a4c09445a8b814f8e06bab84635ad67ee7bda61cc87d3bf74bef176bc",
+  "apps/tetra-grid/package.json": "f14cea60d6a62a6a87ec5f21e41b1f1d37d3dba4b371091a93b5e3ed3fd377f5",
+  "apps/tetra-grid/README.md": "2208f9781b459086f48374ab187a83fe58334721aae57658606c4da31df66522",
+  "apps/tetra-grid/src/audio.ts": "2213ddc5058f4f3a85ae3ad3e98164c0c9fe3fb65590296188410b968b1a787b",
+  "apps/tetra-grid/src/game.ts": "bcf2381fd9f768c48d28f0b12caf87b829bb2e3a969d8852303ee9cb13bcb473",
+  "apps/tetra-grid/src/main.ts": "a81f4e09b49d5d22a45025c2a6c6d60a67b7c4781440266a23aaa9163eaefe1b",
+  "apps/tetra-grid/src/music.ts": "9203d95b3a4ce86853ecd5c40b525bc3b120b1701bf1e6c841a11300db80be97",
+  "apps/tetra-grid/src/storage.ts": "e2a0a8e14760301ebdb52ba76b01e29ce538b9227793847e36a29b65f3e57512",
+  "apps/tetra-grid/src/style.css": "94055045013f2097f00a77d0cd8c5691602ead2604f5bdf55b71f7a8649be336",
+  "apps/tetra-grid/src/synth.ts": "d020a59ac270dd2ba05f47823a778f0f552cbdd3b00c7e2f0d4a4d199b977042",
+  "apps/tetra-grid/tests/audio.html": "e4dca4c69773b701241f6af3cbfa9c809e8e2c27f0348907781bb4b7893bcfcf",
+  "apps/tetra-grid/tests/audio.test.ts": "c9947f9b334f9ea804758cbb62c405c828ca9054e7bcc770b4e78a02a5fadc18",
+  "apps/tetra-grid/tests/fixtures/original-audio.js": "16b27bccfdc897925483fca8b62ae4bdfccc0d71ca186d3cf07c1098117af0d1",
+  "apps/tetra-grid/tests/game.test.ts": "767e4709b1612cffcd73b290fb95672162f7933397a9297c5517ab71b5eb2a0d",
+  "apps/tetra-grid/tests/scenarios.html": "6be16267f6a82f723600c7db944eced60da6062b5be2d59f89dfe092ac2ade1d",
+  "apps/tetra-grid/tests/storage.test.ts": "0e5c7531521471906b174632d53700c80dfe8ff1108d75433b316b4da0097023",
+  "apps/tetra-grid/tsconfig.json": "0a8f2f1d4acd6f3f2080338516353f50548ddc02da1878666999b4921c762a2f",
+  "apps/tetra-grid/vite.config.ts": "10ab8ce181d7e648970cc0725a9e14c27476f7906e5b637471b157332dbb6005"
+}

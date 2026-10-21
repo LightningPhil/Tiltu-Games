@@ -1,0 +1,69 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>Archive Patrol playtest laboratory</title>
+<style>body{margin:18px;background:#101a27;color:#eaf8fa;font:14px system-ui}button,select,input{font:inherit;margin:4px;padding:9px}iframe{display:block;max-width:100%;border:1px solid #567;background:#101a27;margin-top:15px}pre{white-space:pre-wrap}label{display:inline-block}a{color:#72edee}</style>
+<h1>Archive Patrol playtest laboratory</h1><p>Isolated port 5193 only. Practice scenes preserve the other games on this test origin. Add <code>?bundle</code> for the offline build.</p>
+<label>Scene <select id="scene"><option value="ready">Launch briefing</option><option value="flight">In flight</option><option value="hangar">Hangar</option><option value="scan">Survey beacon</option><option value="escort">Courier rescue</option><option value="carrier">Final carrier</option><option value="storm">Ion storm</option><option value="lost">Relay checkpoint retry</option><option value="complete">Expedition complete</option></select></label>
+<label>Theme <select id="theme"><option value="tron">Neon Grid</option><option value="pulse">Neon Pulse</option><option value="classic">Classic</option><option value="midnight">Midnight</option><option value="woodland">Woodland</option></select></label>
+<label>Width <input id="width" type="number" value="1240" min="300" max="1500"></label><label>Height <input id="height" type="number" value="800" min="320" max="1100"></label>
+<button id="load">Load scene</button><button id="layouts">Check 100 theme / viewport / scene combinations</button><button id="flows">Check controls and missions</button><button id="touch">Check touch stick and cancellation</button><button id="audio">Check adaptive music and effects</button>
+<pre id="report" role="status">Ready.</pre><iframe title="Archive Patrol practice" id="frame" width="1240" height="800"></iframe>
+<script type="module">
+import {loadState,saveState,THEMES} from '../src/state.ts';
+import {newSalvage,populateSector,dockSalvage,upgradeSalvage} from '../src/archive-patrol.ts';
+import {ArcadeAudio} from '../src/arcade-audio.ts';
+const frame=document.querySelector('iframe'),report=document.querySelector('#report'),results=[];
+const safe=()=>{if(location.port!=='5193')throw Error('Use isolated port 5193.');};
+const tick=()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+const until=async(predicate,message,ms=30000)=>{const end=performance.now()+ms;while(!predicate()){if(performance.now()>end)throw Error(message);await new Promise(r=>setTimeout(r,30));}};
+const check=(ok,message)=>{if(!ok)throw Error(message);};
+const url=new URLSearchParams(location.search).has('bundle')?'/dist_single/index.html':'/';
+async function load(scene=document.querySelector('#scene').value,width=+document.querySelector('#width').value,height=+document.querySelector('#height').value,theme=document.querySelector('#theme').value){
+  safe();frame.src='about:blank';await new Promise(r=>frame.onload=r);const state=loadState();state.preferences.game='salvage';state.preferences.theme=theme;state.actionArcade.music=false;
+  const s=state.actionArcade.salvage=newSalvage(2,729);s.safety=true;
+  if(scene==='flight'||scene==='storm'){s.sector=scene==='storm'?5:2;populateSector(s);s.phase='flying';s.x=1200;s.y=1000;s.hull=88;s.shield=72;s.energy=64;s.sectorTime=scene==='storm'?10.4:14;s.noticeTime=0;}
+  if(scene==='hangar'){s.sector=3;populateSector(s);s.phase='flying';s.cargo=5;s.credits=210;dockSalvage(s);}
+  if(scene==='scan'){s.phase='flying';s.x=1200;s.y=900;s.ships=[];s.rocks=[];s.mission.beacons=[{id:99,x:1230,y:900,progress:0,scanned:false}];s.waypoint={kind:'beacons'};}
+  if(scene==='escort'){s.phase='flying';s.x=1280;s.y=900;s.ships=[{id:99,kind:'courier',x:1350,y:900,vx:0,vy:0,angle:Math.PI,hp:125,maxHp:125,cooldown:0,active:false}];s.rocks=[];s.waypoint={kind:'courier'};}
+  if(scene==='carrier'){s.sector=6;populateSector(s);s.phase='flying';s.delivered=s.quota;s.x=1200;s.y=900;s.angle=-Math.PI/2;s.sectorTime=10;s.rocks=[];const boss=s.ships.find(v=>v.kind==='carrier');boss.x=1200;boss.y=700;boss.hp=30;boss.phase=2;boss.cooldown=6;s.ships=[boss];s.relics=[];}
+  if(scene==='lost'){s.phase='flying';s.cargo=3;s.credits=120;dockSalvage(s);upgradeSalvage(s,'weapon');s.phase='lost';s.hull=0;s.shield=0;s.cargo=4;s.credits+=20;}
+  if(scene==='complete'){s.sector=6;populateSector(s);s.phase='complete';s.delivered=s.quota;s.mission.bossDefeated=true;s.score=s.best=18750;s.kills=37;s.elapsed=482;}
+  saveState(state);frame.width=String(width);frame.height=String(height);frame.src=url+'?patrol-practice='+Date.now();await new Promise(r=>frame.onload=r);await until(()=>frame.contentDocument.querySelector('#action-canvas'),'game did not load');frame.scrollIntoView({block:'center'});await tick();return frame.contentDocument;
+}
+function action(d,name){const el=d.querySelector(`[data-action-arcade="${name}"]`);check(el&&!el.disabled,'Unavailable action: '+name);el.click();}
+function key(d,code,down=true){const w=frame.contentWindow;d.querySelector('canvas').dispatchEvent(new w.KeyboardEvent(down?'keydown':'keyup',{bubbles:true,cancelable:true,code,key:code}));}
+function tap(d,code){key(d,code);key(d,code,false);}
+function launch(d){action(d,'play');}
+async function run(label,fn){report.textContent=label+'…';try{const result=await fn();results.push({label,result});}catch(error){results.push({label,error:String(error)});}report.textContent=JSON.stringify(results,null,2);}
+document.querySelector('#load').onclick=()=>run('Scene',async()=>{const d=await load();return d.querySelector('main').innerText.slice(0,150);});
+document.querySelector('#layouts').onclick=()=>run('Responsive scenes',async()=>{
+  const output=[];for(const [width,height]of[[1240,800],[360,800],[320,640],[860,480]])for(const theme of THEMES)for(const scene of ['ready','flight','hangar','lost','complete']){
+    const d=await load(scene,width,height,theme),w=frame.contentWindow;if(scene==='flight')launch(d);await tick();
+    const canvas=d.querySelector('canvas'),r=canvas.getBoundingClientRect(),toolbar=d.querySelector('.patrol-toolbar').getBoundingClientRect(),main=d.querySelector('main'),base=[r.x,r.y,r.width,r.height,w.scrollX,w.scrollY,d.documentElement.scrollWidth,d.documentElement.scrollHeight];
+    for(const el of d.querySelectorAll('button,canvas'))el.dispatchEvent(new w.PointerEvent('pointermove',{bubbles:true,pointerType:'mouse',clientX:r.left+20,clientY:r.top+20}));await tick();const after=canvas.getBoundingClientRect();
+    const issues=[];if(d.documentElement.scrollWidth>width+1||d.documentElement.scrollHeight>height+1)issues.push('page overflow');if(toolbar.bottom>height+1||r.bottom>height+1||r.width<140||r.height<100)issues.push('clipped canvas/controls');
+    if([after.x,after.y,after.width,after.height,w.scrollX,w.scrollY,d.documentElement.scrollWidth,d.documentElement.scrollHeight].some((value,i)=>Math.abs(value-base[i])>.5))issues.push('hover layout movement');
+    const start=d.querySelector('.patrol-modal [data-action-arcade="play"],.patrol-modal [data-action-arcade="retry"]');if(scene==='ready'&&start){const b=start.getBoundingClientRect();if(b.top<r.top||b.bottom>r.bottom)issues.push('launch button clipped');}
+    if(d.documentElement.dataset.theme!==theme||!main.classList.contains('patrol-page'))issues.push('incorrect scene/theme');output.push({scene,theme,width,height,canvas:[Math.round(r.width),Math.round(r.height)],issues});if(scene==='flight')tap(d,'KeyP');
+  }return output;
+});
+document.querySelector('#flows').onclick=()=>run('Controls and missions',async()=>{
+  const out=[];let d=await load('ready');action(d,'chassis-swift');check(d.querySelector('[data-action-arcade="chassis-swift"]').getAttribute('aria-pressed')==='true','ship choice failed');check(d.querySelector('#action-shield').textContent==='80','ship stats did not change');launch(d);
+  tap(d,'Digit2');check(d.querySelector('[data-action-arcade="weapon-scatter"]').getAttribute('aria-pressed')==='true','weapon hotkey failed');tap(d,'KeyH');check(d.querySelector('#patrol-target').textContent.includes('relay'),'home navigation failed');tap(d,'KeyQ');check(d.querySelector('[data-action-arcade="boost"]').disabled,'boost tap missed');tap(d,'KeyP');check(d.querySelector('.patrol-pause'),'pause failed');out.push('ship choice, weapon hotkey, home navigation, boost and pause');
+  d=await load('flight');launch(d);const c=d.querySelector('canvas'),w=frame.contentWindow,r=c.getBoundingClientRect();c.dispatchEvent(new w.PointerEvent('pointerdown',{bubbles:true,button:0,pointerId:1,pointerType:'mouse',clientX:r.right-65,clientY:r.top+65}));check(d.querySelector('#patrol-target').textContent.includes('waypoint'),'radar did not set waypoint');w.dispatchEvent(new w.PointerEvent('pointerup',{pointerId:1,bubbles:true}));tap(d,'KeyP');out.push('radar waypoint uses a click without firing');
+  d=await load('scan');launch(d);key(d,'KeyF');await until(()=>d.querySelector('#action-credits').textContent==='20','beacon scan did not finish');key(d,'KeyF',false);tap(d,'KeyP');out.push('survey scan and reward');
+  d=await load('escort');launch(d);key(d,'KeyA');await until(()=>!d.querySelector('[data-action-arcade="dock"]').disabled,'escort leader did not reach the relay',45000);key(d,'KeyA',false);await until(()=>d.querySelector('#action-credits').textContent==='50','courier did not reach home',45000);tap(d,'KeyP');out.push('courier discovery and escort');
+  d=await load('hangar');check(d.querySelector('.patrol-credit-balance strong').textContent==='360','delivery credits wrong');action(d,'upgrade-weapon');check(d.querySelector('.patrol-credit-balance strong').textContent==='300','upgrade price wrong');check(!d.querySelector('[data-action-arcade="sector"]'),'carrier gate was bypassed');action(d,'chassis-bulwark');check(d.querySelector('#action-shield').textContent==='125','dock chassis selection wrong');out.push('banking, upgrade purchase, carrier gate, hangar ship change');
+  d=await load('lost');action(d,'retry');check(d.querySelector('#action-progress').textContent==='3 / 6','retry lost archived cargo');check(d.querySelector('#action-credits').textContent==='150','retry did not restore banked credits');check(d.querySelector('.patrol-briefing'),'retry did not return to launch state');out.push('checkpoint retry keeps deliveries and purchases');
+  d=await load('carrier');launch(d);tap(d,'Digit3');tap(d,'Space');await until(()=>d.querySelector('#patrol-goal').textContent.includes('Return your cargo'),'carrier was not defeated');key(d,'KeyA');await until(()=>!d.querySelector('[data-action-arcade="dock"]').disabled,'did not reach relay',45000);key(d,'KeyA',false);tap(d,'KeyE');await until(()=>d.querySelector('.patrol-hangar'),'docking failed');action(d,'sector');check(d.querySelector('.patrol-ending').textContent.includes('You brought it all home'),'final victory did not resolve');out.push('carrier combat, return flight, docking and final victory');return out;
+});
+document.querySelector('#touch').onclick=()=>run('Touch controls',async()=>{
+  const d=await load('flight',360,800),w=frame.contentWindow;launch(d);const stick=d.querySelector('[data-patrol-stick]'),r=stick.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;
+  // Capture is a browser pointer facility: this harness supplies its own balanced touch sequence.
+  const original=stick.setPointerCapture;stick.setPointerCapture=()=>{};
+  stick.dispatchEvent(new w.PointerEvent('pointerdown',{bubbles:true,button:0,pointerId:81,pointerType:'touch',clientX:cx,clientY:cy}));stick.dispatchEvent(new w.PointerEvent('pointermove',{bubbles:true,pointerId:81,pointerType:'touch',clientX:cx+50,clientY:cy-20}));await tick();check(d.querySelector('.patrol-stick-thumb').style.transform.includes('translate'),'stick did not move');
+  w.dispatchEvent(new w.PointerEvent('pointercancel',{pointerId:81,pointerType:'touch',bubbles:true}));check(!d.querySelector('.patrol-stick-thumb').style.transform,'cancel left the stick held');stick.setPointerCapture=original;
+  const fire=d.querySelector('[data-action-hold="fire"]'),fr=fire.getBoundingClientRect();const cap=fire.setPointerCapture;fire.setPointerCapture=()=>{};fire.dispatchEvent(new w.PointerEvent('pointerdown',{bubbles:true,button:0,pointerId:82,pointerType:'touch',clientX:fr.left+10,clientY:fr.top+10}));await new Promise(r=>setTimeout(r,300));w.dispatchEvent(new w.PointerEvent('pointerup',{pointerId:82,pointerType:'touch',bubbles:true}));fire.setPointerCapture=cap;tap(d,'KeyP');check(d.querySelector('[data-action-hold="fire"]').disabled,'paused touch controls remained enabled');return ['drag movement','pointer cancellation releases movement','touch fire','pause disables touch actions'];
+});
+document.querySelector('#audio').onclick=()=>run('Adaptive audio',async()=>{
+  const audio=new ArcadeAudio();try{await audio.start('salvage');audio.setIntensity(0);await new Promise(r=>setTimeout(r,200));audio.setIntensity(1);for(const kind of ['shot','boost','pulse','scan','explosion'])audio.effect(kind);await new Promise(r=>setTimeout(r,400));check(audio.active,'music failed to start');check(audio.position>2,'music scheduling stalled');audio.configure(false,.3,true);check(!audio.active,'mute failed');audio.pause();check(!audio.active,'pause failed');return {scheduledSteps:audio.position,adaptiveLayers:true,effects:5,muted:true,paused:true};}finally{audio.dispose();}
+});
+</script></html>

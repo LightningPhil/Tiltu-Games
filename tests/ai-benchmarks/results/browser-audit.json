@@ -1,0 +1,670 @@
+{
+  "testedAt": "2026-10-18T17:44:48.948Z",
+  "buildBytes": 1001381,
+  "buildSha256": "021d012568e3c68abb5d700e23ec6179dd384a3ab88099e2528a90e398941d5c",
+  "uncaughtRenderErrorsFailCase": true,
+  "passed": 165,
+  "total": 165,
+  "scenarios": [
+    {
+      "name": "four · skill 1",
+      "passed": true
+    },
+    {
+      "name": "draughts · skill 1",
+      "passed": true
+    },
+    {
+      "name": "chess · skill 1",
+      "passed": true
+    },
+    {
+      "name": "go · skill 1",
+      "passed": true
+    },
+    {
+      "name": "noughts · skill 1",
+      "passed": true
+    },
+    {
+      "name": "reversi · skill 1",
+      "passed": true
+    },
+    {
+      "name": "dots · skill 1",
+      "passed": true
+    },
+    {
+      "name": "morris · skill 1",
+      "passed": true
+    },
+    {
+      "name": "kalah · skill 1",
+      "passed": true
+    },
+    {
+      "name": "Backgammon · skill 1",
+      "passed": true
+    },
+    {
+      "name": "Cribbage · skill 1",
+      "passed": true
+    },
+    {
+      "name": "gomoku · skill 1",
+      "passed": true
+    },
+    {
+      "name": "hex · skill 1",
+      "passed": true
+    },
+    {
+      "name": "nim · skill 1",
+      "passed": true
+    },
+    {
+      "name": "ur · skill 1",
+      "passed": true
+    },
+    {
+      "name": "senet · skill 1",
+      "passed": true
+    },
+    {
+      "name": "ludo · skill 1",
+      "passed": true
+    },
+    {
+      "name": "chinese · skill 1",
+      "passed": true
+    },
+    {
+      "name": "halma · skill 1",
+      "passed": true
+    },
+    {
+      "name": "fox · skill 1",
+      "passed": true
+    },
+    {
+      "name": "tafl · skill 1",
+      "passed": true
+    },
+    {
+      "name": "dominoes · skill 1",
+      "passed": true
+    },
+    {
+      "name": "hearts · skill 1",
+      "passed": true
+    },
+    {
+      "name": "spades · skill 1",
+      "passed": true
+    },
+    {
+      "name": "whist · skill 1",
+      "passed": true
+    },
+    {
+      "name": "gin · skill 1",
+      "passed": true
+    },
+    {
+      "name": "memory · skill 1",
+      "passed": true
+    },
+    {
+      "name": "Poker holdem · skill 1",
+      "passed": true
+    },
+    {
+      "name": "Poker omaha · skill 1",
+      "passed": true
+    },
+    {
+      "name": "Poker draw · skill 1",
+      "passed": true
+    },
+    {
+      "name": "LifeGenesis · skill 1",
+      "passed": true
+    },
+    {
+      "name": "four · skill 2",
+      "passed": true
+    },
+    {
+      "name": "draughts · skill 2",
+      "passed": true
+    },
+    {
+      "name": "chess · skill 2",
+      "passed": true
+    },
+    {
+      "name": "go · skill 2",
+      "passed": true
+    },
+    {
+      "name": "noughts · skill 2",
+      "passed": true
+    },
+    {
+      "name": "reversi · skill 2",
+      "passed": true
+    },
+    {
+      "name": "dots · skill 2",
+      "passed": true
+    },
+    {
+      "name": "morris · skill 2",
+      "passed": true
+    },
+    {
+      "name": "kalah · skill 2",
+      "passed": true
+    },
+    {
+      "name": "Backgammon · skill 2",
+      "passed": true
+    },
+    {
+      "name": "Cribbage · skill 2",
+      "passed": true
+    },
+    {
+      "name": "gomoku · skill 2",
+      "passed": true
+    },
+    {
+      "name": "hex · skill 2",
+      "passed": true
+    },
+    {
+      "name": "nim · skill 2",
+      "passed": true
+    },
+    {
+      "name": "ur · skill 2",
+      "passed": true
+    },
+    {
+      "name": "senet · skill 2",
+      "passed": true
+    },
+    {
+      "name": "ludo · skill 2",
+      "passed": true
+    },
+    {
+      "name": "chinese · skill 2",
+      "passed": true
+    },
+    {
+      "name": "halma · skill 2",
+      "passed": true
+    },
+    {
+      "name": "fox · skill 2",
+      "passed": true
+    },
+    {
+      "name": "tafl · skill 2",
+      "passed": true
+    },
+    {
+      "name": "dominoes · skill 2",
+      "passed": true
+    },
+    {
+      "name": "hearts · skill 2",
+      "passed": true
+    },
+    {
+      "name": "spades · skill 2",
+      "passed": true
+    },
+    {
+      "name": "whist · skill 2",
+      "passed": true
+    },
+    {
+      "name": "gin · skill 2",
+      "passed": true
+    },
+    {
+      "name": "memory · skill 2",
+      "passed": true
+    },
+    {
+      "name": "Poker holdem · skill 2",
+      "passed": true
+    },
+    {
+      "name": "Poker omaha · skill 2",
+      "passed": true
+    },
+    {
+      "name": "Poker draw · skill 2",
+      "passed": true
+    },
+    {
+      "name": "LifeGenesis · skill 2",
+      "passed": true
+    },
+    {
+      "name": "four · skill 3",
+      "passed": true
+    },
+    {
+      "name": "draughts · skill 3",
+      "passed": true
+    },
+    {
+      "name": "chess · skill 3",
+      "passed": true
+    },
+    {
+      "name": "go · skill 3",
+      "passed": true
+    },
+    {
+      "name": "noughts · skill 3",
+      "passed": true
+    },
+    {
+      "name": "reversi · skill 3",
+      "passed": true
+    },
+    {
+      "name": "dots · skill 3",
+      "passed": true
+    },
+    {
+      "name": "morris · skill 3",
+      "passed": true
+    },
+    {
+      "name": "kalah · skill 3",
+      "passed": true
+    },
+    {
+      "name": "Backgammon · skill 3",
+      "passed": true
+    },
+    {
+      "name": "Cribbage · skill 3",
+      "passed": true
+    },
+    {
+      "name": "gomoku · skill 3",
+      "passed": true
+    },
+    {
+      "name": "hex · skill 3",
+      "passed": true
+    },
+    {
+      "name": "nim · skill 3",
+      "passed": true
+    },
+    {
+      "name": "ur · skill 3",
+      "passed": true
+    },
+    {
+      "name": "senet · skill 3",
+      "passed": true
+    },
+    {
+      "name": "ludo · skill 3",
+      "passed": true
+    },
+    {
+      "name": "chinese · skill 3",
+      "passed": true
+    },
+    {
+      "name": "halma · skill 3",
+      "passed": true
+    },
+    {
+      "name": "fox · skill 3",
+      "passed": true
+    },
+    {
+      "name": "tafl · skill 3",
+      "passed": true
+    },
+    {
+      "name": "dominoes · skill 3",
+      "passed": true
+    },
+    {
+      "name": "hearts · skill 3",
+      "passed": true
+    },
+    {
+      "name": "spades · skill 3",
+      "passed": true
+    },
+    {
+      "name": "whist · skill 3",
+      "passed": true
+    },
+    {
+      "name": "gin · skill 3",
+      "passed": true
+    },
+    {
+      "name": "memory · skill 3",
+      "passed": true
+    },
+    {
+      "name": "Poker holdem · skill 3",
+      "passed": true
+    },
+    {
+      "name": "Poker omaha · skill 3",
+      "passed": true
+    },
+    {
+      "name": "Poker draw · skill 3",
+      "passed": true
+    },
+    {
+      "name": "LifeGenesis · skill 3",
+      "passed": true
+    },
+    {
+      "name": "four · skill 4",
+      "passed": true
+    },
+    {
+      "name": "draughts · skill 4",
+      "passed": true
+    },
+    {
+      "name": "chess · skill 4",
+      "passed": true
+    },
+    {
+      "name": "go · skill 4",
+      "passed": true
+    },
+    {
+      "name": "noughts · skill 4",
+      "passed": true
+    },
+    {
+      "name": "reversi · skill 4",
+      "passed": true
+    },
+    {
+      "name": "dots · skill 4",
+      "passed": true
+    },
+    {
+      "name": "morris · skill 4",
+      "passed": true
+    },
+    {
+      "name": "kalah · skill 4",
+      "passed": true
+    },
+    {
+      "name": "Backgammon · skill 4",
+      "passed": true
+    },
+    {
+      "name": "Cribbage · skill 4",
+      "passed": true
+    },
+    {
+      "name": "gomoku · skill 4",
+      "passed": true
+    },
+    {
+      "name": "hex · skill 4",
+      "passed": true
+    },
+    {
+      "name": "nim · skill 4",
+      "passed": true
+    },
+    {
+      "name": "ur · skill 4",
+      "passed": true
+    },
+    {
+      "name": "senet · skill 4",
+      "passed": true
+    },
+    {
+      "name": "ludo · skill 4",
+      "passed": true
+    },
+    {
+      "name": "chinese · skill 4",
+      "passed": true
+    },
+    {
+      "name": "halma · skill 4",
+      "passed": true
+    },
+    {
+      "name": "fox · skill 4",
+      "passed": true
+    },
+    {
+      "name": "tafl · skill 4",
+      "passed": true
+    },
+    {
+      "name": "dominoes · skill 4",
+      "passed": true
+    },
+    {
+      "name": "hearts · skill 4",
+      "passed": true
+    },
+    {
+      "name": "spades · skill 4",
+      "passed": true
+    },
+    {
+      "name": "whist · skill 4",
+      "passed": true
+    },
+    {
+      "name": "gin · skill 4",
+      "passed": true
+    },
+    {
+      "name": "memory · skill 4",
+      "passed": true
+    },
+    {
+      "name": "Poker holdem · skill 4",
+      "passed": true
+    },
+    {
+      "name": "Poker omaha · skill 4",
+      "passed": true
+    },
+    {
+      "name": "Poker draw · skill 4",
+      "passed": true
+    },
+    {
+      "name": "LifeGenesis · skill 4",
+      "passed": true
+    },
+    {
+      "name": "four · skill 5",
+      "passed": true
+    },
+    {
+      "name": "draughts · skill 5",
+      "passed": true
+    },
+    {
+      "name": "chess · skill 5",
+      "passed": true
+    },
+    {
+      "name": "go · skill 5",
+      "passed": true
+    },
+    {
+      "name": "noughts · skill 5",
+      "passed": true
+    },
+    {
+      "name": "reversi · skill 5",
+      "passed": true
+    },
+    {
+      "name": "dots · skill 5",
+      "passed": true
+    },
+    {
+      "name": "morris · skill 5",
+      "passed": true
+    },
+    {
+      "name": "kalah · skill 5",
+      "passed": true
+    },
+    {
+      "name": "Backgammon · skill 5",
+      "passed": true
+    },
+    {
+      "name": "Cribbage · skill 5",
+      "passed": true
+    },
+    {
+      "name": "gomoku · skill 5",
+      "passed": true
+    },
+    {
+      "name": "hex · skill 5",
+      "passed": true
+    },
+    {
+      "name": "nim · skill 5",
+      "passed": true
+    },
+    {
+      "name": "ur · skill 5",
+      "passed": true
+    },
+    {
+      "name": "senet · skill 5",
+      "passed": true
+    },
+    {
+      "name": "ludo · skill 5",
+      "passed": true
+    },
+    {
+      "name": "chinese · skill 5",
+      "passed": true
+    },
+    {
+      "name": "halma · skill 5",
+      "passed": true
+    },
+    {
+      "name": "fox · skill 5",
+      "passed": true
+    },
+    {
+      "name": "tafl · skill 5",
+      "passed": true
+    },
+    {
+      "name": "dominoes · skill 5",
+      "passed": true
+    },
+    {
+      "name": "hearts · skill 5",
+      "passed": true
+    },
+    {
+      "name": "spades · skill 5",
+      "passed": true
+    },
+    {
+      "name": "whist · skill 5",
+      "passed": true
+    },
+    {
+      "name": "gin · skill 5",
+      "passed": true
+    },
+    {
+      "name": "memory · skill 5",
+      "passed": true
+    },
+    {
+      "name": "Poker holdem · skill 5",
+      "passed": true
+    },
+    {
+      "name": "Poker omaha · skill 5",
+      "passed": true
+    },
+    {
+      "name": "Poker draw · skill 5",
+      "passed": true
+    },
+    {
+      "name": "LifeGenesis · skill 5",
+      "passed": true
+    },
+    {
+      "name": "Gin empty discard pile · computer skill 1",
+      "passed": true
+    },
+    {
+      "name": "Gin empty discard pile · computer skill 2",
+      "passed": true
+    },
+    {
+      "name": "Gin empty discard pile · computer skill 3",
+      "passed": true
+    },
+    {
+      "name": "Gin empty discard pile · computer skill 4",
+      "passed": true
+    },
+    {
+      "name": "Gin empty discard pile · computer skill 5",
+      "passed": true
+    },
+    {
+      "name": "Gin empty discard pile · human legal discard",
+      "passed": true
+    },
+    {
+      "name": "LifeGenesis · cancel stale undo",
+      "passed": true
+    },
+    {
+      "name": "LifeGenesis · cancel stale reset",
+      "passed": true
+    },
+    {
+      "name": "LifeGenesis · cancel stale wrap",
+      "passed": true
+    },
+    {
+      "name": "Navigation cancels LifeGenesis computer work",
+      "passed": true
+    }
+  ]
+}

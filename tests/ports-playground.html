@@ -1,0 +1,66 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>Four arcade ports — collection checks</title>
+<style>body{font:14px system-ui;background:#101a27;color:#edf6fa;margin:18px}button,select,input{font:inherit;padding:8px;margin:4px}iframe{display:block;border:1px solid #567;margin:15px 0}pre{white-space:pre-wrap}</style>
+<h1>Four arcade ports</h1><p>Isolated origin 5193. Native game controls, navigation, themes, audio ownership and screen fitting. Add ?bundle to check the built offline app.</p>
+<button id="layouts">Check 300 layouts</button><button id="flows">Play all four games</button>
+<pre id="report" role="status">Ready.</pre><iframe title="Tiltu’s Games integration" width="1240" height="800"></iframe>
+<script type="module">
+import {loadState,saveState} from '../src/state.ts';
+import {newPortSave,PORT_GAMES} from '../src/arcade-ports/store.ts';
+const frame=document.querySelector('iframe'),report=document.querySelector('#report'),results=[];
+const bundle=new URLSearchParams(location.search).has('bundle'),url=bundle?'/dist_single/index.html':'/tests/ports-runtime.html';
+const themes=['tron','pulse','classic','midnight','woodland'],sizes=[[1240,800],[1240,720],[360,800],[320,640],[860,480]];
+const check=(v,m)=>{if(!v)throw Error(m);},wait=(ms)=>new Promise(r=>setTimeout(r,ms));
+async function until(fn,m){const end=performance.now()+45000;while(!fn()){if(performance.now()>end)throw Error(m);await wait(50);}}
+async function load(game){
+  if(location.port!=='5193')throw Error('Isolated local test port only.');frame.src='about:blank';await new Promise(r=>frame.onload=r);
+  const state=loadState();state.preferences.game=game;state.preferences.theme='tron';for(const id of PORT_GAMES)state.actionArcade[id]=newPortSave();saveState(state);
+  frame.width=1240;frame.height=800;frame.src=url+'?game='+game+'&practice='+Date.now();await new Promise(r=>frame.onload=r);await until(()=>frame.contentDocument.querySelector('.arcade-port'),'Port did not mount');await wait(100);return frame.contentDocument;
+}
+const visible=(d,s)=>{const e=d.querySelector(s);return !!e&&e.getClientRects().length>0&&d.defaultView.getComputedStyle(e).visibility!=='hidden';};
+const click=(d,s)=>{const e=d.querySelector(s);check(e&&!e.disabled,'Missing available control '+s);e.click();};
+const change=(d,s,value)=>{const e=d.querySelector(s);e.value=value;e.dispatchEvent(new frame.contentWindow.Event('change',{bubbles:true}));};
+const pauseSelectors={void:'[title="Pause and settings"]',whacker:'#pause',horizon:'#pause-button',ballistics:'#pause-button'};
+function pause(d,game){click(d,pauseSelectors[game]);}
+function resume(d,game){
+  const selector=game==='void'?'#pause-screen .primary-button':game==='whacker'?'#resume':game==='horizon'?'#resume':'#settings-resume-button';click(d,selector);
+}
+function isPaused(d,game){return game==='void'?visible(d,'#pause-screen'):game==='whacker'?d.querySelector('#overlay-title').textContent.includes('Paused'):game==='horizon'?visible(d,'#pause-screen'):visible(d,'#settings-menu');}
+function start(d,game){if(game==='whacker'){d.querySelector('#practice').checked=true;d.querySelector('#practice').dispatchEvent(new frame.contentWindow.Event('change',{bubbles:true}));}click(d,game==='void'?'#launch-btn':game==='whacker'?'#start':game==='horizon'?'#cruise-button':'#practice-button');}
+function layout(d,game,phase,width,height,theme){
+  check(d.documentElement.scrollWidth<=width+2,`${game} ${phase} horizontal page overflow: ${d.documentElement.scrollWidth}/${width}`);
+  check(d.documentElement.scrollHeight<=height+2,`${game} ${phase} vertical page overflow: ${d.documentElement.scrollHeight}/${height}`);
+  const r=d.querySelector('.port-viewport').getBoundingClientRect();check(r.top>=0&&r.bottom<=height+2&&r.width>250&&r.height>180,`${game} ${phase} viewport does not fit`);
+  check(!d.querySelector('.port-error'),`${game} failed to initialise`);
+  if(phase==='ready'){
+    const s=game==='void'?'#launch-btn':game==='whacker'?'#start':game==='horizon'?'#start':'#practice-button',b=d.querySelector(s).getBoundingClientRect();
+    check(b.left>=r.left-2&&b.right<=r.right+2&&b.top>=r.top-2&&b.bottom<=r.bottom+2,`${game} launch outside viewport ${width}x${height}`);
+  }
+  return {game,phase,width,height,theme,viewport:[Math.round(r.width),Math.round(r.height)]};
+}
+async function run(label,fn){report.textContent=label+'…';try{results.push({label,result:await fn()});}catch(e){results.push({label,error:String(e)});}report.textContent=JSON.stringify(results,null,2);}
+document.querySelector('#layouts').onclick=()=>run('Layouts',async()=>{
+  const out=[];for(const game of PORT_GAMES){const d=await load(game);for(const phase of ['ready','playing','paused']){
+    if(phase==='playing'){start(d,game);await wait(100);}if(phase==='paused'&&!isPaused(d,game))pause(d,game);
+    for(const [width,height]of sizes){frame.width=width;frame.height=height;for(const theme of themes){d.documentElement.dataset.theme=theme;await wait(45);if(phase==='playing'&&isPaused(d,game))resume(d,game);out.push(layout(d,game,phase,width,height,theme));report.textContent=`Layouts: ${out.length}/300 · ${game} ${phase} ${width}×${height} ${theme}`;}}
+  }}return {checked:out.length,layouts:out};
+});
+document.querySelector('#flows').onclick=()=>run('Game flows',async()=>{
+  const out=[];for(const game of PORT_GAMES){let d=await load(game);start(d,game);
+    if(game==='whacker'){
+      const target=()=>[...d.querySelectorAll('.hole.up:not(.kind-sleepy)')].find(e=>{const life=Number(e.style.getPropertyValue('--life'));return life<.8&&life>.35;});
+      await until(()=>target(),'No fully risen legal pop-up appeared');
+      const score=Number(d.querySelector('#score').textContent);target().click();
+      check(Number(d.querySelector('#score').textContent)>score,'Bonk did not score');out.push('Whack-a: live target hit and scored in practice');
+    }
+    if(game==='horizon'){check(visible(d,'#flight-view')&&!visible(d,'#load-screen'),'3D flight did not start');change(d,'#controls','keyboard');out.push('Horizon: city, cockpit and cruise launch');}
+    if(game==='void'){check(visible(d,'#game-layer'),'Mission did not launch');click(d,'#dash-btn');out.push('Void: campaign launch and dash');}
+    if(game==='ballistics'){check(visible(d,'#stage'),'Firing range did not start');check(d.querySelectorAll('.weapon-card').length===10,'Full arsenal not available');out.push('Ballistics: firing range and all ten weapons');}
+    pause(d,game);check(isPaused(d,game),game+' did not pause');resume(d,game);check(!isPaused(d,game),game+' did not resume');
+    const view=d.querySelector('.arcade-port'),contexts=frame.contentWindow.portAudioContexts??[];
+    change(d,'#theme','classic');check(d.querySelector('.arcade-port')===view,'Theme replaced the engine');check(isPaused(d,game),'Theme change did not safely pause');resume(d,game);
+    change(d,'#game-select','blocks');await until(()=>contexts.every(c=>c.state!=='running'),'Audio continued outside its game');
+    change(d,'#game-select',game);check(d.querySelector('.arcade-port')===view,'Returning discarded current state');check(isPaused(d,game),'Returning did not keep game paused');
+    resume(d,game);out.push(game+': pause/resume, shared theme, navigation/audio isolation and retained state');
+  }return out;
+});
+</script></html>

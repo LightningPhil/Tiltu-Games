@@ -1,0 +1,27 @@
+[
+  {
+    "label": "Manual flight and EMP",
+    "result": [
+      "WASD and arrows share movement",
+      "mixed aliases release independently",
+      "E EMP / Shift boost / Space fire together",
+      "left and right mouse guns work together",
+      "touch and toolbar EMP share charge",
+      "ready/recharging controls fit four viewports",
+      "ship-relative arrows",
+      "gradual acceleration and coasting",
+      "braking without reversing",
+      "inertial steering",
+      "mouse cannot aim",
+      "forward Space fire",
+      "80% wider view",
+      "no aim assist option",
+      "travelling directional EMP",
+      "raider and carrier disable durations",
+      "rear targets unaffected",
+      "no direct EMP damage or energy cost",
+      "paused EMP charge",
+      "secondary mouse button"
+    ]
+  }
+]

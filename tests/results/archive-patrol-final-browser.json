@@ -1,0 +1,14 @@
+[
+  {
+    "label": "Controls and missions",
+    "result": [
+      "ship choice, weapon hotkey, home navigation, boost and pause",
+      "radar waypoint uses a click without firing",
+      "survey scan and reward",
+      "courier discovery and escort",
+      "banking, upgrade purchase, carrier gate, hangar ship change",
+      "checkpoint retry keeps deliveries and purchases",
+      "carrier combat, return flight, docking and final victory"
+    ]
+  }
+]

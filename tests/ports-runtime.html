@@ -1,0 +1,5 @@
+<!doctype html><html lang="en" data-theme="tron"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Arcade integration fixture</title></head><body><div id="app"></div><script>
+if(location.port!=='5193')throw Error('Development fixture requires isolated port 5193.');
+window.portAudioContexts=[];const NativeAudioContext=window.AudioContext;
+window.AudioContext=class extends NativeAudioContext{constructor(...args){super(...args);window.portAudioContexts.push(this);}};
+</script><script type="module" src="../src/main.ts"></script></body></html>

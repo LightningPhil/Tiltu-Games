@@ -1,0 +1,32 @@
+[
+  {
+    "label": "Manual flight and EMP",
+    "result": [
+      "ship-relative arrows",
+      "gradual acceleration and coasting",
+      "braking without reversing",
+      "inertial steering",
+      "mouse cannot aim",
+      "forward Space fire",
+      "80% wider view",
+      "no aim assist option",
+      "travelling directional EMP",
+      "raider and carrier disable durations",
+      "rear targets unaffected",
+      "no direct EMP damage or energy cost",
+      "paused EMP charge",
+      "secondary mouse button"
+    ]
+  },
+  {
+    "label": "Features",
+    "result": [
+      "repair and rejoin retains banked loot and wave progress",
+      "keyboard shooting breaks a supply cache",
+      "cores bank immediately and activate Magnet",
+      "Overdrive/Magnet status",
+      "pause freezes power-ups",
+      "shared theme retains pause"
+    ]
+  }
+]

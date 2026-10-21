@@ -1,0 +1,21 @@
+[
+  {
+    "label": "Game flows",
+    "result": [
+      "countdown, seven-piece previews, movement, rotation, hold limit, drop and pause",
+      "quad and all-clear scoring",
+      "Sprint completion and record",
+      "Ultra ends at two minutes",
+      "Zen and finish practice",
+      "mode changes preserve run, restart cancellation and saved resume"
+    ]
+  },
+  {
+    "label": "Touch",
+    "result": [
+      "simultaneous movement and rotation",
+      "cancellation releases",
+      "pause disables actions"
+    ]
+  }
+]

@@ -1,0 +1,55 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>TetriGrid collection checks</title>
+<style>body{font:14px system-ui;background:#101a27;color:#edf6fa;margin:18px}button,select,input{font:inherit;padding:8px;margin:4px}iframe{display:block;border:1px solid #567;margin:15px 0;max-width:100%}pre{white-space:pre-wrap}</style>
+<h1>TetriGrid integration checks</h1><p>Only isolated local port 5193. Practice states leave other games intact. Add ?bundle to test the offline build.</p>
+<label>Scene<select id="scene"><option>ready</option><option>clear</option><option>sprint</option><option>ultra</option><option>topout</option></select></label>
+<label>Theme<select id="theme"><option>tron</option><option>pulse</option><option>classic</option><option>midnight</option><option>woodland</option></select></label>
+<label>Width<input id="width" type="number" value="1240"></label><label>Height<input id="height" type="number" value="800"></label>
+<button id="load">Load scene</button><button id="layouts">Check 150 layouts</button><button id="flows">Play game flows</button><button id="touch">Check touch and cancellation</button>
+<pre id="report" role="status">Ready.</pre><iframe id="frame" title="TetriGrid practice" width="1240" height="800"></iframe>
+<script type="module">
+import {loadState,saveState,THEMES} from '../src/state.ts';
+import {newBlocks} from '../src/tetrigrid/session.ts';
+import {Game} from '../src/tetrigrid/game.ts';
+const frame=document.querySelector('iframe'),report=document.querySelector('#report'),results=[];
+const tick=()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+const url=new URLSearchParams(location.search).has('bundle')?'/dist_single/index.html':'/';
+const check=(v,message)=>{if(!v)throw Error(message);};
+async function until(fn,message){const end=performance.now()+6500;while(!fn()){if(performance.now()>end)throw Error(message);await new Promise(r=>setTimeout(r,25));}}
+async function load(scene='ready',width=1240,height=800,theme='tron'){
+  if(location.port!=='5193')throw Error('Isolated test port only.');frame.src='about:blank';await new Promise(r=>frame.onload=r);
+  const s=loadState();s.preferences.game='blocks';s.preferences.theme=theme;s.actionArcade.blocksSettings.music=false;s.actionArcade.blocksSettings.mode='marathon';s.actionArcade.blocksRecords={};const session=s.actionArcade.blocks=newBlocks(),g=Game.restore(session.run);
+  if(scene!=='ready'){session.phase='playing';g.active={type:'I',rotation:1,x:1,y:1};if(scene==='clear'||scene==='sprint'){for(let y=18;y<22;y++){g.board[y].fill('J');g.board[y][3]=null;}if(scene==='sprint'){g.mode='sprint';g.lines=36;}}
+    if(scene==='ultra'){g.mode='ultra';g.elapsed=119900;}if(scene==='topout'){g.active={type:'O',rotation:0,x:4,y:0};g.board[2][4]='J';}session.run=g.snapshot();session.elapsed=g.elapsed/1000;s.actionArcade.blocksSettings.mode=g.mode;
+  }
+  saveState(s);frame.width=width;frame.height=height;frame.src=url+'?practice='+Date.now();await new Promise(r=>frame.onload=r);await until(()=>frame.contentDocument.querySelector('.tg-page'),'TetriGrid did not load');await tick();return frame.contentDocument;
+}
+const action=(d,name)=>{const b=d.querySelector(`[data-action-arcade="${name}"]`);check(b&&!b.disabled,'Unavailable action '+name);b.click();};
+const key=(d,code,down=true)=>{const w=frame.contentWindow;d.querySelector('canvas').dispatchEvent(new w.KeyboardEvent(down?'keydown':'keyup',{code,key:code,bubbles:true,cancelable:true}));};
+const tap=(d,code)=>{key(d,code);key(d,code,false);};
+async function play(d){action(d,'play');await until(()=>d.querySelector('canvas').dataset.phase==='playing'&&!d.querySelector('.tg-countdown'),'Countdown did not finish');}
+async function run(label,fn){report.textContent=label+'…';try{results.push({label,result:await fn()});}catch(e){results.push({label,error:String(e)});}report.textContent=JSON.stringify(results,null,2);}
+document.querySelector('#load').onclick=()=>run('Scene',()=>load(document.querySelector('#scene').value,+document.querySelector('#width').value,+document.querySelector('#height').value,document.querySelector('#theme').value).then(d=>d.querySelector('h1').textContent));
+document.querySelector('#layouts').onclick=()=>run('150 layouts',async()=>{
+  const out=[];for(const[width,height]of[[1240,800],[1240,720],[1240,600],[360,800],[320,640],[860,480]])for(const theme of THEMES)for(const state of ['ready','paused','settings','records','help']){
+    const d=await load(state==='ready'?'ready':'clear',width,height,theme),w=frame.contentWindow;if(['settings','records','help'].includes(state))action(d,state);await tick();const c=d.querySelector('canvas'),r=c.getBoundingClientRect(),controls=d.querySelector('.action-controls').getBoundingClientRect(),before=[r.x,r.y,r.width,r.height,w.scrollX,w.scrollY],issues=[];
+    for(const el of d.querySelectorAll('button,canvas'))el.dispatchEvent(new w.PointerEvent('pointermove',{bubbles:true,pointerType:'mouse',clientX:r.left+5,clientY:r.top+5}));await tick();const after=c.getBoundingClientRect();
+    if(d.documentElement.scrollHeight>height+1||d.documentElement.scrollWidth>width+1)issues.push('page overflow');if(controls.bottom>height+1||r.width<90||r.height<180)issues.push('small or clipped play area');if([after.x,after.y,after.width,after.height,w.scrollX,w.scrollY].some((n,i)=>Math.abs(n-before[i])>.5))issues.push('hover shift');
+    const area=d.querySelector('.action-play-area').getBoundingClientRect();for(const el of d.querySelectorAll('.tg-companion section')){const box=el.getBoundingClientRect();if(box.width&&box.height&&(box.top<area.top-1||box.bottom>area.bottom+1))issues.push('side card overflow');}
+    const play=d.querySelector('[data-action-arcade="play"]');if(play){const a=play.getBoundingClientRect(),area=d.querySelector('.action-play-area').getBoundingClientRect();if(a.top<area.top-1||a.bottom>area.bottom+1)issues.push('launch clipped');}
+    const previews=[...d.querySelectorAll('#action-next svg')];if(previews.length!==5||previews.some(p=>p.getBoundingClientRect().height<12))issues.push('previews clipped');
+    out.push({width,height,theme,state,canvas:[Math.round(r.width),Math.round(r.height)],issues});
+  }check(out.every(r=>!r.issues.length),JSON.stringify(out.filter(r=>r.issues.length)));return out;
+});
+document.querySelector('#flows').onclick=()=>run('Game flows',async()=>{
+  const out=[];let d=await load();check(d.querySelectorAll('#action-next svg').length===5,'five previews missing');await play(d);tap(d,'KeyC');const held=d.querySelector('#action-reserve').getAttribute('data-piece');tap(d,'KeyC');check(d.querySelector('#action-reserve').getAttribute('data-piece')===held,'hold twice');tap(d,'ArrowLeft');tap(d,'KeyZ');tap(d,'Space');check(+d.querySelector('#action-score').textContent.replaceAll(',','')>0,'hard drop failed');tap(d,'KeyP');check(d.querySelector('.tg-cover h2').textContent==='Game paused.','pause failed');out.push('countdown, seven-piece previews, movement, rotation, hold limit, drop and pause');
+  d=await load('clear');await play(d);tap(d,'Space');check(d.querySelector('#action-progress').textContent==='4','quad failed');check(d.querySelector('#action-notice').textContent.includes('ALL CLEAR'),'all-clear advice missing');out.push('quad and all-clear scoring');
+  d=await load('sprint');await play(d);tap(d,'Space');check(d.querySelector('.tg-cover h2').textContent==='40 lines. Beautiful.','Sprint did not end at 40');action(d,'records');check(d.querySelector('.tg-records li'),'Sprint record missing');action(d,'close-records');action(d,'new');check(d.querySelector('.tg-countdown')&&!d.querySelector('[data-action-arcade="cancel-new"]'),'finished run asked for unnecessary replacement confirmation');tap(d,'KeyP');out.push('Sprint completion, record and direct play again');
+  d=await load('ultra');await play(d);await until(()=>d.querySelector('.tg-result-value'),'Ultra did not finish');check(d.querySelector('#action-time').textContent==='0:00.00','Ultra clock overran');out.push('Ultra ends at two minutes');
+  d=await load();action(d,'mode-zen');await play(d);const before=d.querySelector('#action-progress').textContent;await new Promise(r=>setTimeout(r,900));tap(d,'KeyP');check(d.querySelector('#action-progress').textContent===before,'Zen auto-locked');action(d,'finish-zen');check(d.querySelector('.tg-cover h2').textContent==='Nice practice.','Zen finish failed');out.push('Zen and finish practice');
+  d=await load('clear');await play(d);tap(d,'Space');tap(d,'KeyP');action(d,'settings');const select=d.querySelector('#action-tg-mode');select.value='ultra';select.dispatchEvent(new frame.contentWindow.Event('change',{bubbles:true}));action(d,'close-settings');action(d,'new');check(d.querySelector('[data-action-arcade="cancel-new"]'),'replacement confirmation missing');action(d,'cancel-new');check(d.querySelector('#action-progress').textContent==='4','cancel discarded board');await new Promise(r=>{frame.onload=r;frame.contentWindow.location.reload();});await until(()=>frame.contentDocument.querySelector('.tg-page'),'reload failed');d=frame.contentDocument;check(d.querySelector('#action-progress').textContent==='4','save reload lost lines');check(d.querySelector('.tg-cover h2').textContent==='Game paused.','reload did not pause');action(d,'mode-sprint');check(d.querySelector('[data-action-arcade="cancel-new"]'),'live mode change did not ask before replacing');action(d,'cancel-new');check(d.querySelector('#action-progress').textContent==='4','mode cancellation lost the run');out.push('mode changes preserve run, replacement confirmation, restart cancellation and saved resume');return out;
+});
+document.querySelector('#touch').onclick=()=>run('Touch',async()=>{
+  const d=await load('ready',360,800),w=frame.contentWindow;await play(d);const left=d.querySelector('[data-action-hold="left"]'),rotate=d.querySelector('[data-action-hold="cw"]');for(const b of[left,rotate])b.setPointerCapture=()=>{};
+  left.dispatchEvent(new w.PointerEvent('pointerdown',{bubbles:true,button:0,pointerType:'touch',pointerId:1}));rotate.dispatchEvent(new w.PointerEvent('pointerdown',{bubbles:true,button:0,pointerType:'touch',pointerId:2}));await new Promise(r=>setTimeout(r,220));w.dispatchEvent(new w.PointerEvent('pointercancel',{bubbles:true,pointerType:'touch',pointerId:1}));w.dispatchEvent(new w.PointerEvent('pointerup',{bubbles:true,pointerType:'touch',pointerId:2}));check(!d.querySelector('.tg-page .pressed'),'touch stayed pressed');tap(d,'KeyP');check([...d.querySelectorAll('.tg-touch button')].every(b=>b.disabled),'paused controls active');return ['simultaneous movement and rotation','cancellation releases','pause disables actions'];
+});
+</script></html>

@@ -1,0 +1,19 @@
+{
+  "changes": [
+    "WASD and arrows share one input map",
+    "E / right mouse = secondary directional EMP; G = dock",
+    "Shift = boost; F = magnet and scan",
+    "Main and secondary mouse weapons work together; releasing one does not interrupt the other",
+    "EMP fires once per press, reports recharge and has a dedicated touch button",
+    "Controls panel opens with a readable key map"
+  ],
+  "tests": {
+    "passed": 694,
+    "failed": 0,
+    "offlineControls": "passed",
+    "simultaneousInputs": "passed",
+    "smallScreenControls": "passed at 1240x800, 860x480, 360x800, 320x640"
+  },
+  "app": "http://127.0.0.1:5182/",
+  "buildBytes": 2445723
+}

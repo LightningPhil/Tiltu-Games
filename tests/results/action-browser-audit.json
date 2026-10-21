@@ -1,0 +1,735 @@
+{
+  "date": "2026-10-18",
+  "development": [
+    {
+      "label": "Layouts",
+      "result": [
+        {
+          "game": "blocks",
+          "theme": "tron",
+          "width": 1240,
+          "height": 720,
+          "canvas": [
+            310,
+            414
+          ],
+          "issues": []
+        },
+        {
+          "game": "salvage",
+          "theme": "tron",
+          "width": 1240,
+          "height": 720,
+          "canvas": [
+            1175,
+            414
+          ],
+          "issues": []
+        },
+        {
+          "game": "blocks",
+          "theme": "pulse",
+          "width": 1240,
+          "height": 720,
+          "canvas": [
+            310,
+            414
+          ],
+          "issues": []
+        },
+        {
+          "game": "salvage",
+          "theme": "pulse",
+          "width": 1240,
+          "height": 720,
+          "canvas": [
+            1175,
+            414
+          ],
+          "issues": []
+        },
+        {
+          "game": "blocks",
+          "theme": "classic",
+          "width": 1240,
+          "height": 720,
+          "canvas": [
+            310,
+            414
+          ],
+          "issues": []
+        },
+        {
+          "game": "salvage",
+          "theme": "classic",
+          "width": 1240,
+          "height": 720,
+          "canvas": [
+            1175,
+            414
+          ],
+          "issues": []
+        },
+        {
+          "game": "blocks",
+          "theme": "midnight",
+          "width": 1240,
+          "height": 720,
+          "canvas": [
+            310,
+            414
+          ],
+          "issues": []
+        },
+        {
+          "game": "salvage",
+          "theme": "midnight",
+          "width": 1240,
+          "height": 720,
+          "canvas": [
+            1175,
+            414
+          ],
+          "issues": []
+        },
+        {
+          "game": "blocks",
+          "theme": "woodland",
+          "width": 1240,
+          "height": 720,
+          "canvas": [
+            310,
+            414
+          ],
+          "issues": []
+        },
+        {
+          "game": "salvage",
+          "theme": "woodland",
+          "width": 1240,
+          "height": 720,
+          "canvas": [
+            1175,
+            414
+          ],
+          "issues": []
+        },
+        {
+          "game": "blocks",
+          "theme": "tron",
+          "width": 360,
+          "height": 800,
+          "canvas": [
+            242,
+            324
+          ],
+          "issues": []
+        },
+        {
+          "game": "salvage",
+          "theme": "tron",
+          "width": 360,
+          "height": 800,
+          "canvas": [
+            319,
+            449
+          ],
+          "issues": []
+        },
+        {
+          "game": "blocks",
+          "theme": "pulse",
+          "width": 360,
+          "height": 800,
+          "canvas": [
+            242,
+            324
+          ],
+          "issues": []
+        },
+        {
+          "game": "salvage",
+          "theme": "pulse",
+          "width": 360,
+          "height": 800,
+          "canvas": [
+            319,
+            449
+          ],
+          "issues": []
+        },
+        {
+          "game": "blocks",
+          "theme": "classic",
+          "width": 360,
+          "height": 800,
+          "canvas": [
+            242,
+            324
+          ],
+          "issues": []
+        },
+        {
+          "game": "salvage",
+          "theme": "classic",
+          "width": 360,
+          "height": 800,
+          "canvas": [
+            319,
+            449
+          ],
+          "issues": []
+        },
+        {
+          "game": "blocks",
+          "theme": "midnight",
+          "width": 360,
+          "height": 800,
+          "canvas": [
+            242,
+            324
+          ],
+          "issues": []
+        },
+        {
+          "game": "salvage",
+          "theme": "midnight",
+          "width": 360,
+          "height": 800,
+          "canvas": [
+            319,
+            449
+          ],
+          "issues": []
+        },
+        {
+          "game": "blocks",
+          "theme": "woodland",
+          "width": 360,
+          "height": 800,
+          "canvas": [
+            242,
+            324
+          ],
+          "issues": []
+        },
+        {
+          "game": "salvage",
+          "theme": "woodland",
+          "width": 360,
+          "height": 800,
+          "canvas": [
+            319,
+            449
+          ],
+          "issues": []
+        },
+        {
+          "game": "blocks",
+          "theme": "tron",
+          "width": 860,
+          "height": 480,
+          "canvas": [
+            166,
+            222
+          ],
+          "issues": []
+        },
+        {
+          "game": "salvage",
+          "theme": "tron",
+          "width": 860,
+          "height": 480,
+          "canvas": [
+            795,
+            222
+          ],
+          "issues": []
+        },
+        {
+          "game": "blocks",
+          "theme": "pulse",
+          "width": 860,
+          "height": 480,
+          "canvas": [
+            166,
+            222
+          ],
+          "issues": []
+        },
+        {
+          "game": "salvage",
+          "theme": "pulse",
+          "width": 860,
+          "height": 480,
+          "canvas": [
+            795,
+            222
+          ],
+          "issues": []
+        },
+        {
+          "game": "blocks",
+          "theme": "classic",
+          "width": 860,
+          "height": 480,
+          "canvas": [
+            166,
+            222
+          ],
+          "issues": []
+        },
+        {
+          "game": "salvage",
+          "theme": "classic",
+          "width": 860,
+          "height": 480,
+          "canvas": [
+            795,
+            222
+          ],
+          "issues": []
+        },
+        {
+          "game": "blocks",
+          "theme": "midnight",
+          "width": 860,
+          "height": 480,
+          "canvas": [
+            166,
+            222
+          ],
+          "issues": []
+        },
+        {
+          "game": "salvage",
+          "theme": "midnight",
+          "width": 860,
+          "height": 480,
+          "canvas": [
+            795,
+            222
+          ],
+          "issues": []
+        },
+        {
+          "game": "blocks",
+          "theme": "woodland",
+          "width": 860,
+          "height": 480,
+          "canvas": [
+            166,
+            222
+          ],
+          "issues": []
+        },
+        {
+          "game": "salvage",
+          "theme": "woodland",
+          "width": 860,
+          "height": 480,
+          "canvas": [
+            795,
+            222
+          ],
+          "issues": []
+        }
+      ]
+    },
+    {
+      "label": "Game flows",
+      "result": [
+        "row clear, pause",
+        "sprint finish",
+        "mode applies to new run",
+        "dock, cargo delivery, upgrade, next sector",
+        "six-sector completion",
+        "tap pulse and paused simulation"
+      ]
+    },
+    {
+      "label": "Web Audio",
+      "result": [
+        {
+          "game": "blocks",
+          "scheduledSteps": 3,
+          "muted": true,
+          "paused": true
+        },
+        {
+          "game": "salvage",
+          "scheduledSteps": 4,
+          "muted": true,
+          "paused": true
+        }
+      ]
+    }
+  ],
+  "standaloneLayouts": [
+    {
+      "label": "Layouts",
+      "result": [
+        {
+          "game": "blocks",
+          "theme": "tron",
+          "width": 1240,
+          "height": 720,
+          "canvas": [
+            310,
+            414
+          ],
+          "issues": []
+        },
+        {
+          "game": "salvage",
+          "theme": "tron",
+          "width": 1240,
+          "height": 720,
+          "canvas": [
+            1175,
+            414
+          ],
+          "issues": []
+        },
+        {
+          "game": "blocks",
+          "theme": "pulse",
+          "width": 1240,
+          "height": 720,
+          "canvas": [
+            310,
+            414
+          ],
+          "issues": []
+        },
+        {
+          "game": "salvage",
+          "theme": "pulse",
+          "width": 1240,
+          "height": 720,
+          "canvas": [
+            1175,
+            414
+          ],
+          "issues": []
+        },
+        {
+          "game": "blocks",
+          "theme": "classic",
+          "width": 1240,
+          "height": 720,
+          "canvas": [
+            310,
+            414
+          ],
+          "issues": []
+        },
+        {
+          "game": "salvage",
+          "theme": "classic",
+          "width": 1240,
+          "height": 720,
+          "canvas": [
+            1175,
+            414
+          ],
+          "issues": []
+        },
+        {
+          "game": "blocks",
+          "theme": "midnight",
+          "width": 1240,
+          "height": 720,
+          "canvas": [
+            310,
+            414
+          ],
+          "issues": []
+        },
+        {
+          "game": "salvage",
+          "theme": "midnight",
+          "width": 1240,
+          "height": 720,
+          "canvas": [
+            1175,
+            414
+          ],
+          "issues": []
+        },
+        {
+          "game": "blocks",
+          "theme": "woodland",
+          "width": 1240,
+          "height": 720,
+          "canvas": [
+            310,
+            414
+          ],
+          "issues": []
+        },
+        {
+          "game": "salvage",
+          "theme": "woodland",
+          "width": 1240,
+          "height": 720,
+          "canvas": [
+            1175,
+            414
+          ],
+          "issues": []
+        },
+        {
+          "game": "blocks",
+          "theme": "tron",
+          "width": 360,
+          "height": 800,
+          "canvas": [
+            242,
+            324
+          ],
+          "issues": []
+        },
+        {
+          "game": "salvage",
+          "theme": "tron",
+          "width": 360,
+          "height": 800,
+          "canvas": [
+            319,
+            449
+          ],
+          "issues": []
+        },
+        {
+          "game": "blocks",
+          "theme": "pulse",
+          "width": 360,
+          "height": 800,
+          "canvas": [
+            242,
+            324
+          ],
+          "issues": []
+        },
+        {
+          "game": "salvage",
+          "theme": "pulse",
+          "width": 360,
+          "height": 800,
+          "canvas": [
+            319,
+            449
+          ],
+          "issues": []
+        },
+        {
+          "game": "blocks",
+          "theme": "classic",
+          "width": 360,
+          "height": 800,
+          "canvas": [
+            242,
+            324
+          ],
+          "issues": []
+        },
+        {
+          "game": "salvage",
+          "theme": "classic",
+          "width": 360,
+          "height": 800,
+          "canvas": [
+            319,
+            449
+          ],
+          "issues": []
+        },
+        {
+          "game": "blocks",
+          "theme": "midnight",
+          "width": 360,
+          "height": 800,
+          "canvas": [
+            242,
+            324
+          ],
+          "issues": []
+        },
+        {
+          "game": "salvage",
+          "theme": "midnight",
+          "width": 360,
+          "height": 800,
+          "canvas": [
+            319,
+            449
+          ],
+          "issues": []
+        },
+        {
+          "game": "blocks",
+          "theme": "woodland",
+          "width": 360,
+          "height": 800,
+          "canvas": [
+            242,
+            324
+          ],
+          "issues": []
+        },
+        {
+          "game": "salvage",
+          "theme": "woodland",
+          "width": 360,
+          "height": 800,
+          "canvas": [
+            319,
+            449
+          ],
+          "issues": []
+        },
+        {
+          "game": "blocks",
+          "theme": "tron",
+          "width": 860,
+          "height": 480,
+          "canvas": [
+            166,
+            222
+          ],
+          "issues": []
+        },
+        {
+          "game": "salvage",
+          "theme": "tron",
+          "width": 860,
+          "height": 480,
+          "canvas": [
+            795,
+            222
+          ],
+          "issues": []
+        },
+        {
+          "game": "blocks",
+          "theme": "pulse",
+          "width": 860,
+          "height": 480,
+          "canvas": [
+            166,
+            222
+          ],
+          "issues": []
+        },
+        {
+          "game": "salvage",
+          "theme": "pulse",
+          "width": 860,
+          "height": 480,
+          "canvas": [
+            795,
+            222
+          ],
+          "issues": []
+        },
+        {
+          "game": "blocks",
+          "theme": "classic",
+          "width": 860,
+          "height": 480,
+          "canvas": [
+            166,
+            222
+          ],
+          "issues": []
+        },
+        {
+          "game": "salvage",
+          "theme": "classic",
+          "width": 860,
+          "height": 480,
+          "canvas": [
+            795,
+            222
+          ],
+          "issues": []
+        },
+        {
+          "game": "blocks",
+          "theme": "midnight",
+          "width": 860,
+          "height": 480,
+          "canvas": [
+            166,
+            222
+          ],
+          "issues": []
+        },
+        {
+          "game": "salvage",
+          "theme": "midnight",
+          "width": 860,
+          "height": 480,
+          "canvas": [
+            795,
+            222
+          ],
+          "issues": []
+        },
+        {
+          "game": "blocks",
+          "theme": "woodland",
+          "width": 860,
+          "height": 480,
+          "canvas": [
+            166,
+            222
+          ],
+          "issues": []
+        },
+        {
+          "game": "salvage",
+          "theme": "woodland",
+          "width": 860,
+          "height": 480,
+          "canvas": [
+            795,
+            222
+          ],
+          "issues": []
+        }
+      ]
+    }
+  ],
+  "standaloneFlowsAndAudio": [
+    {
+      "label": "Game flows",
+      "result": [
+        "row clear, pause",
+        "sprint finish",
+        "mode applies to new run",
+        "dock, cargo delivery, upgrade, next sector",
+        "six-sector completion",
+        "tap pulse and paused simulation"
+      ]
+    },
+    {
+      "label": "Web Audio",
+      "result": [
+        {
+          "game": "blocks",
+          "scheduledSteps": 3,
+          "muted": true,
+          "paused": true
+        },
+        {
+          "game": "salvage",
+          "scheduledSteps": 4,
+          "muted": true,
+          "paused": true
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+✔ all six integrated arcade games have catalogue entries, bringing the collection to fifty-four (0.9437ms)
+✔ flight uses inertia, turns progressively and respects world edges (4.0652ms)
+✔ a tractor draws in fragments; only collected cargo earns delivery credits (2.0381ms)
+✔ docking requires the relay, repairs the ship and cannot pay for cargo twice (0.4631ms)
+✔ upgrades require docking and sufficient credits, with three levels maximum (0.555ms)
+✔ sector gates require archived quota and all six archives can be completed (0.6893ms)
+✔ weapons consume energy, respect rate limits and cannot shoot while paused (1.397ms)
+✔ pulse damages nearby hostiles, spares friends and has a cooldown and energy cost (0.9248ms)
+✔ shield absorbs damage, invulnerability prevents repeat damage and zero hull ends flight (0.3472ms)
+✔ friendly fire causes a warden pursuit rather than treating every ship as an enemy (0.5287ms)
+✔ difficulty increases hostile count, speed, projectile speed and fire frequency (0.8565ms)
+✔ long flights keep resources, objects and coordinates bounded and recoverable (768.9653ms)
+✔ saves resume paused and transient flight projectiles are discarded safely (9.8292ms)
+✔ malformed arcade saves are rejected individually without damaging other progress (0.4949ms)
+✔ each imported game keeps its own save without touching standalone storage (2.071ms)
+✔ custom character image storage survives restoration, but corrupt saves stay bounded (6.4181ms)
+✔ quota failures roll back a new item and preserve the previous preference (0.5846ms)
+✔ navigation suspends frames, timers and audio; returning preserves pending work (2.096ms)
+✔ inactive engines cannot consume collection input and lose no saved progress (0.7351ms)
+✔ the environment scopes dimensions, handlers, storage and document to its game (0.9448ms)
+ℹ tests 20
+ℹ suites 0
+ℹ pass 20
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1091.0131

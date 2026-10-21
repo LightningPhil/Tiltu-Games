@@ -1,0 +1,15 @@
+{
+  "games": 54,
+  "regressionTests": 647,
+  "regressionsPassed": 647,
+  "responsiveLayouts": 300,
+  "sharedThemes": 5,
+  "screenSizes": 5,
+  "browserFlows": "All four passed in source and offline build",
+  "customPng": "Prepared, saved, selected and restored after reload",
+  "standaloneFilesChecked": 142,
+  "standaloneDifferences": [],
+  "externalScriptsLinksOrIframes": [],
+  "threeLicenseIncluded": true,
+  "offlineBytes": 2428029
+}

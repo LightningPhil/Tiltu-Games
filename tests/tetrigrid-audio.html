@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>TetraGrid audio verification</title>
+<style>body{font:14px system-ui;background:#15131f;color:#eee;max-width:850px;margin:30px auto;padding:20px}button,a{color:#b7a1ff}button{background:#292335;border:1px solid #b7a1ff;border-radius:5px;padding:12px;cursor:pointer}section{border:1px solid #454055;padding:18px;margin:15px 0;border-radius:8px}audio{display:block;margin:12px 0;width:100%}p{line-height:1.6}.pass{color:#8be9af}.fail{color:#ff8096}</style></head>
+<body><h1>TetraGrid audio verification</h1><p>Development-only full-loop audio rendering. Classic House is compared sample by sample with the original engine recovered from Git. Every soundtrack, including Cello Flow, is rendered through the compressor, with deterministic noise for the comparison.</p><button id="render">Render and verify all tracks</button><p id="status" role="status">Ready.</p><div id="results"></div><div id="samples" hidden></div>
+<script type="module">
+import { Synth } from '../src/tetrigrid/synth.ts';
+import { TRACKS } from '../src/tetrigrid/music.ts';
+import { createOriginalAudio } from './fixtures/tetrigrid-original-audio.js';
+function noiseRandom() {let seed=24681;return()=>((seed=(seed*1664525+1013904223)>>>0)/4294967296);}
+async function render(track,original=false) {
+  const p=TRACKS[track],duration=60/p.bpm*64+6,ctx=new OfflineAudioContext(2,Math.ceil(duration*44100),44100);
+  const savedRandom=Math.random;Math.random=noiseRandom();
+  try {
+    let synth;
+    if(original) synth=createOriginalAudio(ctx);
+    else {
+      const master=ctx.createGain(),comp=ctx.createDynamicsCompressor();master.gain.value=0.5;
+      comp.threshold.value=-24;comp.ratio.value=16;comp.attack.value=0.003;comp.release.value=0.15;
+      master.connect(comp);comp.connect(ctx.destination);synth=new Synth(ctx,master,track);
+    }
+    for(let step=0;step<256;step++) {
+      const time=0.1+step*60/p.bpm/4+(step%2 ? p.swing*60/p.bpm/4 : 0);
+      if(original) synth.scheduleNote(step,time);else synth.note(step,time);
+    }
+  } finally {Math.random=savedRandom;}
+  return ctx.startRendering();
+}
+function metrics(buffer) {
+  let peak=0,square=0,finite=true;
+  for(let channel=0;channel<buffer.numberOfChannels;channel++) for(const x of buffer.getChannelData(channel)) {peak=Math.max(peak,Math.abs(x));square+=x*x;finite&&=Number.isFinite(x);}
+  return {peak,rms:Math.sqrt(square/(buffer.length*buffer.numberOfChannels)),finite};
+}
+function wav(buffer,seconds=12) {
+  const channels=buffer.numberOfChannels,samples=Math.min(buffer.length,Math.round(seconds*buffer.sampleRate));
+  const size=samples*channels*2,bytes=new ArrayBuffer(44+size),view=new DataView(bytes);
+  const string=(offset,text)=>[...text].forEach((c,i)=>view.setUint8(offset+i,c.charCodeAt(0)));
+  string(0,'RIFF');view.setUint32(4,36+size,true);string(8,'WAVE');string(12,'fmt ');view.setUint32(16,16,true);
+  view.setUint16(20,1,true);view.setUint16(22,channels,true);view.setUint32(24,buffer.sampleRate,true);view.setUint32(28,buffer.sampleRate*channels*2,true);
+  view.setUint16(32,channels*2,true);view.setUint16(34,16,true);string(36,'data');view.setUint32(40,size,true);
+  for(let channel=0;channel<channels;channel++) {const data=buffer.getChannelData(channel);for(let i=0;i<samples;i++) {const fade=Math.min(1,(samples-i)/220);view.setInt16(44+(i*channels+channel)*2,Math.max(-1,Math.min(1,data[i]*fade))*32767,true);}}
+  return new Uint8Array(bytes);
+}
+document.querySelector('#render').addEventListener('click',async()=> {
+  const button=document.querySelector('#render');button.disabled=true;document.querySelector('#results').replaceChildren();document.querySelector('#samples').replaceChildren();
+  const status=document.querySelector('#status');status.textContent='Rendering original reference…';
+  try {
+    const reference=await render('classic-house',true);let allPass=true;
+    for(const [id,preset] of Object.entries(TRACKS)) {
+      status.textContent='Rendering '+preset.name+'…';const buffer=await render(id),m=metrics(buffer);
+      let difference=null;
+      if(id==='classic-house') {difference=0;const a=reference.getChannelData(0),b=buffer.getChannelData(0);for(let i=0;i<a.length;i++) difference=Math.max(difference,Math.abs(a[i]-b[i]));}
+      const pass=m.finite && m.rms>0.01 && m.peak<1 && (difference===null || difference<0.00001);allPass&&=pass;
+      const section=document.createElement('section');section.innerHTML='<h2>'+preset.name+' · '+preset.bpm+' BPM</h2><p class="'+(pass?'pass':'fail')+'">'+(pass?'PASS':'FAIL')+' · peak '+m.peak.toFixed(6)+' · RMS '+m.rms.toFixed(6)+(difference===null?'':' · maximum sample difference from original '+difference.toExponential(3))+'</p>';
+      const bytes=wav(buffer),blob=new Blob([bytes],{type:'audio/wav'}),url=URL.createObjectURL(blob);
+      const audio=document.createElement('audio');audio.controls=true;audio.src=url;audio.setAttribute('aria-label',preset.name+' rendered audio sample');section.append(audio);
+      const link=document.createElement('a');link.href=url;link.download=id+'-sample.wav';link.textContent='Download '+preset.name+' sample';section.append(link);document.querySelector('#results').append(section);
+      let binary='';for(let i=0;i<bytes.length;i+=8192) binary+=String.fromCharCode(...bytes.subarray(i,i+8192));
+      const sample=document.createElement('textarea');sample.id=id+'-wav';sample.value=btoa(binary);document.querySelector('#samples').append(sample);
+    }
+    status.textContent=allPass?'PASS — all '+Object.keys(TRACKS).length+' tracks rendered; original soundtrack matches the reference.':'FAIL — inspect the results.';
+  } catch(error) {status.textContent='FAIL — '+error.message;} finally {button.disabled=false;}
+});
+</script></body></html>

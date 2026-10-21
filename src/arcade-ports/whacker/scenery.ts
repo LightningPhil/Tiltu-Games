@@ -1,0 +1,24 @@
+/** Ported from whack-a; the standalone source remains independent. */
+import {document,window,localStorage,requestAnimationFrame,cancelAnimationFrame,setTimeout,clearTimeout,setInterval,clearInterval,AudioContext,ResizeObserver} from './environment.ts';
+/** Small, self-contained vector scenery. Decorative layers never intercept a tap. */
+export function gardenScene() {
+  const fence = Array.from({ length: 21 }, (_, index) => {
+    const x = index * 48 - 30;
+    return `<path d="M${x} 187v-47l10-9 10 9v47" fill="#fff1ce" stroke="#c9bf92" stroke-width="2"/>`;
+  }).join("");
+  const flags = ["#e8876b", "#f7d77d", "#94b6a1", "#d2a0b3", "#edac64", "#f7d77d", "#a6c1bf", "#e8876b", "#d2a0b3"]
+    .map((color, index) => {
+      const x = 70 + index * 95;
+      const y = 18 + Math.sin(index / 8 * Math.PI) * 27;
+      return `<g class="bunting-flag" style="--flag-delay:${index * -0.31}s;transform-origin:${x + 10}px ${y}px"><path d="M${x} ${y}l22 2-12 25Z" fill="${color}" stroke="#795d3b" stroke-opacity=".28"/><path d="M${x + 4} ${y + 4}l13 1-7 15Z" fill="white" opacity=".12"/></g>`;
+    }).join("");
+  const flower = (x: number, y: number, color: string, scale = 1) => `<g transform="translate(${x} ${y}) scale(${scale})"><path d="M0 9v24m0-8q-12-12-13-4 1 9 13 4m0 4q12-13 14-6-1 9-14 6" fill="#4d7946" stroke="#426b3f" stroke-width="2"/><g fill="${color}"><ellipse cy="-6" rx="4" ry="7"/><ellipse cy="6" rx="4" ry="7"/><ellipse cx="-6" rx="7" ry="4"/><ellipse cx="6" rx="7" ry="4"/></g><circle r="4" fill="#f6cf73"/><circle cx="-1" cy="-1" r="1.3" fill="#fff0b7"/></g>`;
+  const flowers = [[30, 242, "#fff3c7", 1], [868, 275, "#efb1ab", 1.1], [35, 462, "#efd88e", .8], [878, 499, "#fff3c7", .9], [28, 676, "#f2b1a6", 1.1], [844, 687, "#fff3c7", .9], [869, 662, "#f2c0c8", .8]]
+    .map(([x, y, color, scale]) => flower(Number(x), Number(y), String(color), Number(scale))).join("");
+  return `<svg class="garden-landscape" viewBox="0 0 900 720" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="garden-sky" x2="0" y2="1"><stop stop-color="#bfddd0"/><stop offset="1" stop-color="#edf0cc"/></linearGradient><linearGradient id="garden-lawn" x2=".15" y2="1"><stop stop-color="#a6be7d"/><stop offset=".5" stop-color="#91ae6c"/><stop offset="1" stop-color="#769654"/></linearGradient><radialGradient id="garden-sun"><stop stop-color="#fff6ba" stop-opacity=".7"/><stop offset="1" stop-color="#fff6ba" stop-opacity="0"/></radialGradient></defs><path fill="url(#garden-sky)" d="M0 0h900v230H0Z"/><circle cx="760" cy="55" r="92" fill="url(#garden-sun)"/><g class="garden-sun"><circle cx="760" cy="55" r="27" fill="#ffe9a0"/><circle cx="752" cy="48" r="19" fill="#fff0b3"/><path d="M760 15V7m0 96v-8m40-40h8m-96 0h8m68-28 6-6m-68 68 6-6m56 0 6 6m-68-68 6 6" stroke="#fff1bd" stroke-width="3" stroke-linecap="round"/></g><g class="garden-clouds" fill="#fff9e6" opacity=".67"><path d="M88 77q-9-18 9-24 10-22 28-4 24-9 28 16 16 3 13 15Z"/><path d="M485 97q-8-16 8-21 13-21 26-1 22-7 26 14 12 2 11 10Z"/></g><path d="M0 162Q120 70 287 151q162-80 330 4 132-84 283-12v110H0Z" fill="#91b693"/><path d="M0 188q185-97 376-9 213-87 524 4v84H0Z" fill="#799f73"/><path d="M0 153h900v10H0m0 23h900v8H0" fill="#e9ddb8" stroke="#a3ae7a" stroke-width="1.5"/>${fence}<path d="M0 191q245-26 450-3 270-22 450 3v529H0Z" fill="url(#garden-lawn)"/><path d="M0 292q450-30 900 0m-900 166q450-30 900 0m-900 169q450-30 900 0" fill="none" stroke="#c0cc92" stroke-opacity=".15" stroke-width="68"/><g stroke="#537b47" stroke-width="2" stroke-linecap="round" opacity=".3"><path d="M64 308l-3-8m3 8 4-9m704-45-3-7m3 7 4-9M190 480l-2-8m2 8 4-9m346-15-3-7m3 7 4-9M104 657l-3-8m3 8 4-9m569 18-3-7m3 7 4-9M404 343l-2-7m2 7 3-8"/></g><g class="garden-bunting"><path d="M0 6Q450 82 900 6" fill="none" stroke="#8a795a" stroke-width="2"/>${flags}</g>${flowers}<g class="garden-butterfly" transform="translate(832 118)"><path d="M0 0q-18-24-20-7t20 9q17-27 20-10T0 2" fill="#f0b67f" stroke="#bb845d" stroke-width="1.5"/><path d="M0-3v10m0-8-4-8m4 8 4-8" stroke="#7b6550" stroke-width="2" stroke-linecap="round"/></g></svg>`;
+}
+
+export function turfSVG(index: number) {
+  const id = `turf-${index}`;
+  return `<svg viewBox="0 0 200 65" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="${id}" x2="0" y2="1"><stop stop-color="#acc67a"/><stop offset="1" stop-color="#739551"/></linearGradient></defs><path d="M3 15q95 48 194 0l-4 24q-88 41-186 0Z" fill="url(#${id})"/><path d="M4 16q93 49 192 0" fill="none" stroke="#cbda94" stroke-width="3"/><path d="M13 33l-6-9 12 6-2-12 11 16m145 0 8-12-1 11 12-4-5 12" fill="#719747"/><path d="M44 39l-3-8m3 8 4-9m110 5 3-7m-3 7-3-5" stroke="#5b8347" stroke-width="1.6" stroke-linecap="round"/><ellipse cx="35" cy="43" rx="3" ry="1.3" fill="#d2dd9d" opacity=".65"/><ellipse cx="169" cy="40" rx="2" ry="1" fill="#d2dd9d" opacity=".65"/></svg>`;
+}

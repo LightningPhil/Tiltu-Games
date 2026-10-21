@@ -1,0 +1,39 @@
+{
+  "name": "tiltu-games",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Tiltu’s Games — a personal browser game collection by Philip Leichauer",
+  "author": "Philip Leichauer",
+  "license": "SEE LICENSE IN LICENSE",
+  "homepage": "https://lightningphil.github.io/Tiltu-Games/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LightningPhil/Tiltu-Games.git"
+  },
+  "engines": {
+    "node": ">=24.0.0 <25"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "node --test tests/*.test.ts",
+    "test:browser": "playwright test",
+    "test:ai": "node tests/progression.ts",
+    "test:ai:boards": "node tests/ai-benchmarks/boards.ts",
+    "test:ai:cards": "node tests/ai-benchmarks/cards.ts",
+    "test:ai:pawns": "node tests/ai-benchmarks/king-pawn.ts"
+  },
+  "dependencies": {
+    "chess.js": "^1.4.0",
+    "three": "0.128.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.1",
+    "rollup": "4.59.0",
+    "typescript": "5.9.3",
+    "vite": "8.3.5",
+    "vite-plugin-singlefile": "2.3.4"
+  }
+}

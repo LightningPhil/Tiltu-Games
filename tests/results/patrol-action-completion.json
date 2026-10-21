@@ -1,0 +1,20 @@
+{
+  "loop": "Blast raiders and caches → collect banked cores and timed power-ups → upgrade → launch next sector",
+  "build": "passed",
+  "regressionTests": 670,
+  "regressionsPassed": 670,
+  "responsiveChecks": 100,
+  "sharedThemes": 5,
+  "scriptedCampaigns": 15,
+  "campaignsCompleted": 15,
+  "browserChecks": [
+    "Full three-wave sector, loot sweep, upgrade purchase and direct next-sector launch in source and offline build",
+    "Cache shooting, keyboard aim despite stale mouse position, instant banking and Magnet activation",
+    "Overdrive/Magnet timers freeze on pause",
+    "Repair/rejoin keeps banked credits, cores and wave progress",
+    "Next-sector button visible at every tested size",
+    "Existing expedition migration retained earned currency and upgrades"
+  ],
+  "preview": "http://127.0.0.1:5182/",
+  "previewProcess": 36384
+}

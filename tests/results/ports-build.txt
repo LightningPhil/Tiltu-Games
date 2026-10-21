@@ -1,0 +1,16 @@
+
+> @single-file-games/grid-club@1.0.0 build
+> tsc --noEmit && vite build
+
+vite v8.3.4 building client environment for production...
+transforming...
+✓ 169 modules transformed.
+rendering chunks...
+[plugin vite:singlefile] 
+
+[plugin vite:singlefile] Inlining: index-YWcthF3e.js
+[plugin vite:singlefile] Inlining: style-BDDZ62ai.css
+computing gzip size...
+dist_single/index.html  2,428.02 kB │ gzip: 697.22 kB
+
+✓ built in 629ms

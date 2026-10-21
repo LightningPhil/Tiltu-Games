@@ -1,0 +1,31 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>Grid Club UX practice fixtures</title>
+<style>body{font:18px system-ui;max-width:680px;margin:40px auto;padding:20px;background:#101a27;color:#eef7fa}button,select{font:inherit;padding:12px;margin:8px}a{color:#72edee}</style>
+<h1>UX practice fixtures</h1><p>This development page uses the isolated preview on port 5193. It never writes to the normal game preview on port 5182.</p>
+<label>Position <select id="fixture"><option value="four">Four in a Row · winning line</option><option value="draughts">Draughts · double jump</option><option value="chess">Chess · capture and develop</option><option value="chess-castle">Chess · castling</option><option value="chess-promotion">Chess · promotion</option><option value="go">Go · atari and capture</option><option value="poker">Poker - Hold'em river</option><option value="poker-omaha">Poker - Omaha river</option><option value="poker-draw">Poker - drawing cards</option><option value="tetravex">TetraVex · small puzzle</option><option value="patience-art">Patience · illustrated deck</option><option value="patience">Patience · finish the deal</option><option value="blackjack">Blackjack · split eights</option><option value="sudoku-art">Sudoku · finished row</option><option value="sudoku">Sudoku · quick puzzle</option></select></label><button id="load">Load practice position</button><p id="status"></p><a href="/">Play fixture →</a>
+<script type="module">
+import { freshState, saveState, updateResult } from '../src/state.ts';
+import { applyMove, moveLabel, other } from '../src/rules.ts';
+import { newPoker, dealPoker, actPoker, pokerActions } from '../src/poker.ts';
+import { newTetra } from '../src/tetravex.ts';
+import { newPatience } from '../src/patience.ts';
+import { dealBlackjack } from '../src/blackjack.ts';
+import { playChess } from '../src/chess.ts';
+import { playGo } from '../src/go.ts';
+import { generatePuzzle, newSudoku } from '../src/sudoku.ts';
+document.querySelector('#load').onclick=()=>{
+ if(location.port!=='5193'){document.querySelector('#status').textContent='Use the isolated preview on port 5193.';return;}
+ const s=freshState(), fixture=document.querySelector('#fixture').value, game=fixture.startsWith('chess')?'chess':fixture.startsWith('poker')?'poker':fixture.startsWith('patience')?'patience':fixture.startsWith('sudoku')?'sudoku':fixture; s.preferences.game=game;
+ s.preferences.motion='relaxed';
+ if(game==='four'){const f=s.four;f.options.mode=s.preferences.four.mode='local';for(const col of [0,6,1,6,2,5,3]){f.history.push({board:f.board.slice(),turn:f.turn,quiet:f.quiet});f.moves.push({player:f.turn,text:moveLabel('four',col)});f.board=applyMove('four',f.board,f.turn,col);f.turn=other(f.turn);updateResult('four',f);}}
+ if(game==='draughts'){s.draughts.options.mode=s.preferences.draughts.mode='local';s.draughts.board.fill(0);s.draughts.board[42]=1;s.draughts.board[35]=s.draughts.board[21]=-1;s.draughts.board[5]=-2;}
+ if(game==='chess'){s.chess.options.mode=s.preferences.chess.mode='local'; if(fixture==='chess-castle')s.chess.startFen='r3k2r/8/8/8/8/8/8/R3K2R w KQkq - 0 1'; else if(fixture==='chess-promotion')s.chess.startFen='4k3/P7/8/8/8/8/8/4K3 w - - 0 1'; else for(const move of ['e4','d5','exd5','Qxd5','Nc3'])playChess(s.chess,move);}
+ if(game==='go'){s.go.options.mode=s.preferences.go.mode='local';for(const point of [39,40,31,80,41,79])playGo(s.go,point);}
+ if(game==='poker'){const variant=fixture==='poker-omaha'?'omaha':fixture==='poker-draw'?'draw':'holdem';s.preferences.pokerVariant=variant;s.poker=newPoker(variant);dealPoker(s.poker,()=>.37);for(let n=0;n<30&&s.poker.phase==='betting'&&(variant==='draw'||s.poker.street<3||s.poker.turn!==0);n++)actPoker(s.poker,pokerActions(s.poker).check?'check':'call');}
+ if(game==='tetravex'){let seed=42;const random=()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/4294967296);s.preferences.tetraSize=2;s.tetravex=newTetra(2,random);s.tetravex.tray=[0,1,2,3];}
+ if(game==='patience' && fixture!=='patience-art'){s.patience=newPatience(1,Array.from({length:52},(_,i)=>i));Object.assign(s.patience,{stock:[],waste:[],foundations:Array.from({length:4},(_,suit)=>Array.from({length:12},(_,r)=>suit*13+r)),tableau:Array.from({length:7},(_,i)=>i<4?[{card:i*13+12,up:true}]:[]),moves:100,score:400});}
+ if(fixture==='patience-art'){const deck=Array.from({length:52},(_,i)=>i),places=[51,49,46,42,37,31,24],faces=[0,25,37,49,9,16,33];places.forEach((at,i)=>{const from=deck.indexOf(faces[i]);[deck[at],deck[from]]=[deck[from],deck[at]]});s.patience=newPatience(1,deck);}
+ if(game==='blackjack'){const opening=[7,5,20,8];s.blackjack.shoe=[...Array.from({length:312},(_,i)=>i).filter(c=>!opening.includes(c)),...opening.slice().reverse()];dealBlackjack(s.blackjack);}
+ if(game==='sudoku'){s.preferences.size=4;s.preferences.difficulty=1;s.sudoku=newSudoku(generatePuzzle(4,1,()=>.37));if(fixture==='sudoku-art')s.sudoku.values.splice(0,4,...s.sudoku.solution.slice(0,4));}
+ saveState(s);document.querySelector('#status').textContent='Practice position ready. Open Play fixture.';
+};
+</script></html>

@@ -1,0 +1,26 @@
+{
+  "changes": [
+    "Manual ship-relative steering with thrust, coasting, braking and gradual turn acceleration",
+    "Target assistance removed from controller, weapons, mouse and settings",
+    "80% default zoom; legacy views widened once",
+    "Directional EMP: 60-degree cone, 580 m, 780 m/s, 18-second independent recharge, 5-second raider / 3-second carrier disable",
+    "EMP and disable state restore paused; travelling pulse, disabled indicators and charge/speed readouts",
+    "Short-screen workshop departure remains visible"
+  ],
+  "tests": {
+    "collection": 688,
+    "passed": 688,
+    "focused": 89,
+    "offlineLayouts": 100,
+    "offlineControls": "passed",
+    "offlineFeatures": "passed",
+    "consoleErrors": 0
+  },
+  "build": {
+    "bytes": 2444145,
+    "sha256": "180c561f61f2465c889c6e0957d488d8082deda20e1d627ebfc4438c626d99eb"
+  },
+  "app": "http://127.0.0.1:5182/",
+  "userSave": "Existing sector 1 workshop, 750 credits retained; paused; in-app browser refreshed",
+  "screenshot": "C:/Users/pglei/.codex/visualizations/2026/10/13/01a13724-5f6b-7f60-91cf-f50a07e9a182/archive-patrol-manual-flight.png"
+}

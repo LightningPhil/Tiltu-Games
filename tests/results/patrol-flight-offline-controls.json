@@ -1,0 +1,21 @@
+[
+  {
+    "label": "Manual flight and EMP",
+    "result": [
+      "ship-relative arrows",
+      "gradual acceleration and coasting",
+      "braking without reversing",
+      "inertial steering",
+      "mouse cannot aim",
+      "forward Space fire",
+      "80% wider view",
+      "no aim assist option",
+      "travelling directional EMP",
+      "raider and carrier disable durations",
+      "rear targets unaffected",
+      "no direct EMP damage or energy cost",
+      "paused EMP charge",
+      "secondary mouse button"
+    ]
+  }
+]

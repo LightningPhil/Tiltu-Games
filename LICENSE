@@ -1,0 +1,98 @@
+TILTU'S GAMES — PROPRIETARY PERSONAL-PLAY LICENSE
+Version 1.0, 21 October 2026
+
+Copyright © 2026 Philip Leichauer. All rights reserved.
+
+1. Ownership and scope
+
+Philip Leichauer (the "Owner") retains copyright and other applicable rights
+in his original contributions to Tiltu's Games (the "Collection"), including
+its original source code, artwork, music, text and their selection and
+arrangement. This license grants limited permission to play the Collection;
+it does not transfer ownership or place it in the public domain.
+
+This license applies only to material in which the Owner holds the relevant
+rights. It does not claim ownership of third-party libraries, traditional
+game rules, general ideas, or material outside copyright protection.
+
+2. Free personal play
+
+Subject to these terms, the Owner grants you a non-exclusive, worldwide,
+royalty-free, non-transferable license to:
+
+(a) access and play the Collection for your own personal, non-commercial
+    enjoyment, including playing with friends and family, at the official
+    website: https://lightningphil.github.io/Tiltu-Games/;
+(b) allow your browser to download, execute, cache and store the copies and
+    game data needed for that play; and
+(c) save and use an unmodified copy of the official playable HTML file on
+    your own devices for your own personal, non-commercial offline play.
+
+You may share links to the official website. Private offline copies must
+retain the embedded copyright, license and third-party notices. This grant
+does not permit you to distribute the HTML file or offer it to others from
+another website, service, app, repository or download location.
+
+3. Rights reserved
+
+Except as expressly permitted above, by a separate written agreement with
+the Owner, or independently under section 4 or 5, you may not:
+
+(a) copy, publish, redistribute, sublicense, sell, rent or rehost the
+    Collection, its source code or its original assets;
+(b) modify, adapt, translate or create derivative works from the Collection
+    or reuse its original code, artwork, music or other protected material
+    in another project;
+(c) exploit the Collection commercially, including charging for access,
+    bundling it with paid products, or monetising a hosted copy; or
+(d) remove or misrepresent copyright, authorship, license or attribution
+    notices.
+
+Public access to the repository is not a general license to reuse the work.
+No trademark or branding rights are granted. All rights not expressly
+granted are reserved. Requests for additional permission may be directed
+to the Owner via https://github.com/LightningPhil.
+
+4. GitHub and rights provided by law
+
+Nothing in this license restricts rights independently granted under
+GitHub's applicable Terms of Service, including viewing and forking a
+public repository through GitHub's functionality, or limits GitHub's
+rights to operate its service. Those rights do not create a general
+permission under this license to redistribute, commercially exploit or
+rehost the Collection elsewhere.
+
+Nothing in this license excludes or restricts rights, exceptions or
+permissions that applicable law does not allow the Owner to exclude or
+restrict. Such rights do not depend on obtaining permission here.
+
+5. Third-party components
+
+Third-party components are licensed separately by their respective rights
+holders. Their notices and terms are provided in THIRD_PARTY_NOTICES.txt
+and embedded in the playable HTML file. Those terms govern those components
+and prevail over any conflicting restriction here for those components.
+Their inclusion does not apply their licenses to the Owner's original work
+or to the Collection as a whole.
+
+6. Availability, warranty and liability
+
+The Collection is provided free of charge, "as is" and "as available".
+To the fullest extent permitted by applicable law, the Owner makes no
+warranty about its quality, fitness for a particular purpose, availability,
+accuracy or freedom from errors, and is not liable for losses or damages
+arising from its use or unavailability, including loss of saved progress.
+There is no promise of continued hosting, updates or support.
+
+Nothing here excludes or limits liability for fraud, death or personal
+injury caused by negligence, or any liability or statutory right that
+applicable law does not allow to be excluded or limited.
+
+7. Termination
+
+The permissions in section 2 end if you materially breach these terms.
+On termination you must stop using the Collection and delete private
+offline copies held under that grant. Termination does not affect rights
+you independently hold under section 4 or third-party licenses in section 5.
+The ownership, reserved-rights, third-party and liability provisions remain
+applicable after termination to the extent permitted by law.

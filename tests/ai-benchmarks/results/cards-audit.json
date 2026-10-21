@@ -1,0 +1,387 @@
+{
+  "note": "Latest research battery results by section. Sections were run separately; read each method and sample count. Intervals are descriptive paired-normal intervals over cases; rotated cases share deal seeds, so marginal intervals are not formal statistical proof.",
+  "results": [
+    {
+      "section": "memory",
+      "seconds": 0.01,
+      "method": "72 revealed boards; match the face-up tile using bounded recall. Seed 1..72, recency permutations 9001..9072.",
+      "higherIsBetter": true,
+      "correct": [
+        3,
+        11,
+        19,
+        36,
+        72
+      ],
+      "trials": 72
+    },
+    {
+      "section": "gin",
+      "seconds": 13.3,
+      "method": "400 valid eleven-card positions, newGin seeds 1..400; exact current deadwood + 0.7 times mean optimal deadwood after one unknown stock draw. Lower regret is better.",
+      "meanRegret": [
+        10.348451219512201,
+        5.459250000000002,
+        2.4234999999999984,
+        0.5927378048780488,
+        0.007097560975609731
+      ],
+      "meanCurrentDeadwoodRegret": [
+        6.105,
+        3.165,
+        1.4225,
+        0.3325,
+        0.01
+      ],
+      "adjacentRegretDifferences": [
+        {
+          "difference": -4.889201219512194,
+          "low": -6.462299181893723,
+          "high": -3.316103257130665
+        },
+        {
+          "difference": -3.0357499999999984,
+          "low": -3.808963334389691,
+          "high": -2.262536665610306
+        },
+        {
+          "difference": -1.8307621951219508,
+          "low": -2.498984069297524,
+          "high": -1.1625403209463778
+        },
+        {
+          "difference": -0.5856402439024391,
+          "low": -0.9755557145411771,
+          "high": -0.19572477326370114
+        }
+      ],
+      "positions": 400
+    },
+    {
+      "section": "poker",
+      "seconds": 8.1,
+      "method": "16 positions per variant, shuffled independent deck seeds 1001..1016. Reference: 1000 fresh unseen enemy hands (seeds 9001..9016). Action EV assumes opponent calls one fixed-limit raise; own cards/public board only. Lower chip regret is better.",
+      "variants": {
+        "holdem": {
+          "meanChipRegret": [
+            27.716562500000002,
+            5.3218749999999995,
+            0.5487500000000001,
+            0.23000000000000043,
+            0.21593750000000012
+          ]
+        },
+        "omaha": {
+          "meanChipRegret": [
+            28.911875,
+            5.7768749999999995,
+            0.9784374999999996,
+            0.5696874999999998,
+            0.01687499999999975
+          ]
+        },
+        "draw": {
+          "meanChipRegret": [
+            29.785624999999996,
+            4.47625,
+            1.13125,
+            0.7750000000000002,
+            0.07374999999999998
+          ],
+          "meanExchangeWinProbabilityRegret": [
+            0.22119140625,
+            0.05902099609375,
+            0.03399658203125,
+            0.0338134765625,
+            0.0126953125
+          ]
+        }
+      }
+    },
+    {
+      "section": "crib",
+      "seconds": 11.02,
+      "method": "64 hand/crib situations (32 deal seeds × own/opponent crib). Exact average kept-hand points over 46 starters plus independent 512-sample crib expectation (seeds 20001..20032). Lower expected-points regret is better.",
+      "meanExpectedPointRegret": [
+        3.577347465183424,
+        0.3238167140794837,
+        0.1288306194802989,
+        0.08720464291779888,
+        0.041101870329483675
+      ],
+      "positions": 64
+    },
+    {
+      "section": "life",
+      "seconds": 59.73,
+      "method": "96 initial colony positions: fair random human additions near own seed, seeds 30001..30096. Apply each computer plan then evolve eight generations. Higher computer-minus-human population is better.",
+      "meanPopulationAdvantage": [
+        0.71875,
+        1.5104166666666667,
+        3.6041666666666665,
+        11.291666666666666,
+        15.1875
+      ],
+      "adjacentPopulationDifferences": [
+        {
+          "difference": 0.7916666666666666,
+          "low": -0.8982611753168629,
+          "high": 2.481594508650196
+        },
+        {
+          "difference": 2.09375,
+          "low": 0.4082744225592816,
+          "high": 3.7792255774407186
+        },
+        {
+          "difference": 7.6875,
+          "low": 6.207700426978103,
+          "high": 9.167299573021896
+        },
+        {
+          "difference": 3.8958333333333335,
+          "low": 3.046394616861724,
+          "high": 4.745272049804943
+        }
+      ],
+      "positions": 96
+    },
+    {
+      "section": "cribpeg",
+      "seconds": 0.82,
+      "method": "Exact expected own-minus-opponent pegging points over one unknown reply plus best own answer, with count reset on31; all remaining unseen card identities equally likely. First six moves from32 seeded deals, both actors. Lower regret is better.",
+      "positions": 146,
+      "meanPeggingPointRegret": [
+        0.4999622302111962,
+        0.38041566759599355,
+        0.23572985064701468,
+        0.11231872199616917,
+        0.0021595747027551675
+      ],
+      "adjacentRegretDifferences": [
+        {
+          "difference": -0.11954656261520245,
+          "low": -0.3222979361091042,
+          "high": 0.08320481087869926
+        },
+        {
+          "difference": -0.14468581694897895,
+          "low": -0.2174111772664271,
+          "high": -0.07196045663153078
+        },
+        {
+          "difference": -0.1234111286508455,
+          "low": -0.2073533652544884,
+          "high": -0.03946889204720262
+        },
+        {
+          "difference": -0.11015914729341399,
+          "low": -0.159260764253445,
+          "high": -0.061057530333383
+        }
+      ]
+    },
+    {
+      "section": "whist-solver-match",
+      "seconds": 19.05,
+      "method": "Existing Hard vs prototype Expert with exact public-information last-two-card ending solver; fixed level3 opponents; seeded deals40001 onward with all four seat rotations. Higher team points is better.",
+      "cases": 192,
+      "hardExpertTeamPoints": [
+        0.17708333333333334,
+        0.22395833333333334
+      ],
+      "expertMinusHard": {
+        "difference": 0.046875,
+        "low": -0.11187613583645001,
+        "high": 0.20562613583645
+      },
+      "status": "Research prototype measurements. Final production measurements are in tricks and whist-endings."
+    },
+    {
+      "section": "trick-prototype",
+      "seconds": 71.42,
+      "method": "Common Expert policy for top two levels; prototype Hard has independent legal slips at stated lapse rate, Expert has none. Existing level-3 fixed opponents. All seat rotations.",
+      "deals": 96,
+      "lapse": 0.18,
+      "variants": {
+        "hearts": {
+          "hardExpertChallenging": [
+            5.1875,
+            4.364583333333333,
+            6.5
+          ],
+          "expertMinusHard": {
+            "difference": -0.8229166666666666,
+            "low": -1.2658209046657714,
+            "high": -0.38001242866756185
+          },
+          "hardMinusChallenging": {
+            "difference": -1.3125,
+            "low": -2.035650235466207,
+            "high": -0.5893497645337933
+          },
+          "cases": 384
+        }
+      },
+      "status": "Research prototype measurements. Final production measurements are in tricks and whist-endings."
+    },
+    {
+      "section": "tricks",
+      "seconds": 77.42,
+      "method": "48 deal seeds (40001..40048), each rotated through all four seat positions. Tested computer is seat 0; other seats use fixed level 3. One complete 13-trick hand per case. Hearts lower penalty is better; Spades/Whist higher team points are better.",
+      "variants": {
+        "hearts": {
+          "meanScore": [
+            12.458333333333334,
+            8.671875,
+            6.5,
+            5.473958333333333,
+            4.427083333333333
+          ],
+          "adjacentScoreDifferences": [
+            {
+              "difference": -3.7864583333333335,
+              "low": -5.690564277826192,
+              "high": -1.8823523888404754
+            },
+            {
+              "difference": -2.171875,
+              "low": -3.37688651081315,
+              "high": -0.9668634891868502
+            },
+            {
+              "difference": -1.0260416666666667,
+              "low": -2.0528582021952344,
+              "high": 0.0007748688619007016
+            },
+            {
+              "difference": -1.046875,
+              "low": -1.686426956434562,
+              "high": -0.407323043565438
+            }
+          ],
+          "cases": 192
+        },
+        "spades": {
+          "meanScore": [
+            -68.09375,
+            -4.166666666666667,
+            0,
+            2.0989583333333335,
+            3.3854166666666665
+          ],
+          "adjacentScoreDifferences": [
+            {
+              "difference": 63.927083333333336,
+              "low": 53.952231540947224,
+              "high": 73.90193512571945
+            },
+            {
+              "difference": 4.166666666666667,
+              "low": 0.1368919106709301,
+              "high": 8.196441422662403
+            },
+            {
+              "difference": 2.0989583333333335,
+              "low": -0.6070606559749496,
+              "high": 4.804977322641617
+            },
+            {
+              "difference": 1.2864583333333333,
+              "low": -1.708702283062742,
+              "high": 4.281618949729409
+            }
+          ],
+          "cases": 192
+        },
+        "whist": {
+          "meanScore": [
+            -1.0104166666666667,
+            -0.109375,
+            0,
+            0.17708333333333334,
+            0.22395833333333334
+          ],
+          "adjacentScoreDifferences": [
+            {
+              "difference": 0.9010416666666666,
+              "low": 0.6521980391598109,
+              "high": 1.1498852941735225
+            },
+            {
+              "difference": 0.109375,
+              "low": -0.03848586732965617,
+              "high": 0.2572358673296562
+            },
+            {
+              "difference": 0.17708333333333334,
+              "low": -0.03662509078597437,
+              "high": 0.39079175745264105
+            },
+            {
+              "difference": 0.046875,
+              "low": -0.11187613583645001,
+              "high": 0.20562613583645
+            }
+          ],
+          "cases": 192
+        }
+      },
+      "productionVerifiedVariants": [
+        "hearts",
+        "whist"
+      ],
+      "unchangedPreviouslyMeasuredVariants": [
+        "spades"
+      ]
+    },
+    {
+      "section": "whist-endings",
+      "seconds": 1.89,
+      "method": "Public-information-consistent last-two-card assignments, exact remaining team minimax (double-dummy) averaged over assignments. Own hand/public cards/voids/exposed dealer card only; no actual hidden hands. Independent expected-trick regret, lower better.",
+      "positions": 157,
+      "assignments": 2561,
+      "meanExpectedTrickRegret": [
+        0.15145081387119602,
+        0.1315488828227682,
+        0.10819431806692952,
+        0.07366124085869309,
+        0
+      ],
+      "adjacentRegretDifferences": [
+        {
+          "difference": -0.019901931048427867,
+          "low": -0.08328921638071453,
+          "high": 0.04348535428385879
+        },
+        {
+          "difference": -0.02335456475583864,
+          "low": -0.0509784428488153,
+          "high": 0.004269313337138023
+        },
+        {
+          "difference": -0.03453307720823644,
+          "low": -0.10125639476831069,
+          "high": 0.03219024035183782
+        },
+        {
+          "difference": -0.07366124085869309,
+          "low": -0.1149785729881235,
+          "high": -0.032343908729262676
+        }
+      ],
+      "expertEndingSolverRegret": 0
+    },
+    {
+      "section": "ported-fidelity",
+      "seconds": 4.08,
+      "method": "Final production helper exactly matches independent research helper on all192deal/seat cases; all five choices invariant under permitted hidden-hand swaps preserving public voids and exposed dealer card; source input unchanged.",
+      "endings": 157,
+      "allLevelChoices": 785,
+      "changedAssignments": 148,
+      "heartsExactHardWrapperChecks": 624,
+      "heartsSharedPassingChecks": 12,
+      "heartsMethod": "Additional final production probe: twelve Hearts deals (seeds1..12), all624trick decisions compare Hard to exact fresh-RNG18%wrapper around Expert; all choices legal and inputs unchanged; passing Hard=Expert on12hands."
+    }
+  ]
+}

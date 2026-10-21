@@ -1,0 +1,89 @@
+✔ both original games are complete catalogue entries, bringing the collection to fifty (0.9758ms)
+✔ original forms have 2, 3 or 5 cells; rotation preserves connected, unique cells (1.8985ms)
+✔ seeded piece bags supply each form once before repeating (2.5172ms)
+✔ movement, kicks and rotation cannot cross walls or occupy settled cells (2.0243ms)
+✔ reserve can be used once per falling form and becomes available after locking (0.331ms)
+✔ hard drops settle at the nearest obstacle and never overwrite it (0.2028ms)
+✔ completed rows animate before clearing and the resulting save restores (0.7814ms)
+✔ sprint completes only after its twenty-fourth cleared row (0.2009ms)
+✔ blocked spawning ends a run, without writing the next form over the stack (0.1858ms)
+✔ pausing freezes all block actions, clocks and scoring (0.4217ms)
+✔ five falling speeds progress strictly; Zen never falls automatically (0.8791ms)
+✔ large/random input sequences keep every live form and board in bounds (26.073ms)
+✔ flight uses inertia, turns progressively and respects world edges (10.7238ms)
+✔ a tractor draws in fragments; only collected cargo earns delivery credits (4.8213ms)
+✔ docking requires the relay, repairs the ship and cannot pay for cargo twice (0.7324ms)
+✔ upgrades require docking and sufficient credits, with three levels maximum (5.8928ms)
+✔ sector gates require archived quota and all six archives can be completed (1.1655ms)
+✔ weapons consume energy, respect rate limits and cannot shoot while paused (1.4872ms)
+✔ pulse damages nearby hostiles, spares friends and has a cooldown and energy cost (2.8266ms)
+✔ shield absorbs damage, invulnerability prevents repeat damage and zero hull ends flight (0.5166ms)
+✔ friendly fire causes a warden pursuit rather than treating every ship as an enemy (0.5492ms)
+✔ difficulty increases hostile count, speed, projectile speed and fire frequency (3.9417ms)
+✔ long flights keep resources, objects and coordinates bounded and recoverable (928.3117ms)
+✔ saves resume paused and transient flight projectiles are discarded safely (20.9052ms)
+✔ malformed arcade saves are rejected individually without damaging other progress (0.6954ms)
+✔ 7, 11 and 16 step musical parts first realign after 1232 steps, about 201 seconds (0.2134ms)
+✔ each sector has a repeatable, clear spawn, enough fragments and a nearby first collection (22.3705ms)
+✔ directional flight is responsive, diagonal motion is normalised and braking stops faster (5.7379ms)
+✔ aiming is independent of movement in directional flight and turns without snapping (1.782ms)
+✔ a dodge boost consumes energy once, has a cooldown and follows the chosen direction (1.0261ms)
+✔ three chassis have real trade-offs and cannot be swapped for free shields in flight (3.4882ms)
+✔ each weapon has distinct projectiles, reach, cost and a rate limit that switching cannot bypass (3.2869ms)
+✔ segment collisions catch fast shots, stationary overlaps, tangencies and misses (0.7662ms)
+✔ fast projectiles hit an intervening rock before a ship behind it (1.5337ms)
+✔ a lance pierces up to three different targets and cannot damage the same target twice (0.8896ms)
+✔ IFF protects friendly ships by default; disabling it makes friendly fire meaningful (0.7795ms)
+✔ enemy fire can threaten an escorted courier but cannot cross the relay shield (0.5756ms)
+✖ enemy roles move differently and all show a charge before their timed attacks (8.4787ms)
+✔ carrier damage thresholds change its attack phase and announce reinforcements (0.5026ms)
+✔ the survey requires proximity and an explicit scan or tractor; rewards happen only once (8.5756ms)
+✔ couriers wait to be found, pause when abandoned and reward a completed escort once (3.1689ms)
+✔ a lost courier does not make the main recovery mission unwinnable (1.2616ms)
+✔ wardens do not earn the player free kills or bounty; player victories pay once (1.3242ms)
+✔ resource pickups help when needed, remain available when full and expire without granting rewards (0.5411ms)
+✔ only ore asteroids drop credits and a destroyed asteroid cannot pay twice (0.7435ms)
+✔ quick collections build a chain; the first fragment and every delivery retain their stated base value (4.6418ms)
+✔ shield regeneration waits after damage and the pulse clears hostile fire while sparing allies (8.0181ms)
+✔ storm hazards have three seconds of warning before an active interval and leave the relay safe (1.1619ms)
+✔ new raiders appear through an announced warp ring, with bounded reinforcements (2.2902ms)
+✔ navigation tracks a moving objective, returns to the relay and never targets a collected fragment (0.7802ms)
+✔ a carrier-gated sector cannot be skipped by delivering cargo; all primary objectives permit departure (1.0059ms)
+✔ retrying an undocked sector reproduces its original world, without resetting the personal best (4.81ms)
+✔ relay checkpoints retain deliveries, upgrades and the remaining world without duplicate cargo rewards (0.5575ms)
+✔ checkpoint retries survive save/load and checkpoint snapshots cannot nest recursively (3.4889ms)
+✔ old saves migrate without replacing cargo, score, credits, positions or upgrades (0.988ms)
+✔ pause and terminal states freeze simulation and reject combat actions (0.849ms)
+✔ views explain mechanics, expose ship choices and escape restored log and status text (25.6527ms)
+✔ seeded mixed-input flights keep every resource, shot, ship and save finite at all five difficulties (2764.3727ms)
+ℹ tests 58
+ℹ suites 0
+ℹ pass 57
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3182.1218
+
+✖ failing tests:
+
+test at tests\archive-patrol.test.ts:65:1
+✖ enemy roles move differently and all show a charge before their timed attacks (8.4787ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(s.ships[0].charge >0)
+  
+      at TestContext.<anonymous> (file:///F:/WebDev/SingleFileGames/apps/grid-club/tests/archive-patrol.test.ts:67:178)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

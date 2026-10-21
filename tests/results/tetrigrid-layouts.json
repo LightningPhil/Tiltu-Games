@@ -1,0 +1,1657 @@
+[
+  {
+    "label": "150 layouts",
+    "result": [
+      {
+        "width": 1240,
+        "height": 800,
+        "theme": "tron",
+        "state": "ready",
+        "canvas": [
+          245,
+          490
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 800,
+        "theme": "tron",
+        "state": "paused",
+        "canvas": [
+          245,
+          490
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 800,
+        "theme": "tron",
+        "state": "settings",
+        "canvas": [
+          245,
+          490
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 800,
+        "theme": "tron",
+        "state": "records",
+        "canvas": [
+          245,
+          490
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 800,
+        "theme": "tron",
+        "state": "help",
+        "canvas": [
+          245,
+          490
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 800,
+        "theme": "pulse",
+        "state": "ready",
+        "canvas": [
+          245,
+          490
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 800,
+        "theme": "pulse",
+        "state": "paused",
+        "canvas": [
+          245,
+          490
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 800,
+        "theme": "pulse",
+        "state": "settings",
+        "canvas": [
+          245,
+          490
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 800,
+        "theme": "pulse",
+        "state": "records",
+        "canvas": [
+          245,
+          490
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 800,
+        "theme": "pulse",
+        "state": "help",
+        "canvas": [
+          245,
+          490
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 800,
+        "theme": "classic",
+        "state": "ready",
+        "canvas": [
+          245,
+          490
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 800,
+        "theme": "classic",
+        "state": "paused",
+        "canvas": [
+          245,
+          490
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 800,
+        "theme": "classic",
+        "state": "settings",
+        "canvas": [
+          245,
+          490
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 800,
+        "theme": "classic",
+        "state": "records",
+        "canvas": [
+          245,
+          490
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 800,
+        "theme": "classic",
+        "state": "help",
+        "canvas": [
+          245,
+          490
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 800,
+        "theme": "midnight",
+        "state": "ready",
+        "canvas": [
+          245,
+          490
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 800,
+        "theme": "midnight",
+        "state": "paused",
+        "canvas": [
+          245,
+          490
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 800,
+        "theme": "midnight",
+        "state": "settings",
+        "canvas": [
+          245,
+          490
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 800,
+        "theme": "midnight",
+        "state": "records",
+        "canvas": [
+          245,
+          490
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 800,
+        "theme": "midnight",
+        "state": "help",
+        "canvas": [
+          245,
+          490
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 800,
+        "theme": "woodland",
+        "state": "ready",
+        "canvas": [
+          245,
+          490
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 800,
+        "theme": "woodland",
+        "state": "paused",
+        "canvas": [
+          245,
+          490
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 800,
+        "theme": "woodland",
+        "state": "settings",
+        "canvas": [
+          245,
+          490
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 800,
+        "theme": "woodland",
+        "state": "records",
+        "canvas": [
+          245,
+          490
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 800,
+        "theme": "woodland",
+        "state": "help",
+        "canvas": [
+          245,
+          490
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 720,
+        "theme": "tron",
+        "state": "ready",
+        "canvas": [
+          205,
+          410
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 720,
+        "theme": "tron",
+        "state": "paused",
+        "canvas": [
+          205,
+          410
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 720,
+        "theme": "tron",
+        "state": "settings",
+        "canvas": [
+          205,
+          410
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 720,
+        "theme": "tron",
+        "state": "records",
+        "canvas": [
+          205,
+          410
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 720,
+        "theme": "tron",
+        "state": "help",
+        "canvas": [
+          205,
+          410
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 720,
+        "theme": "pulse",
+        "state": "ready",
+        "canvas": [
+          205,
+          410
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 720,
+        "theme": "pulse",
+        "state": "paused",
+        "canvas": [
+          205,
+          410
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 720,
+        "theme": "pulse",
+        "state": "settings",
+        "canvas": [
+          205,
+          410
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 720,
+        "theme": "pulse",
+        "state": "records",
+        "canvas": [
+          205,
+          410
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 720,
+        "theme": "pulse",
+        "state": "help",
+        "canvas": [
+          205,
+          410
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 720,
+        "theme": "classic",
+        "state": "ready",
+        "canvas": [
+          205,
+          410
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 720,
+        "theme": "classic",
+        "state": "paused",
+        "canvas": [
+          205,
+          410
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 720,
+        "theme": "classic",
+        "state": "settings",
+        "canvas": [
+          205,
+          410
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 720,
+        "theme": "classic",
+        "state": "records",
+        "canvas": [
+          205,
+          410
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 720,
+        "theme": "classic",
+        "state": "help",
+        "canvas": [
+          205,
+          410
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 720,
+        "theme": "midnight",
+        "state": "ready",
+        "canvas": [
+          205,
+          410
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 720,
+        "theme": "midnight",
+        "state": "paused",
+        "canvas": [
+          205,
+          410
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 720,
+        "theme": "midnight",
+        "state": "settings",
+        "canvas": [
+          205,
+          410
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 720,
+        "theme": "midnight",
+        "state": "records",
+        "canvas": [
+          205,
+          410
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 720,
+        "theme": "midnight",
+        "state": "help",
+        "canvas": [
+          205,
+          410
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 720,
+        "theme": "woodland",
+        "state": "ready",
+        "canvas": [
+          205,
+          410
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 720,
+        "theme": "woodland",
+        "state": "paused",
+        "canvas": [
+          205,
+          410
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 720,
+        "theme": "woodland",
+        "state": "settings",
+        "canvas": [
+          205,
+          410
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 720,
+        "theme": "woodland",
+        "state": "records",
+        "canvas": [
+          205,
+          410
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 720,
+        "theme": "woodland",
+        "state": "help",
+        "canvas": [
+          205,
+          410
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 600,
+        "theme": "tron",
+        "state": "ready",
+        "canvas": [
+          169,
+          338
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 600,
+        "theme": "tron",
+        "state": "paused",
+        "canvas": [
+          169,
+          338
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 600,
+        "theme": "tron",
+        "state": "settings",
+        "canvas": [
+          169,
+          338
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 600,
+        "theme": "tron",
+        "state": "records",
+        "canvas": [
+          169,
+          338
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 600,
+        "theme": "tron",
+        "state": "help",
+        "canvas": [
+          169,
+          338
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 600,
+        "theme": "pulse",
+        "state": "ready",
+        "canvas": [
+          169,
+          338
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 600,
+        "theme": "pulse",
+        "state": "paused",
+        "canvas": [
+          169,
+          338
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 600,
+        "theme": "pulse",
+        "state": "settings",
+        "canvas": [
+          169,
+          338
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 600,
+        "theme": "pulse",
+        "state": "records",
+        "canvas": [
+          169,
+          338
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 600,
+        "theme": "pulse",
+        "state": "help",
+        "canvas": [
+          169,
+          338
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 600,
+        "theme": "classic",
+        "state": "ready",
+        "canvas": [
+          169,
+          338
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 600,
+        "theme": "classic",
+        "state": "paused",
+        "canvas": [
+          169,
+          338
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 600,
+        "theme": "classic",
+        "state": "settings",
+        "canvas": [
+          169,
+          338
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 600,
+        "theme": "classic",
+        "state": "records",
+        "canvas": [
+          169,
+          338
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 600,
+        "theme": "classic",
+        "state": "help",
+        "canvas": [
+          169,
+          338
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 600,
+        "theme": "midnight",
+        "state": "ready",
+        "canvas": [
+          169,
+          338
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 600,
+        "theme": "midnight",
+        "state": "paused",
+        "canvas": [
+          169,
+          338
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 600,
+        "theme": "midnight",
+        "state": "settings",
+        "canvas": [
+          169,
+          338
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 600,
+        "theme": "midnight",
+        "state": "records",
+        "canvas": [
+          169,
+          338
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 600,
+        "theme": "midnight",
+        "state": "help",
+        "canvas": [
+          169,
+          338
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 600,
+        "theme": "woodland",
+        "state": "ready",
+        "canvas": [
+          169,
+          338
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 600,
+        "theme": "woodland",
+        "state": "paused",
+        "canvas": [
+          169,
+          338
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 600,
+        "theme": "woodland",
+        "state": "settings",
+        "canvas": [
+          169,
+          338
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 600,
+        "theme": "woodland",
+        "state": "records",
+        "canvas": [
+          169,
+          338
+        ],
+        "issues": []
+      },
+      {
+        "width": 1240,
+        "height": 600,
+        "theme": "woodland",
+        "state": "help",
+        "canvas": [
+          169,
+          338
+        ],
+        "issues": []
+      },
+      {
+        "width": 360,
+        "height": 800,
+        "theme": "tron",
+        "state": "ready",
+        "canvas": [
+          239,
+          480
+        ],
+        "issues": []
+      },
+      {
+        "width": 360,
+        "height": 800,
+        "theme": "tron",
+        "state": "paused",
+        "canvas": [
+          239,
+          480
+        ],
+        "issues": []
+      },
+      {
+        "width": 360,
+        "height": 800,
+        "theme": "tron",
+        "state": "settings",
+        "canvas": [
+          239,
+          480
+        ],
+        "issues": []
+      },
+      {
+        "width": 360,
+        "height": 800,
+        "theme": "tron",
+        "state": "records",
+        "canvas": [
+          239,
+          480
+        ],
+        "issues": []
+      },
+      {
+        "width": 360,
+        "height": 800,
+        "theme": "tron",
+        "state": "help",
+        "canvas": [
+          239,
+          480
+        ],
+        "issues": []
+      },
+      {
+        "width": 360,
+        "height": 800,
+        "theme": "pulse",
+        "state": "ready",
+        "canvas": [
+          239,
+          480
+        ],
+        "issues": []
+      },
+      {
+        "width": 360,
+        "height": 800,
+        "theme": "pulse",
+        "state": "paused",
+        "canvas": [
+          239,
+          480
+        ],
+        "issues": []
+      },
+      {
+        "width": 360,
+        "height": 800,
+        "theme": "pulse",
+        "state": "settings",
+        "canvas": [
+          239,
+          480
+        ],
+        "issues": []
+      },
+      {
+        "width": 360,
+        "height": 800,
+        "theme": "pulse",
+        "state": "records",
+        "canvas": [
+          239,
+          480
+        ],
+        "issues": []
+      },
+      {
+        "width": 360,
+        "height": 800,
+        "theme": "pulse",
+        "state": "help",
+        "canvas": [
+          239,
+          480
+        ],
+        "issues": []
+      },
+      {
+        "width": 360,
+        "height": 800,
+        "theme": "classic",
+        "state": "ready",
+        "canvas": [
+          239,
+          480
+        ],
+        "issues": []
+      },
+      {
+        "width": 360,
+        "height": 800,
+        "theme": "classic",
+        "state": "paused",
+        "canvas": [
+          239,
+          480
+        ],
+        "issues": []
+      },
+      {
+        "width": 360,
+        "height": 800,
+        "theme": "classic",
+        "state": "settings",
+        "canvas": [
+          239,
+          480
+        ],
+        "issues": []
+      },
+      {
+        "width": 360,
+        "height": 800,
+        "theme": "classic",
+        "state": "records",
+        "canvas": [
+          239,
+          480
+        ],
+        "issues": []
+      },
+      {
+        "width": 360,
+        "height": 800,
+        "theme": "classic",
+        "state": "help",
+        "canvas": [
+          239,
+          480
+        ],
+        "issues": []
+      },
+      {
+        "width": 360,
+        "height": 800,
+        "theme": "midnight",
+        "state": "ready",
+        "canvas": [
+          239,
+          480
+        ],
+        "issues": []
+      },
+      {
+        "width": 360,
+        "height": 800,
+        "theme": "midnight",
+        "state": "paused",
+        "canvas": [
+          239,
+          480
+        ],
+        "issues": []
+      },
+      {
+        "width": 360,
+        "height": 800,
+        "theme": "midnight",
+        "state": "settings",
+        "canvas": [
+          239,
+          480
+        ],
+        "issues": []
+      },
+      {
+        "width": 360,
+        "height": 800,
+        "theme": "midnight",
+        "state": "records",
+        "canvas": [
+          239,
+          480
+        ],
+        "issues": []
+      },
+      {
+        "width": 360,
+        "height": 800,
+        "theme": "midnight",
+        "state": "help",
+        "canvas": [
+          239,
+          480
+        ],
+        "issues": []
+      },
+      {
+        "width": 360,
+        "height": 800,
+        "theme": "woodland",
+        "state": "ready",
+        "canvas": [
+          239,
+          480
+        ],
+        "issues": []
+      },
+      {
+        "width": 360,
+        "height": 800,
+        "theme": "woodland",
+        "state": "paused",
+        "canvas": [
+          239,
+          480
+        ],
+        "issues": []
+      },
+      {
+        "width": 360,
+        "height": 800,
+        "theme": "woodland",
+        "state": "settings",
+        "canvas": [
+          239,
+          480
+        ],
+        "issues": []
+      },
+      {
+        "width": 360,
+        "height": 800,
+        "theme": "woodland",
+        "state": "records",
+        "canvas": [
+          239,
+          480
+        ],
+        "issues": []
+      },
+      {
+        "width": 360,
+        "height": 800,
+        "theme": "woodland",
+        "state": "help",
+        "canvas": [
+          239,
+          480
+        ],
+        "issues": []
+      },
+      {
+        "width": 320,
+        "height": 640,
+        "theme": "tron",
+        "state": "ready",
+        "canvas": [
+          167,
+          335
+        ],
+        "issues": []
+      },
+      {
+        "width": 320,
+        "height": 640,
+        "theme": "tron",
+        "state": "paused",
+        "canvas": [
+          167,
+          335
+        ],
+        "issues": []
+      },
+      {
+        "width": 320,
+        "height": 640,
+        "theme": "tron",
+        "state": "settings",
+        "canvas": [
+          167,
+          335
+        ],
+        "issues": []
+      },
+      {
+        "width": 320,
+        "height": 640,
+        "theme": "tron",
+        "state": "records",
+        "canvas": [
+          167,
+          335
+        ],
+        "issues": []
+      },
+      {
+        "width": 320,
+        "height": 640,
+        "theme": "tron",
+        "state": "help",
+        "canvas": [
+          167,
+          335
+        ],
+        "issues": []
+      },
+      {
+        "width": 320,
+        "height": 640,
+        "theme": "pulse",
+        "state": "ready",
+        "canvas": [
+          167,
+          335
+        ],
+        "issues": []
+      },
+      {
+        "width": 320,
+        "height": 640,
+        "theme": "pulse",
+        "state": "paused",
+        "canvas": [
+          167,
+          335
+        ],
+        "issues": []
+      },
+      {
+        "width": 320,
+        "height": 640,
+        "theme": "pulse",
+        "state": "settings",
+        "canvas": [
+          167,
+          335
+        ],
+        "issues": []
+      },
+      {
+        "width": 320,
+        "height": 640,
+        "theme": "pulse",
+        "state": "records",
+        "canvas": [
+          167,
+          335
+        ],
+        "issues": []
+      },
+      {
+        "width": 320,
+        "height": 640,
+        "theme": "pulse",
+        "state": "help",
+        "canvas": [
+          167,
+          335
+        ],
+        "issues": []
+      },
+      {
+        "width": 320,
+        "height": 640,
+        "theme": "classic",
+        "state": "ready",
+        "canvas": [
+          167,
+          335
+        ],
+        "issues": []
+      },
+      {
+        "width": 320,
+        "height": 640,
+        "theme": "classic",
+        "state": "paused",
+        "canvas": [
+          167,
+          335
+        ],
+        "issues": []
+      },
+      {
+        "width": 320,
+        "height": 640,
+        "theme": "classic",
+        "state": "settings",
+        "canvas": [
+          167,
+          335
+        ],
+        "issues": []
+      },
+      {
+        "width": 320,
+        "height": 640,
+        "theme": "classic",
+        "state": "records",
+        "canvas": [
+          167,
+          335
+        ],
+        "issues": []
+      },
+      {
+        "width": 320,
+        "height": 640,
+        "theme": "classic",
+        "state": "help",
+        "canvas": [
+          167,
+          335
+        ],
+        "issues": []
+      },
+      {
+        "width": 320,
+        "height": 640,
+        "theme": "midnight",
+        "state": "ready",
+        "canvas": [
+          167,
+          335
+        ],
+        "issues": []
+      },
+      {
+        "width": 320,
+        "height": 640,
+        "theme": "midnight",
+        "state": "paused",
+        "canvas": [
+          167,
+          335
+        ],
+        "issues": []
+      },
+      {
+        "width": 320,
+        "height": 640,
+        "theme": "midnight",
+        "state": "settings",
+        "canvas": [
+          167,
+          335
+        ],
+        "issues": []
+      },
+      {
+        "width": 320,
+        "height": 640,
+        "theme": "midnight",
+        "state": "records",
+        "canvas": [
+          167,
+          335
+        ],
+        "issues": []
+      },
+      {
+        "width": 320,
+        "height": 640,
+        "theme": "midnight",
+        "state": "help",
+        "canvas": [
+          167,
+          335
+        ],
+        "issues": []
+      },
+      {
+        "width": 320,
+        "height": 640,
+        "theme": "woodland",
+        "state": "ready",
+        "canvas": [
+          167,
+          335
+        ],
+        "issues": []
+      },
+      {
+        "width": 320,
+        "height": 640,
+        "theme": "woodland",
+        "state": "paused",
+        "canvas": [
+          167,
+          335
+        ],
+        "issues": []
+      },
+      {
+        "width": 320,
+        "height": 640,
+        "theme": "woodland",
+        "state": "settings",
+        "canvas": [
+          167,
+          335
+        ],
+        "issues": []
+      },
+      {
+        "width": 320,
+        "height": 640,
+        "theme": "woodland",
+        "state": "records",
+        "canvas": [
+          167,
+          335
+        ],
+        "issues": []
+      },
+      {
+        "width": 320,
+        "height": 640,
+        "theme": "woodland",
+        "state": "help",
+        "canvas": [
+          167,
+          335
+        ],
+        "issues": []
+      },
+      {
+        "width": 860,
+        "height": 480,
+        "theme": "tron",
+        "state": "ready",
+        "canvas": [
+          112,
+          224
+        ],
+        "issues": []
+      },
+      {
+        "width": 860,
+        "height": 480,
+        "theme": "tron",
+        "state": "paused",
+        "canvas": [
+          112,
+          224
+        ],
+        "issues": []
+      },
+      {
+        "width": 860,
+        "height": 480,
+        "theme": "tron",
+        "state": "settings",
+        "canvas": [
+          112,
+          224
+        ],
+        "issues": []
+      },
+      {
+        "width": 860,
+        "height": 480,
+        "theme": "tron",
+        "state": "records",
+        "canvas": [
+          112,
+          224
+        ],
+        "issues": []
+      },
+      {
+        "width": 860,
+        "height": 480,
+        "theme": "tron",
+        "state": "help",
+        "canvas": [
+          112,
+          224
+        ],
+        "issues": []
+      },
+      {
+        "width": 860,
+        "height": 480,
+        "theme": "pulse",
+        "state": "ready",
+        "canvas": [
+          112,
+          224
+        ],
+        "issues": []
+      },
+      {
+        "width": 860,
+        "height": 480,
+        "theme": "pulse",
+        "state": "paused",
+        "canvas": [
+          112,
+          224
+        ],
+        "issues": []
+      },
+      {
+        "width": 860,
+        "height": 480,
+        "theme": "pulse",
+        "state": "settings",
+        "canvas": [
+          112,
+          224
+        ],
+        "issues": []
+      },
+      {
+        "width": 860,
+        "height": 480,
+        "theme": "pulse",
+        "state": "records",
+        "canvas": [
+          112,
+          224
+        ],
+        "issues": []
+      },
+      {
+        "width": 860,
+        "height": 480,
+        "theme": "pulse",
+        "state": "help",
+        "canvas": [
+          112,
+          224
+        ],
+        "issues": []
+      },
+      {
+        "width": 860,
+        "height": 480,
+        "theme": "classic",
+        "state": "ready",
+        "canvas": [
+          112,
+          224
+        ],
+        "issues": []
+      },
+      {
+        "width": 860,
+        "height": 480,
+        "theme": "classic",
+        "state": "paused",
+        "canvas": [
+          112,
+          224
+        ],
+        "issues": []
+      },
+      {
+        "width": 860,
+        "height": 480,
+        "theme": "classic",
+        "state": "settings",
+        "canvas": [
+          112,
+          224
+        ],
+        "issues": []
+      },
+      {
+        "width": 860,
+        "height": 480,
+        "theme": "classic",
+        "state": "records",
+        "canvas": [
+          112,
+          224
+        ],
+        "issues": []
+      },
+      {
+        "width": 860,
+        "height": 480,
+        "theme": "classic",
+        "state": "help",
+        "canvas": [
+          112,
+          224
+        ],
+        "issues": []
+      },
+      {
+        "width": 860,
+        "height": 480,
+        "theme": "midnight",
+        "state": "ready",
+        "canvas": [
+          112,
+          224
+        ],
+        "issues": []
+      },
+      {
+        "width": 860,
+        "height": 480,
+        "theme": "midnight",
+        "state": "paused",
+        "canvas": [
+          112,
+          224
+        ],
+        "issues": []
+      },
+      {
+        "width": 860,
+        "height": 480,
+        "theme": "midnight",
+        "state": "settings",
+        "canvas": [
+          112,
+          224
+        ],
+        "issues": []
+      },
+      {
+        "width": 860,
+        "height": 480,
+        "theme": "midnight",
+        "state": "records",
+        "canvas": [
+          112,
+          224
+        ],
+        "issues": []
+      },
+      {
+        "width": 860,
+        "height": 480,
+        "theme": "midnight",
+        "state": "help",
+        "canvas": [
+          112,
+          224
+        ],
+        "issues": []
+      },
+      {
+        "width": 860,
+        "height": 480,
+        "theme": "woodland",
+        "state": "ready",
+        "canvas": [
+          112,
+          224
+        ],
+        "issues": []
+      },
+      {
+        "width": 860,
+        "height": 480,
+        "theme": "woodland",
+        "state": "paused",
+        "canvas": [
+          112,
+          224
+        ],
+        "issues": []
+      },
+      {
+        "width": 860,
+        "height": 480,
+        "theme": "woodland",
+        "state": "settings",
+        "canvas": [
+          112,
+          224
+        ],
+        "issues": []
+      },
+      {
+        "width": 860,
+        "height": 480,
+        "theme": "woodland",
+        "state": "records",
+        "canvas": [
+          112,
+          224
+        ],
+        "issues": []
+      },
+      {
+        "width": 860,
+        "height": 480,
+        "theme": "woodland",
+        "state": "help",
+        "canvas": [
+          112,
+          224
+        ],
+        "issues": []
+      }
+    ]
+  }
+]

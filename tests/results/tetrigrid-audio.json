@@ -1,0 +1,10 @@
+{
+  "status": "PASS — all 5 tracks rendered; original soundtrack matches the reference.",
+  "tracks": [
+    "PASS · peak 0.702714 · RMS 0.131657 · maximum sample difference from original 1.043e-6",
+    "PASS · peak 0.673103 · RMS 0.088804",
+    "PASS · peak 0.566617 · RMS 0.088061",
+    "PASS · peak 0.606473 · RMS 0.081822",
+    "PASS · peak 0.264202 · RMS 0.059255"
+  ]
+}

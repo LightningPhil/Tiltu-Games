@@ -1,3 +1,4 @@
+import {openFromHome} from './navigation.ts';
 import {test as base,expect} from '@playwright/test';
 const test=base.extend<{runtimeChecks:void}>({runtimeChecks:[async({page},use)=>{
   const errors:string[]=[];page.on('pageerror',error=>errors.push(error.message));page.on('console',message=>{if(message.type()==='error')errors.push(message.text());});
@@ -19,7 +20,7 @@ for(const viewport of [{width:320,height:640},{width:844,height:390},{width:1280
     {id:'life',launch:'.arena [data-arcade="run"]',field:'#life-canvas'},
   ];
   for(const game of games)await test.step(game.id,async()=>{
-    await page.goto('./');await page.getByRole('button',{name:'Tiltu’s Games home',exact:true}).click();await page.locator(`.game-card[data-game="${game.id}"]`).click();
+    await page.goto('./');await page.getByRole('button',{name:'Tiltu’s Games home',exact:true}).click();await openFromHome(page,game.id);
     await expect(page.locator('.port-error')).toHaveCount(0);await page.locator(game.launch).click();
     await expect(page.locator(game.field)).toBeVisible();
     const geometry=await page.evaluate(()=>({width:document.documentElement.scrollWidth,height:document.documentElement.scrollHeight,w:innerWidth,h:innerHeight}));
@@ -31,7 +32,7 @@ for(const viewport of [{width:320,height:640},{width:844,height:390},{width:1280
 });
 
 test('Life fits the phone screen, keeps tools reachable, and paints continuous strokes',async({page})=>{
-  await page.setViewportSize({width:390,height:844});await page.goto('./');await page.locator('.game-card[data-game="life"]').click();
+  await page.setViewportSize({width:390,height:844});await page.goto('./');await openFromHome(page,'life');
   expect(await page.evaluate(()=>document.documentElement.scrollHeight)).toBeLessThanOrEqual(844);
   await page.getByRole('tab',{name:'Patterns',exact:true}).click();await page.locator('[data-arcade="pattern:clear"]').click();
   await page.getByRole('tab',{name:'Play',exact:true}).click();
@@ -49,7 +50,7 @@ test('Life fits the phone screen, keeps tools reachable, and paints continuous s
 });
 
 test('Downhill Skiing pauses on focus loss and groups setup away from its thumb controls',async({page})=>{
-  await page.setViewportSize({width:390,height:844});await page.goto('./');await page.locator('.game-card[data-game="ski"]').click();
+  await page.setViewportSize({width:390,height:844});await page.goto('./');await openFromHome(page,'ski');
   await page.locator('.ski-controls [data-arcade="run"]').click();
   await expect(page.locator('.ski-countdown')).toBeVisible();
   await page.evaluate(()=>window.dispatchEvent(new Event('blur')));
@@ -63,7 +64,7 @@ test('Downhill Skiing pauses on focus loss and groups setup away from its thumb 
 });
 
 test('Snake turns during a swipe and Escape pauses without repeat-key flicker',async({page,context})=>{
-  await page.setViewportSize({width:390,height:844});await page.goto('./');await page.locator('.game-card[data-game="snake"]').click();
+  await page.setViewportSize({width:390,height:844});await page.goto('./');await openFromHome(page,'snake');
   await page.locator('.snake-run-actions [data-collection="snake-run"]').click();
   const canvas=(await page.locator('#snake-canvas').boundingBox())!,cdp=await context.newCDPSession(page);
   const finger={id:1,x:canvas.x+canvas.width/2,y:canvas.y+canvas.height/2};
@@ -78,7 +79,7 @@ test('Snake turns during a swipe and Escape pauses without repeat-key flicker',a
 });
 
 test('Archive Patrol keeps flight controls outside the arena and makes sound settings directly reachable',async({page})=>{
-  await page.setViewportSize({width:390,height:844});await page.goto('./');await page.locator('.game-card[data-game="salvage"]').click();
+  await page.setViewportSize({width:390,height:844});await page.goto('./');await openFromHome(page,'salvage');
   await page.locator('[data-action-arcade="play"]').click();
   const canvas=(await page.locator('#action-canvas').boundingBox())!,stick=(await page.locator('[data-patrol-stick]').boundingBox())!;
   expect(stick.y).toBeGreaterThanOrEqual(canvas.y+canvas.height);
@@ -88,7 +89,7 @@ test('Archive Patrol keeps flight controls outside the arena and makes sound set
 });
 
 test('TetriGrid keeps Hold and Drop within thumb reach and separates sound settings',async({page})=>{
-  await page.setViewportSize({width:390,height:844});await page.goto('./');await page.locator('.game-card[data-game="blocks"]').click();
+  await page.setViewportSize({width:390,height:844});await page.goto('./');await openFromHome(page,'blocks');
   await page.locator('[data-action-arcade="play"]').click();
   const hold=page.locator('.tg-touch [data-action-hold="hold"]');await expect(hold).toBeEnabled();
   await hold.click();await expect(hold).toBeDisabled();

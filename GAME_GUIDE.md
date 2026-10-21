@@ -6,6 +6,10 @@ The nine games in **Arcade & worlds** are **TetriGrid**, **Archive Patrol**, **N
 
 ## Playing on phones and larger screens
 
+The home screen keeps search, categories and page controls visible while game tiles fit the available screen. Games are alphabetical; search looks across all 54 games and recognises familiar names such as Checkers and Tic Tac Toe. Recent lists the last eight games opened on this browser. Searching for Klondike, FreeCell or Spider opens that Patience variant directly.
+
+Use **Switch game** in the header to open the same library during play. The current game is suspended while the picker is open. Close it to return, or choose another game; saved progress stays with each game. Returning home keeps the category and page you were browsing. On a phone, the search key dismisses the keyboard so you can see the results.
+
 Puzzles, board games and card games share a screen-sized workspace. **Play** keeps the board or table, current turn and essential actions together. On portrait phones, actions sit below play; landscape screens put them alongside it. **Setup** contains new games, variants and preferences, **Help** contains rules and license information, and **Tools** appears when there is additional guidance, history, inspection or tutorial material. Escape returns to Play. Number pads, dice, bids, legal destinations and scoring confirmations remain in Play.
 
 Use **Enlarge** for a dense board. **Pan board** lets you drag the view without playing a move; **Move pieces** restores game input, and Escape also leaves Pan mode. **Fit board** returns to the full-board view. Expert minefields enlarge enough to keep their squares tappable. Senet turns into three tall columns on portrait phones, preserving the numbered route, then returns to its wide board in landscape.

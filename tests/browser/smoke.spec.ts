@@ -3,6 +3,9 @@ import { mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { basename, dirname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import {openFromHome,switchGame} from './navigation.ts';
+import {GAMES} from '../../src/state.ts';
+import {GAME_NAMES} from '../../src/catalog.ts';
 
 const test = base.extend<{ runtimeChecks: void }>({
   runtimeChecks: [async ({ page }, use) => {
@@ -15,7 +18,7 @@ const test = base.extend<{ runtimeChecks: void }>({
 });
 
 const save = (page: Page) => page.evaluate(() => JSON.parse(localStorage.getItem('grid-club-v1') || '{}'));
-const openGame = (page: Page, game: string) => page.locator(`.game-card[data-game="${game}"]`).click();
+const openGame = openFromHome;
 
 test('all 54 games open at the Pages path without runtime services', async ({ page, baseURL }) => {
   test.setTimeout(180_000);
@@ -23,10 +26,8 @@ test('all 54 games open at the Pages path without runtime services', async ({ pa
   page.on('request', request => { if (/^https?:/.test(request.url())) requests.push(request.url()); });
   await page.goto('./');
   await expect(page).toHaveTitle(/Tiltu’s Games/);
-  await expect(page.locator('.game-card')).toHaveCount(54);
-  const games = await page.locator('.game-card').evaluateAll(cards => cards.map(card => ({
-    id: (card as HTMLElement).dataset.game!, name: card.querySelector('h2')!.textContent!,
-  })));
+  await expect(page.locator('.library-count')).toContainText('54');
+  const games = GAMES.filter(id=>id!=='home').map(id=>({id,name:GAME_NAMES[id]}));
   for (const game of games) {
     await test.step(game.name, async () => {
       await openGame(page, game.id);
@@ -34,7 +35,7 @@ test('all 54 games open at the Pages path without runtime services', async ({ pa
       await expect(page.locator('main').first()).toBeVisible();
       await expect(page.locator('.port-error')).toHaveCount(0);
       await page.getByRole('button', { name: 'Tiltu’s Games home', exact: true }).click();
-      await expect(page.locator('.game-card')).toHaveCount(54);
+      await expect(page.locator('.library-count')).toContainText('54');
     });
   }
   // All application code, graphics, audio and workers are inside the initial HTML.
@@ -66,7 +67,7 @@ test('arcade round starts, responds to input and pauses on navigation', async ({
   await expect(page.locator('#round-panel')).toBeVisible();
   await page.keyboard.press('1');
   await page.getByRole('button', { name: 'Tiltu’s Games home', exact: true }).click();
-  await expect(page.locator('.game-card')).toHaveCount(54);
+  await expect(page.locator('.library-count')).toContainText('54');
   await openGame(page, 'whacker');
   await expect(page.locator('#page-title')).toHaveText('Whack-a-Party!');
   await expect(page.locator('#overlay-title')).toHaveText('Paused.');
@@ -79,7 +80,7 @@ test('phone layout supports discovery, navigation, themes and license access', a
   await expect(page.locator('.game-card')).toHaveCount(1);
   await openGame(page, 'sudoku');
   await expect(page.locator('#page-title')).toHaveText('Sudoku');
-  await page.locator('#game-select').selectOption('four');
+  await switchGame(page,'four');
   await expect(page.locator('[data-column]')).toHaveCount(7);
   await page.locator('#theme').selectOption('woodland');
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'woodland');
@@ -114,7 +115,7 @@ test('an unmodified HTML copy plays from disk with the network disabled', async 
     await writeFile(file, await response.body());
     await context.setOffline(true);
     await page.goto(pathToFileURL(file).href);
-    await expect(page.locator('.game-card')).toHaveCount(54);
+    await expect(page.locator('.library-count')).toContainText('54');
     await openGame(page, 'four');
     await page.locator('[data-column="3"]').click();
     await expect.poll(async () => (await save(page)).four.moves.length).toBe(2);

@@ -1,3 +1,4 @@
+import {openFromHome} from './navigation.ts';
 import {test as base,expect,type Page} from '@playwright/test';
 import {GAME_CATEGORY} from '../../src/catalog.ts';
 import {pegMoves} from '../../src/collection/puzzles.ts';
@@ -14,7 +15,7 @@ test.use({hasTouch:true,actionTimeout:15_000});
 const puzzles=Object.keys(GAME_CATEGORY).filter(key=>GAME_CATEGORY[key as keyof typeof GAME_CATEGORY]==='Puzzles');
 const boards=Object.keys(GAME_CATEGORY).filter(key=>GAME_CATEGORY[key as keyof typeof GAME_CATEGORY]==='Board games');
 const cards=Object.keys(GAME_CATEGORY).filter(key=>GAME_CATEGORY[key as keyof typeof GAME_CATEGORY]==='Card games');
-const open=async(page:Page,game:string)=>{await page.goto('./');await page.getByRole('button',{name:'Tiltu’s Games home',exact:true}).click();await page.locator(`.game-card[data-game="${game}"]`).click();await page.locator('.workspace-board:not(.board-loading)').waitFor();};
+const open=async(page:Page,game:string)=>{await page.goto('./');await page.getByRole('button',{name:'Tiltu’s Games home',exact:true}).click();await openFromHome(page,game);await page.locator('.workspace-board:not(.board-loading)').waitFor();};
 
 for(const viewport of [{width:320,height:640},{width:844,height:390},{width:1280,height:800}])test(`all fifteen puzzles keep play and actions on screen at ${viewport.width} × ${viewport.height}`,async({page})=>{
  test.setTimeout(180_000);await page.setViewportSize(viewport);
@@ -128,7 +129,7 @@ test('all three Patience variants support tap destinations and panning without m
  test.setTimeout(120_000);await page.setViewportSize({width:390,height:844});const save=()=>page.evaluate(()=>JSON.parse(localStorage.getItem('grid-club-v1')!));
  await open(page,'patience');
  // Known valid saved deals keep this input test independent of random opening moves.
- await page.evaluate(deals=>{const s=JSON.parse(localStorage.getItem('grid-club-v1')!);s.patience=deals.patience;s.collection.freecell=deals.freecell;s.collection.spider=deals.spider;localStorage.setItem('grid-club-v1',JSON.stringify(s));},{patience:newPatience(1,Array.from({length:52},(_,i)=>i)),freecell:newFreeCell(42),spider:newSpider(1,42)});
+ await page.addInitScript(deals=>{const s=JSON.parse(localStorage.getItem('grid-club-v1')!);s.patience=deals.patience;s.collection.freecell=deals.freecell;s.collection.spider=deals.spider;localStorage.setItem('grid-club-v1',JSON.stringify(s));},{patience:newPatience(1,Array.from({length:52},(_,i)=>i)),freecell:newFreeCell(42),spider:newSpider(1,42)});
  await page.reload();await page.locator('.workspace-actions [data-patience="draw"]').tap();await expect.poll(async()=>(await save()).patience.waste.length).toBe(1);
  const state=await save(),move=patienceMoves(state.patience)[0];
  expect(move).toBeTruthy();const source=page.locator(`[data-card-source="${move.from.pile}:${move.from.index}:${move.from.at}"]`),r=(await source.boundingBox())!;await source.tap({position:{x:r.width/2,y:8}});await page.locator(`.workspace-feedback [data-patience="move:${move.to.pile}:${move.to.index}"]`).tap();await expect.poll(async()=>(await save()).patience.moves).toBeGreaterThan(state.patience.moves);

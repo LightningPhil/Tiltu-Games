@@ -1,13 +1,10 @@
 import {isPortGame} from './arcade-ports/store.ts';
-import {PLUS_CARD_GAMES,PLUS_PUZZLES} from './club-plus/meta.ts';
 import {PlusController} from './club-plus/controller.ts';
 import {isPlus} from './club-plus/store.ts';
-import {plusGraphic} from './club-plus-art.ts';
 import { CollectionController, collectionRoute, isCollectionGame } from './collection/controller.ts';
-import { GAME_NAMES, GAME_DESCRIPTIONS, GAME_CATEGORY, CATEGORIES } from './catalog.ts';
-import type { Category } from './catalog.ts';
+import { GAME_NAMES } from './catalog.ts';
+import {GameLibrary} from './game-library.ts';
 import type { PatienceVariant } from './collection/patience-collection.ts';
-import { collectionGraphic } from './collection-art.ts';
 import { patiencePicker } from './collection/view.ts';
 import './style.css';
 import './arcade-controls.css';
@@ -18,7 +15,7 @@ import './visuals.css';
 import './collection/collection.css';
 import './club-plus/plus.css';
 import { BoardArtwork, sudokuBoxTint, sudokuFinishedRows } from './board-art.ts';
-import { chessGraphic, clubMark, discEmblem, gameGraphic } from './graphics.ts';
+import { chessGraphic, clubMark, discEmblem } from './graphics.ts';
 import { explainFour } from './four-guide.ts';
 import { openMatchReview } from './match-review.ts';
 import GameWorker from './ai-worker.ts?worker&inline';
@@ -44,9 +41,10 @@ import { blackjackPage, decodeSource, decodeTarget, encodeSource, patiencePage }
 import { CardMotion } from './card-motion.ts';
 import { suit } from './cards.ts';
 import { ArcadeController, isArcade } from './arcade.ts';
-import {ActionArcadeController,actionGraphic} from './action-arcade.ts';
+import {ActionArcadeController} from './action-arcade.ts';
 import {isActionGame} from './action-games.ts';
 import './action-arcade.css';
+import './game-library.css';
 import { CountingTutor, PokerRoom, coachPanel, openCoachLesson } from './learning.ts';
 import { explainChessMove, explainDraughtsMove } from './coach.ts';
 import type { MoveAdvice } from './coach.ts';
@@ -65,9 +63,6 @@ const boardArtwork = new BoardArtwork();
 const collection = new CollectionController(app, state, () => { persist(); render(); }, showDialog);
 const plus = new PlusController(app, state, () => { persist(); render(); }, showDialog);
 const names = GAME_NAMES;
-let lobbyCategory: Category = 'All games';
-let lobbySearch = '';
-const matchesLobby = (g: Game) => (names[g]+' '+GAME_DESCRIPTIONS[g]).toLowerCase().includes(lobbySearch.trim().toLowerCase());
 const themeNames: Record<Theme, string> = { tron: 'Neon Grid', pulse: 'Neon Pulse', classic: 'Classic', midnight: 'Midnight', woodland: 'Woodland' };
 const sudokuLevels = ['Easy', 'Medium', 'Hard', 'Expert'];
 let selected: number | null = null;
@@ -288,6 +283,7 @@ function makePuzzle(): void {
 }
 
 function changeGame(game: Game): void {
+  gameLibrary.remember(game);
   const url=new URL(location.href);if(isPortGame(game))url.searchParams.set('game',game);else{url.searchParams.delete('game');url.searchParams.delete('route');url.searchParams.delete('map');}history.replaceState(null,'',url);
   fourPending = null;
   fourHint = null; fourPending = null; pendingGo = null; goInspect = null; goInspectMode = false;
@@ -638,20 +634,12 @@ function showDialog(title: string, description: string, button: string, action: 
 function renderHeader(): string {
   const current = state.preferences.game;
   return `<header class="topbar"><button class="brand" data-game="home" aria-label="Tiltu’s Games home"><span class="brand-mark" aria-hidden="true">${clubMark()}</span><span>TILTU’S<span class="brand-light"> GAMES</span></span></button>
-    <nav aria-label="Choose a game">${GAMES.map(g => `<button data-game="${g}" ${current === g ? 'aria-current="page"' : ''}>${names[g]}</button>`).join('')}</nav><label class="mobile-game-picker">Game<select id="game-select">${GAMES.map(g => `<option value="${g}" ${current === g ? 'selected' : ''}>${names[g]}</option>`).join('')}</select></label>
+    ${current==='home'?'':`<button type="button" class="library-open" id="game-library-open" data-library-open aria-label="Switch game" aria-haspopup="dialog" aria-expanded="false"><span class="library-open-icon" aria-hidden="true">▦</span><span class="library-open-label"><strong>${names[current]}</strong><small>Switch game ▾</small></span></button>`}
     <label class="theme-control"><span>Theme</span><select id="theme" aria-label="Theme">${THEMES.map(t => `<option value="${t}" ${state.preferences.theme === t ? 'selected' : ''}>${themeNames[t]}</option>`).join('')}</select></label>${current === 'ski' ? '<button class="button ski-setup-toggle" data-arcade="setup" aria-label="Setup and help">⚙</button>' : ''}</header>`;
 }
 
 function renderHome(): string {
-  const visibleGames=GAMES.filter(g=>g!=='home'&&(lobbyCategory==='All games'||GAME_CATEGORY[g]===lobbyCategory)&&matchesLobby(g));
-  return `<main class="lobby"><section class="lobby-intro"><div><p class="eyebrow"><span class="live-dot"></span> YOUR NEXT LITTLE CHALLENGE</p><h1 id="page-title" tabindex="-1">Good games.<br><span>Great company.</span></h1><p class="intro-copy">A quick match, a clever move, a moment to yourself.<br>${GAMES.length-1} games. Room to explore.</p></div><div class="hero-art" aria-hidden="true"><div class="art-grid">${Array.from({ length: 16 }, (_, i) => `<span class="${[0, 5, 10, 15].includes(i) ? 'art-piece' : i === 9 || i === 14 ? 'art-rival' : ''}">${i === 2 ? '3' : i === 7 ? '7' : i === 11 ? chessGraphic('q') : ''}</span>`).join('')}</div><span class="art-caption">MAKE YOUR MOVE</span></div></section>
-    <div class="lobby-discovery"><div class="category-tabs" role="group" aria-label="Game categories">${CATEGORIES.map(c => `<button data-category="${c}" aria-pressed="${lobbyCategory===c}">${c}</button>`).join('')}</div><label class="game-search"><span class="visually-hidden">Find a game</span><input id="game-search" type="search" placeholder="Find your next game" value="${escape(lobbySearch)}"></label></div><p class="library-count" aria-live="polite">${visibleGames.length} game${visibleGames.length===1?'':'s'}${lobbyCategory==='Card games'?' · FreeCell and Spider live inside Patience':''}</p><section class="game-cards" aria-label="Games">
-      ${visibleGames.map((g, i) => {
-        const resume = gameProgress(g);
-        const descriptions = GAME_DESCRIPTIONS;
-        return `<button class="game-card" data-game="${g}"><span class="card-top"><span class="game-number">${String(i + 1).padStart(2, '0')}</span><span class="chip">${isMatch(g) || isPlus(g)&&!PLUS_CARD_GAMES.includes(g)&&!PLUS_PUZZLES.includes(g) || g==='memory' || ['noughts','reversi','dots','morris','kalah','backgammon'].includes(g) ? 'SOLO OR TWO PLAYERS' : g === 'life' ? 'SIMULATE OR COMPETE' : g === 'poker' ? 'THREE STYLES · TUTOR' : isPlus(g)&&PLUS_CARD_GAMES.includes(g)?'CLUB TABLE · ADVICE':'SOLO CLASSIC'}</span></span>${isActionGame(g)?actionGraphic(g):isPlus(g)?plusGraphic(g):isCollectionGame(g)?collectionGraphic(g):gameGraphic(g)}<h2>${names[g]}</h2><p>${descriptions[g]}</p><span class="card-link">${resume ? 'Return to game' : 'Let’s play'} <span aria-hidden="true">↗</span></span></button>`;
-      }).join('')}${!visibleGames.length?'<p class="empty-library">No games found. Try a different search or choose another category.</p>':''}
-    </section><div class="lobby-footer"><span><span class="live-dot"></span> Ready whenever you are</span><span>5 computer levels <b>·</b> 5 shared themes <b>·</b> Plays offline</span></div></main>`;
+  return '<main class="lobby library-home"><div class="library-home-heading"><h1 id="page-title" tabindex="-1">Find your next game.</h1><p>54 games. Pick up where you left off.</p></div><div id="home-library"></div></main>';
 }
 
 function renderDuelSettings(game: MatchGame): string {
@@ -813,8 +801,14 @@ function renderSudoku(): string {
     <div class="status-card ${solved ? 'result-card' : ''}" role="status" aria-live="polite" aria-atomic="true"><span class="status-icon" aria-hidden="true">${solved ? '✦' : s?.paused ? 'Ⅱ' : '▦'}</span><div><h2>${solved ? 'Puzzle complete!' : generating ? 'One moment…' : s?.paused ? 'Paused.' : 'One number at a time.'}</h2><p>${escape(detail)}</p></div>${solved ? '<button class="button primary" id="play-again">New puzzle ↗</button>' : ''}</div><div class="game-meta"><span>${s && !s.paused ? `Selected: row ${Math.floor(s.selected / s.size) + 1}, column ${s.selected % s.size + 1}` : 'Your progress is kept here'}</span><span>${prefs.notes ? '✎ Pencil mode' : 'Number mode'}</span></div></section></div></main>`;
 }
 
+const gameLibrary=new GameLibrary(app,{current:()=>state.preferences.game,hasProgress:gameProgress,
+  beforeOpen:()=>{tickTimer();cancelWork();cancelMotion();actionArcade.leave();arcade.leave();collection.leave();plus.leave();countingTutor.leave();pokerRoom.leave();clearTutor();persist();},
+  choose:(game,patience)=>{if(patience)state.preferences.patienceVariant=patience;changeGame(game);},
+  afterCancel:()=>{timerStart=performance.now();render();if(state.preferences.game==='sudoku'&&!state.sudoku)makePuzzle();else scheduleComputer();}
+});
 const gameWorkspace=new GameWorkspace(app);
 function render(): void {
+  if(gameLibrary.isOpen)return;
   const scrollPositions = ['.mine-scroll', '.life-stage','.workspace-surface','.workspace-board','.workspace-hand'].map(selector => { const el = app.querySelector(selector); return { selector, left: el?.scrollLeft ?? 0, top: el?.scrollTop ?? 0 }; });
   const focus = document.activeElement as HTMLElement;
   const blackjackFocus = !!focus?.closest('.blackjack-actions');
@@ -835,11 +829,13 @@ function render(): void {
   const collectionKey = collectionRoute(state);
   app.dataset.game = game;
   delete app.dataset.workspace;
+  gameLibrary.unmountHome();
   app.dataset.boardSize = isMatch(game) && largeBoards[game] ? 'large' : 'fit';
   document.title = `${game === 'home' ? `${GAMES.length-1} games, one place to play` : names[game]} · Tiltu’s Games`;
   app.innerHTML = `${renderHeader()}${isPlus(game) ? plus.render(game) : collectionKey ? collection.render(collectionKey) : game === 'home' ? renderHome() : game === 'sudoku' ? renderSudoku() : game === 'chess' || game === 'go' ? renderAdvanced(game) : game === 'blackjack' ? blackjackPage(state.blackjack, message, renderMotionSetting(), countingTutor.render()) : game === 'patience' ? patiencePage(state.patience ??= newPatience(state.preferences.patienceDraw), state.preferences.patienceDraw, patienceSelected, cardHint, message, renderMotionSetting(), autoFoundations) : isActionGame(game) ? actionArcade.render(game) : isArcade(game) ? arcade.render(game) : game === 'poker' ? pokerRoom.render() : renderDuel(game as DuelGame)}<footer class="app-footer"><span>© 2026 Philip Leichauer <b>·</b> All rights reserved.</span><button class="license-link" id="license-info">License & notices</button><span>${storageOK ? 'Progress saved on this browser' : 'Storage unavailable · progress kept for this visit'}</span></footer>`;
   if (game === 'patience' && !collectionKey) { const heading = app.querySelector('.page-heading h1'); if (heading) heading.insertAdjacentHTML('afterend', '<p class="game-subtitle">Klondike</p>'); const arena=app.querySelector('.arena'); arena?.insertAdjacentHTML('afterbegin',patiencePicker('klondike')); }
   gameWorkspace.mount(game);
+  if(game==='home')gameLibrary.mountHome();
   boardArtwork.mount(app);
   if (isPlus(game)) plus.mount();
   if (collectionKey) collection.mount(collectionKey);
@@ -879,7 +875,6 @@ app.addEventListener('change', event => {
   if (input.id.startsWith('action-')) { actionArcade.setting(input.id,input.value); return; }
   if (input.id.startsWith('plus-')) { plus.setting(input.id, input.value); return; }
   if (input.id.startsWith('collection-')) { collection.setting(input.id, input.value); return; }
-  if (input.id === 'game-select') { changeGame(input.value as Game); return; }
   if (input.id === 'theme') state.preferences.theme = input.value as Theme;
   if (input.id === 'motion') state.preferences.motion = input.value as MotionSpeed;
   if (input.id === 'four-confirm') { state.preferences.fourConfirm = input.value === 'true'; fourPending = null; }
@@ -956,7 +951,6 @@ app.addEventListener('click', event => {
   if (button.dataset.plus) { plus.action(button.dataset.plus); return; }
   if (button.dataset.collection) { collection.action(button.dataset.collection); return; }
   if (button.dataset.patienceVariant) { collection.leave(); cancelMotion(); state.preferences.patienceVariant = button.dataset.patienceVariant as PatienceVariant; patienceSelected=null; cardHint=null; persist(); render(); return; }
-  if (button.dataset.category) { lobbyCategory=button.dataset.category as Category; render(); return; }
   if (button.dataset.game) { changeGame(button.dataset.game as Game); return; }
   if (button.dataset.actionHold) { if(event.detail===0) actionArcade.tapHold(button.dataset.actionHold); return; }
   if (button.dataset.actionArcade) { actionArcade.action(button.dataset.actionArcade); return; }
@@ -1220,5 +1214,3 @@ if (isActionGame(state.preferences.game)) actionArcade.ensure(state.preferences.
 persist(); render();
 if (state.preferences.game === 'sudoku' && !state.sudoku) makePuzzle();
 else scheduleComputer();
-
-app.addEventListener('input', event => { const input = event.target; if (input instanceof HTMLInputElement && input.id === 'game-search') { const cursor=input.selectionStart; lobbySearch=input.value; render(); const next=app.querySelector<HTMLInputElement>('#game-search'); next?.focus({preventScroll:true}); if(cursor!==null) next?.setSelectionRange(cursor,cursor); } });

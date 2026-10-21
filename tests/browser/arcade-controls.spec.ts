@@ -25,7 +25,7 @@ for(const viewport of [{width:320,height:640},{width:844,height:390},{width:1280
     const geometry=await page.evaluate(()=>({width:document.documentElement.scrollWidth,height:document.documentElement.scrollHeight,w:innerWidth,h:innerHeight}));
     expect(geometry.width,`${game.id} horizontal page overflow`).toBeLessThanOrEqual(geometry.w+1);
     expect(geometry.height,`${game.id} vertical page overflow`).toBeLessThanOrEqual(geometry.h+1);
-    const field=(await page.locator(game.field).boundingBox())!;expect(field.height,`${game.id} usable playfield`).toBeGreaterThan(70);
+    const field=(await page.locator(game.field).boundingBox())!;expect(field.height,`${game.id} usable playfield`).toBeGreaterThan(game.id==='salvage'&&viewport.height<500?120:70);
     expect(field.y+field.height,`${game.id} playfield bottom`).toBeLessThanOrEqual(viewport.height+1);
   });
 });

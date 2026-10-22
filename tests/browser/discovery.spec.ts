@@ -10,9 +10,9 @@ async function checkPages(page:Page,host:string){
  const library=page.locator(host),seen:string[]=[];
  for(let i=0;i<30;i++){
   await expect(library.locator('.game-card').first()).toBeVisible();
-  const geometry=await library.evaluate(el=>({scroll:el.querySelector('.library-results')!.scrollHeight-el.querySelector('.library-results')!.clientHeight,tiles:[...el.querySelectorAll<HTMLElement>('.game-card')].map(tile=>({game:tile.dataset.game,r:tile.getBoundingClientRect().toJSON()}))}));
+  const geometry=await library.evaluate(el=>({scroll:el.querySelector('.library-results')!.scrollHeight-el.querySelector('.library-results')!.clientHeight,tiles:[...el.querySelectorAll<HTMLElement>('.game-card')].map(tile=>({game:tile.dataset.game,r:tile.getBoundingClientRect().toJSON(),art:tile.querySelector('.game-art')?.getBoundingClientRect().toJSON(),drawing:tile.querySelector('.game-art>svg')?.childElementCount??0}))}));
   expect(geometry.scroll,'the game page needs no internal scrolling').toBeLessThanOrEqual(1);
-  for(const tile of geometry.tiles){seen.push(tile.game!);expect(tile.r.height).toBeGreaterThanOrEqual(74);expect(tile.r.y).toBeGreaterThanOrEqual(0);expect(tile.r.bottom).toBeLessThanOrEqual(page.viewportSize()!.height+1);expect(tile.r.right).toBeLessThanOrEqual(page.viewportSize()!.width+1);}
+  for(const tile of geometry.tiles){seen.push(tile.game!);expect(tile.r.height).toBeGreaterThanOrEqual(104);expect(tile.r.y).toBeGreaterThanOrEqual(0);expect(tile.r.bottom).toBeLessThanOrEqual(page.viewportSize()!.height+1);expect(tile.r.right).toBeLessThanOrEqual(page.viewportSize()!.width+1);expect(tile.drawing,`${tile.game}: original illustration`).toBeGreaterThan(0);expect(tile.art,`${tile.game}: artwork frame`).toBeDefined();expect(tile.art!.width).toBeGreaterThanOrEqual(90);expect(tile.art!.height).toBeGreaterThanOrEqual(60);expect(tile.art!.y).toBeGreaterThanOrEqual(tile.r.y);expect(tile.art!.bottom).toBeLessThanOrEqual(tile.r.bottom);}
   const next=library.getByRole('button',{name:'Next games',exact:true});if(await next.isDisabled())break;await next.tap();
  }
  expect(seen.length).toBe(54);expect(new Set(seen).size).toBe(54);expect(new Set(seen)).toEqual(new Set(GAMES.filter(game=>game!=='home')));

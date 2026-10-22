@@ -1,9 +1,11 @@
 import {isPortGame} from './arcade-ports/store.ts';
 import {PlusController} from './club-plus/controller.ts';
 import {isPlus} from './club-plus/store.ts';
+import {plusGraphic} from './club-plus-art.ts';
 import { CollectionController, collectionRoute, isCollectionGame } from './collection/controller.ts';
 import { GAME_NAMES } from './catalog.ts';
 import {GameLibrary} from './game-library.ts';
+import {collectionGraphic} from './collection-art.ts';
 import type { PatienceVariant } from './collection/patience-collection.ts';
 import { patiencePicker } from './collection/view.ts';
 import './style.css';
@@ -15,7 +17,7 @@ import './visuals.css';
 import './collection/collection.css';
 import './club-plus/plus.css';
 import { BoardArtwork, sudokuBoxTint, sudokuFinishedRows } from './board-art.ts';
-import { chessGraphic, clubMark, discEmblem } from './graphics.ts';
+import { chessGraphic, clubMark, discEmblem, gameGraphic } from './graphics.ts';
 import { explainFour } from './four-guide.ts';
 import { openMatchReview } from './match-review.ts';
 import GameWorker from './ai-worker.ts?worker&inline';
@@ -41,7 +43,7 @@ import { blackjackPage, decodeSource, decodeTarget, encodeSource, patiencePage }
 import { CardMotion } from './card-motion.ts';
 import { suit } from './cards.ts';
 import { ArcadeController, isArcade } from './arcade.ts';
-import {ActionArcadeController} from './action-arcade.ts';
+import {ActionArcadeController,actionGraphic} from './action-arcade.ts';
 import {isActionGame} from './action-games.ts';
 import './action-arcade.css';
 import './game-library.css';
@@ -802,6 +804,7 @@ function renderSudoku(): string {
 }
 
 const gameLibrary=new GameLibrary(app,{current:()=>state.preferences.game,hasProgress:gameProgress,
+  artwork:game=>isActionGame(game)?actionGraphic(game):isPlus(game)?plusGraphic(game):isCollectionGame(game)?collectionGraphic(game):gameGraphic(game),
   beforeOpen:()=>{tickTimer();cancelWork();cancelMotion();actionArcade.leave();arcade.leave();collection.leave();plus.leave();countingTutor.leave();pokerRoom.leave();clearTutor();persist();},
   choose:(game,patience)=>{if(patience)state.preferences.patienceVariant=patience;changeGame(game);},
   afterCancel:()=>{timerStart=performance.now();render();if(state.preferences.game==='sudoku'&&!state.sudoku)makePuzzle();else scheduleComputer();}

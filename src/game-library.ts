@@ -36,7 +36,7 @@ export function libraryTarget(game:Game,query:string):LibraryTarget{
 
 interface ViewState {filter:LibraryFilter;query:string;page:number;capacity?:number}
 interface LibraryOptions {
- current:()=>Game;hasProgress:(game:Game)=>boolean;
+ current:()=>Game;hasProgress:(game:Game)=>boolean;artwork:(game:Game)=>string;
  beforeOpen:()=>void;choose:(game:Game,patience?:keyof typeof PATIENCE_NAMES)=>void;afterCancel:()=>void;
 }
 
@@ -72,7 +72,7 @@ class LibraryView {
  clearSearch(){if(this.state.query){this.state.query='';this.state.page=0;}}
  private fit(){
   const {width,height}=this.results.getBoundingClientRect();if(!width||!height)return;
-  const columns=width>=920?4:width>=610?3:2,rows=Math.max(1,Math.min(6,Math.floor((height+8)/82)));
+  const columns=width>=920?4:width>=610?3:2,minimum=matchMedia('(max-height:500px) and (min-width:601px)').matches?104:width<610?138:168,rows=Math.max(1,Math.min(4,Math.floor((height+8)/(minimum+8))));
   if(columns===this.columns&&rows===this.rows&&this.capacity===columns*rows)return;
   const first=this.state.page*this.capacity;this.columns=columns;this.rows=rows;this.capacity=columns*rows;this.state.capacity=this.capacity;this.state.page=Math.floor(first/this.capacity);
   this.results.style.setProperty('--library-columns',String(columns));this.results.style.setProperty('--library-rows',String(rows));this.refresh();
@@ -89,8 +89,7 @@ class LibraryView {
   this.results.innerHTML=page.games.map(game=>{
    const target=libraryTarget(game,this.state.query),name=target.patience?PATIENCE_NAMES[target.patience]:GAME_NAMES[game],current=this.options.current()===game;
    const category=labels[GAME_CATEGORY[game]],detail=target.patience?'Patience':current?'Playing':this.options.hasProgress(game)?'Continue':game==='patience'?'3 variants':game==='poker'?'3 styles':'';
-   const words=GAME_NAMES[game].replace(/[^a-zA-Z0-9 ]/g,'').split(' ').filter(Boolean),monogram=/^\d/.test(words[0])?words[0]:words.length===1?words[0].slice(0,2):words[0][0]+words.at(-1)![0];
-   return `<button type="button" class="game-card library-game" data-game="${game}" data-library-game="${game}" ${current?'aria-current="page"':''} title="${esc(GAME_DESCRIPTIONS[game])}"><span class="library-icon" data-kind="${category}" aria-hidden="true">${monogram}</span><span class="library-game-label"><h2>${esc(name)}</h2><small>${category}${detail?' · '+detail:''}</small></span></button>`;
+   return `<button type="button" class="game-card library-game" data-game="${game}" data-library-game="${game}" ${current?'aria-current="page"':''} title="${esc(GAME_DESCRIPTIONS[game])}">${this.options.artwork(game)}<span class="library-game-label"><h2>${esc(name)}</h2><small>${category}${detail?' · '+detail:''}</small></span></button>`;
   }).join('')||(this.state.filter==='Recent'?'<div class="empty-library"><p>Your recent games will appear here.</p><button type="button" class="button" data-library-reset>Browse all games</button></div>':'<div class="empty-library"><p>No games match that search.</p><button type="button" class="button" data-library-reset>Show all 54 games</button></div>');
   this.results.scrollTop=0;
   this.host.querySelector<HTMLButtonElement>('[data-library-previous]')!.disabled=page.index===0;

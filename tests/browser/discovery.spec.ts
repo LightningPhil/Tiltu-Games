@@ -56,7 +56,8 @@ test('opening the chooser suspends an arcade run and its keys do not reach the g
 
 test('search remains usable when the viewport shrinks for a phone keyboard',async({page})=>{
  await page.setViewportSize({width:390,height:844});await home(page);await page.locator('#game-search').fill('chess');await page.setViewportSize({width:390,height:430});
- await expect(page.locator('.game-card[data-game="chess"]')).toBeVisible();const tile=(await page.locator('.game-card[data-game="chess"]').boundingBox())!;expect(tile.y+tile.height).toBeLessThanOrEqual(430);
+ // ResizeObserver may replace the result cards between visibility and measurement.
+ await expect.poll(async()=>{const tile=await page.locator('.game-card[data-game="chess"]').boundingBox();return tile?tile.y+tile.height:Infinity;}).toBeLessThanOrEqual(430);
  await page.locator('#game-search').press('Enter');await expect(page.locator('#game-search')).not.toBeFocused();await page.setViewportSize({width:390,height:844});await page.locator('.game-card[data-game="chess"]').tap();await expect(page.locator('#page-title')).toHaveText('Chess');
 });
 

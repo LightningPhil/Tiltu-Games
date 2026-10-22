@@ -3,7 +3,7 @@ import {openFromHome} from './navigation.ts';
 const test=base.extend<{runtimeChecks:void}>({runtimeChecks:[async({page},use)=>{const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await use();expect(errors).toEqual([]);},{auto:true}]});
 test.use({hasTouch:true,actionTimeout:15_000});
 const games=[{id:'salvage',stick:'[data-patrol-stick]',fire:'.thumb-fire',aux:'[data-action-hold="boost"]',pause:'[data-action-arcade="pause"]'}, {id:'void',stick:'#void-stick',fire:'#fire-btn',aux:'#dash-btn',pause:'[title="Pause and settings"]'}, {id:'horizon',stick:'#touch-stick',fire:'#touch-fire',aux:'#touch-boost',pause:'#pause-button'}];
-for(const size of [{width:320,height:740},{width:390,height:844},{width:844,height:390}])for(const game of games)test(game.id+' two-thumb controls at '+size.width+'×'+size.height,async({page,context},info)=>{
+for(const size of [{width:320,height:740},{width:390,height:844},{width:844,height:390},{width:1024,height:768}])for(const game of games)test(game.id+' two-thumb controls at '+size.width+'×'+size.height,async({page,context},info)=>{
  await page.setViewportSize(size);await page.goto('./'+(game.id==='salvage'?'':'?game='+game.id));
  if(game.id==='salvage'){await openFromHome(page,game.id);await page.locator('[data-action-arcade="play"]').click();}
  if(game.id==='void')await page.locator('#launch-btn').click();
@@ -12,6 +12,7 @@ for(const size of [{width:320,height:740},{width:390,height:844},{width:844,heig
  await expect(stick).toBeVisible();await expect(fire).toBeEnabled();
  const sr=(await stick.boundingBox())!,fr=(await fire.boundingBox())!,ar=(await aux.boundingBox())!;
  expect(fr.x+fr.width).toBeLessThanOrEqual(ar.x);expect(ar.x+ar.width).toBeLessThanOrEqual(sr.x);
+ if(size.width===1024){const first=(await page.locator('.thumb-aux button:visible').first().boundingBox())!,last=(await page.locator('.thumb-aux button:visible').last().boundingBox())!;expect(first.x-(fr.x+fr.width)).toBeLessThan(64);expect(sr.x-(last.x+last.width)).toBeLessThan(64);}
  for(const control of [stick,fire,...await page.locator('.thumb-aux button:visible').all()]){const r=(await control.boundingBox())!;expect(r.width).toBeGreaterThanOrEqual(48);expect(r.height).toBeGreaterThanOrEqual(48);expect(r.x).toBeGreaterThanOrEqual(0);expect(r.x+r.width).toBeLessThanOrEqual(size.width);expect(r.y+r.height).toBeLessThanOrEqual(size.height);expect(await control.evaluate(el=>{const r=el.getBoundingClientRect();const hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return el===hit||el.contains(hit);})).toBe(true);}
  await page.screenshot({path:info.outputPath('flight-deck.png')});
  const cdp=await context.newCDPSession(page),trigger={id:1,x:fr.x+fr.width/2,y:fr.y+fr.height/2},thumb={id:2,x:sr.x+sr.width*.65,y:sr.y+sr.height*.5};

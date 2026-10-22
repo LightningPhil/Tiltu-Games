@@ -18,7 +18,7 @@
 #app .thumb-deck{--thumb-size:100px;display:grid;grid-template-columns:var(--thumb-size) minmax(0,1fr) var(--thumb-size);align-items:center;gap:8px;touch-action:none;user-select:none;-webkit-user-select:none;}
 #app .thumb-deck .thumb-fire{grid-column:1;grid-row:1;justify-self:start;width:76px;height:76px;min-height:0;padding:0;border:2px solid var(--accent);border-radius:50%;background:var(--raised);color:var(--text);font-size:15px;font-weight:700;touch-action:none;}
 #app .thumb-deck .thumb-fire small{display:block;font-size:10px;font-weight:400;line-height:1.2;margin-top:3px;color:inherit;}
-#app .thumb-deck .thumb-aux:not([hidden]){grid-column:2;grid-row:1;position:static;display:grid;grid-template-columns:repeat(2,minmax(48px,1fr));grid-template-rows:none;gap:8px;min-width:0;pointer-events:auto;}
+#app .thumb-deck .thumb-aux:not([hidden]){grid-column:2;grid-row:1;position:static;display:grid;grid-template-columns:repeat(2,minmax(48px,140px));grid-template-rows:none;justify-content:space-between;justify-items:stretch;gap:8px;min-width:0;pointer-events:auto;}
 #app .thumb-deck .thumb-aux button:not([hidden]){grid-area:auto;width:auto;height:auto;min-width:48px;min-height:48px;padding:5px;border-radius:9px;font-size:10px;line-height:1.2;white-space:normal;touch-action:none;}
 #app .thumb-deck .thumb-aux [hidden]{display:none;}
 #app .thumb-deck .thumb-steering{grid-column:3;grid-row:1;display:grid;justify-items:center;gap:0;min-width:0;pointer-events:auto;}

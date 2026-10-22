@@ -34,3 +34,17 @@ for(const size of [{width:320,height:740},{width:390,height:844},{width:844,heig
   await page.setViewportSize({width:844,height:390});await expect(page.locator(game.stick)).not.toHaveClass(/held/);await expect(page.locator(game.fire)).toHaveAttribute('aria-pressed','false');await cdp.send('Input.dispatchTouchEvent',{type:'touchCancel',touchPoints:[]});
  }
 });
+
+test.describe('compact desktop flight',()=>{
+ test.use({hasTouch:false});
+ test('Horizon keeps keyboard players’ Level and afterburner buttons',async({page})=>{
+  await page.setViewportSize({width:844,height:390});await page.goto('./?game=horizon');
+  await page.getByRole('tab',{name:'Controls',exact:true}).click();await page.locator('#controls').selectOption('keyboard');
+  await page.getByRole('tab',{name:'Look',exact:true}).click();await page.locator('#quality').selectOption('performance');
+  await page.getByRole('tab',{name:'Fly',exact:true}).click();await page.locator('#cruise-button').click();
+  await expect(page.locator('#touch-controls')).toBeHidden();
+  for(const selector of ['#level-button','#afterburner-button','#pause-button']){const button=page.locator(selector);await expect(button).toBeVisible();expect(await button.evaluate(el=>{const r=el.getBoundingClientRect();const hit=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return hit===el||el.contains(hit);})).toBe(true);}
+  const hud=(await page.locator('.hud-element').last().boundingBox())!,actions=(await page.locator('.hud-actions').boundingBox())!;expect(hud.x+hud.width).toBeLessThanOrEqual(actions.x);
+  await page.locator('#level-button').click();await page.locator('#pause-button').click();await expect(page.locator('#pause-screen')).toBeVisible();
+ });
+});

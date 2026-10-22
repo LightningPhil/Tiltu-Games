@@ -365,3 +365,9 @@
  #app .horizon-port #cruise-throttle>div{margin:0;gap:8px;}
  #app .horizon-port #cruise-throttle>div>span{display:none;}
 }
+
+@media(min-width:701px) and (max-height:500px) and (pointer:fine){
+ #app .horizon-port:not(.using-touch) .hud-actions #level-button{display:block;}
+ #app .horizon-port:not(.using-touch) .hud-wrapper{padding-right:352px;}
+ #app .horizon-port:not(.using-touch) .systems-panel #afterburner-button{display:block;}
+}

@@ -5,9 +5,11 @@ import { parseSettings } from '../src/arcade-ports/horizon/game.ts';
 
 // Minimal event targets keep input regressions independent of WebGL and a browser install.
 class Element extends EventTarget {
-    style: Record<string, string> = {};
+    style = {setProperty(_name:string,_value:string){}};
+    dataset:Record<string,string>={};
+    setAttribute(_name:string,_value:string){}
     captures = new Set<number>();
-    classList = { add() {}, remove() {} };
+    classList = { add() {}, remove() {}, toggle() {} };
     setPointerCapture(id: number) { this.captures.add(id); }
     releasePointerCapture(id: number) { this.captures.delete(id); }
     hasPointerCapture(id: number) { return this.captures.has(id); }
@@ -107,13 +109,14 @@ test('right mouse EMP works during held cannon fire and releasing left stops fir
 test('pause clears every touch pointer and the stick can be used again', async () => {
     await withDom(({ input, elements }) => {
         const stick = elements.get('touch-stick'), fire = elements.get('touch-fire'), brake = elements.get('touch-brake');
-        send(stick, 'pointerdown', { pointerId: 1, clientX: 100, clientY: 50 });
+        send(stick, 'pointerdown', { pointerId: 1, clientX: 65, clientY: 50 });
+        assert.equal(input.sample(.01,null).yaw,0);send(stick,'pointermove',{pointerId:1,clientX:100,clientY:50});
         send(fire, 'pointerdown', { pointerId: 2 }); send(brake, 'pointerdown', { pointerId: 3 });
         const held = input.sample(0.1, null); assert.equal(held.yaw, -1); assert.equal(held.fire, true); assert.equal(held.brake, true);
         input.release(); const cleared = input.sample(0.1, null);
         assert.equal(cleared.yaw, 0); assert.equal(cleared.fire, false); assert.equal(cleared.brake, false);
         assert.equal(stick.captures.size, 0); assert.equal(fire.captures.size, 0); assert.equal(brake.captures.size, 0);
-        send(stick, 'pointerdown', { pointerId: 4, clientX: 0, clientY: 50 }); assert.equal(input.sample(0.1, null).yaw, 1);
+        send(stick, 'pointerdown', { pointerId: 4, clientX: 35, clientY: 50 });send(stick,'pointermove',{pointerId:4,clientX:0,clientY:50}); assert.equal(input.sample(0.1, null).yaw, 1);
         send(stick, 'pointercancel', { pointerId: 4 }); assert.equal(input.sample(0.1, null).yaw, 0);
     });
 });
@@ -129,7 +132,7 @@ test('several fingers on a fire button do not leave it stuck or release each oth
 test('cancelling an action finger leaves an independent steering finger active',async()=>{
     await withDom(({input,elements,window})=>{
         const stick=elements.get('touch-stick'),fire=elements.get('touch-fire');
-        send(stick,'pointerdown',{pointerId:1,clientX:100,clientY:50});
+        send(stick,'pointerdown',{pointerId:1,clientX:65,clientY:50});send(stick,'pointermove',{pointerId:1,clientX:100,clientY:50});
         send(fire,'pointerdown',{pointerId:2});
         send(fire,'pointercancel',{pointerId:2});send(window,'pointercancel',{pointerId:2});
         const current=input.sample(.01,null);assert.equal(current.fire,false);assert.equal(current.yaw,-1);

@@ -167,6 +167,7 @@ test('Neon Void keeps both thumbs below the arena and releases held input',async
   const trigger={id:2,x:fire.x+fire.width/2,y:fire.y+fire.height/2};
   await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[finger]});
   await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[finger,trigger]});
+  finger.x+=25;await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[finger,trigger]});
   await expect(page.locator('#void-stick')).toHaveClass(/held/);
   await expect(page.locator('#fire-btn')).toHaveAttribute('aria-pressed','true');
   await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[trigger]});

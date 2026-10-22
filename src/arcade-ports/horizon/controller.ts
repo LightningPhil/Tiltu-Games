@@ -97,6 +97,7 @@ function init() {
     el('retry').addEventListener('click', () => startGame(run.seed));
     el('resume').addEventListener('click', resumeGame);
     el('pause-button').addEventListener('click', pauseGame);
+    el('touch-level').addEventListener('click',()=>{if(state==='playing')controls.queueLevel();});
     el('level-button').addEventListener('click', () => { if (state === 'playing') controls.queueLevel(); });
     el('view-button').addEventListener('click', cycleView);
     el('throttle-down').addEventListener('click', () => setThrottle(throttleSetting - 5));
@@ -119,6 +120,7 @@ function init() {
     window.addEventListener('blur', () => { if (state === 'playing') pauseGame(); else { controls.clear(); if (musicPreview) { musicPreview = false; applyAudio(); } } });
     document.addEventListener('visibilitychange', () => { if (document.hidden) { if (state === 'playing') pauseGame(); if (musicPreview) { musicPreview = false; applyAudio(); } } });
     window.addEventListener('resize', () => {
+        controls?.clear();
         camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); presentation.resize(window.innerWidth, window.innerHeight, settings.quality);
         needsRender = true;
     });
@@ -274,7 +276,7 @@ function updateSetup() {
         keyboard: 'W/S pitches, A/D turns, Q/E rolls. Tap for fine corrections; release to stop turning. −/+ or wheel changes throttle. Shift ignites the afterburner; Ctrl brakes. Z/C strafes.',
         mouse: 'Move or drag the mouse to aim; click fires, right-click releases EMP. WASD also steers. −/+ or wheel changes throttle. Shift ignites the afterburner; Ctrl brakes.',
         gamepad: 'Connect a standard controller and press a button. Left stick pitches/turns; right stick rolls/changes throttle. RT fires, LT brakes, RB boosts, LB drifts, B releases EMP. X levels, Y changes view. Keyboard remains available.',
-        touch: 'Drag the left stick to steer. Hold FIRE, BRAKE or BOOST with your other thumb. EMP clears nearby shots; LEVEL recovers your attitude. The −/+ buttons adjust throttle. Enable Automatic cannons to free your right thumb.',
+        touch: 'Touch the right stick, then drag to steer. Hold FIRE on the left; BRAKE, BOOST, EMP and LEVEL sit in between. EMP clears nearby shots; LEVEL recovers your attitude. The −/+ buttons adjust throttle. Enable Automatic cannons to free your left thumb.',
     };
     const controlNote = `${controlNotes[settings.controls]} Steering follows the craft’s axes. Manual bank holds; R / LEVEL / gamepad X recovers level flight.`;
     el('control-description').textContent = controlNote; el('control-summary').textContent = controlNote;
@@ -1190,5 +1192,5 @@ init();
 
 // END GAME RUNTIME
 
-return {pause:()=>{pauseGame();controls?.release();musicPreview=false;applyAudio();},running:()=>state==='playing',resize:()=>{if(!presentation)return;camera.aspect=window.innerWidth/window.innerHeight;camera.updateProjectionMatrix();presentation.resize(window.innerWidth,window.innerHeight,settings.quality);needsRender=true;},resetClock:()=>{lastFrame=performance.now();},dispose:()=>renderer?.dispose()};
+return {pause:()=>{pauseGame();controls?.release();musicPreview=false;applyAudio();},running:()=>state==='playing',resize:()=>{controls?.clear();if(!presentation)return;camera.aspect=window.innerWidth/window.innerHeight;camera.updateProjectionMatrix();presentation.resize(window.innerWidth,window.innerHeight,settings.quality);needsRender=true;},resetClock:()=>{lastFrame=performance.now();},dispose:()=>renderer?.dispose()};
 }

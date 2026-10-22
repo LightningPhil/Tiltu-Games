@@ -5,15 +5,32 @@ export function stickVector(x:number,y:number,radius:number,deadZone=.12){
   return {x:x/distance*strength,y:y/distance*strength};
 }
 
-/** Captured pointers keep movement independent of a second finger on an action. */
+/** A floating origin avoids a steering jump on touchdown; following removes long reverse drags. */
+export class FollowingStick {
+  origin={x:0,y:0};tip={x:0,y:0};x=0;y=0;
+  radius:number;deadZone:number;
+  constructor(radius=32,deadZone=.1){this.radius=radius;this.deadZone=deadZone;}
+  begin(x:number,y:number){this.origin={x,y};this.tip={x:0,y:0};this.x=this.y=0;}
+  move(x:number,y:number){
+    let dx=x-this.origin.x,dy=y-this.origin.y;const distance=Math.hypot(dx,dy);
+    if(distance>this.radius){const follow=1-this.radius/distance;this.origin.x+=dx*follow;this.origin.y+=dy*follow;dx=x-this.origin.x;dy=y-this.origin.y;}
+    this.tip={x:dx,y:dy};const vector=stickVector(dx,dy,this.radius,this.deadZone);this.x=vector.x;this.y=vector.y;
+  }
+}
+
+/** One captured pointer owns the stick, including non-primary fingers. Other fingers can fire. */
 export class VirtualStick {
   x=0;y=0;private pointer:number|null=null;private keys=new Set<string>();
-  private element:HTMLElement;private change:()=>void;
-  constructor(element:HTMLElement,change:()=>void=()=>{}){
-    this.element=element;this.change=change;
+  private element:HTMLElement;private change:()=>void;private motion=new FollowingStick();private centre={x:0,y:0};
+  private active:()=>boolean;
+  constructor(element:HTMLElement,change:()=>void=()=>{},active:()=>boolean=()=>true){
+    this.element=element;this.change=change;this.active=active;
     element.addEventListener('pointerdown',event=>{
-      if(event.button>0||this.pointer!==null)return;
-      event.preventDefault();this.pointer=event.pointerId;element.setPointerCapture(event.pointerId);this.move(event);
+      if(event.button>0||this.pointer!==null||!this.active())return;
+      event.preventDefault();this.keys.clear();this.pointer=event.pointerId;
+      const r=element.getBoundingClientRect();this.centre={x:r.left+r.width/2,y:r.top+r.height/2};
+      this.motion.radius=Math.min(r.width,r.height)*.32;this.motion.begin(event.clientX,event.clientY);
+      element.setPointerCapture(event.pointerId);element.classList.add('stick-active');this.move(event);
     });
     element.addEventListener('pointermove',event=>{if(event.pointerId===this.pointer)this.move(event);});
     for(const type of ['pointerup','pointercancel','lostpointercapture'])element.addEventListener(type,event=>{
@@ -22,22 +39,28 @@ export class VirtualStick {
     element.addEventListener('keydown',event=>{
       if(!['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(event.key))return;
       event.preventDefault();event.stopPropagation();
+      if(!this.active()||this.pointer!==null)return;
       this.keys.add(event.key);this.keyboardMove();
     });
-    element.addEventListener('keyup',event=>{if(event.key.startsWith('Arrow')){event.preventDefault();event.stopPropagation();this.keys.delete(event.key);this.keyboardMove();}});
+    element.addEventListener('keyup',event=>{if(event.key.startsWith('Arrow')){event.preventDefault();event.stopPropagation();this.keys.delete(event.key);if(this.pointer===null)this.keyboardMove();}});
     element.addEventListener('blur',()=>this.reset());
+    element.addEventListener('contextmenu',event=>event.preventDefault());
   }
   private move(event:PointerEvent){
-    const r=this.element.getBoundingClientRect(),vector=stickVector(event.clientX-r.left-r.width/2,event.clientY-r.top-r.height/2,Math.min(r.width,r.height)*.35);
-    this.set(vector.x,vector.y);
+    event.preventDefault();if(!this.active()){this.reset();return;}
+    this.motion.move(event.clientX,event.clientY);
+    this.element.style.setProperty('--stick-base-x',`${this.motion.origin.x-this.centre.x}px`);
+    this.element.style.setProperty('--stick-base-y',`${this.motion.origin.y-this.centre.y}px`);
+    this.set(this.motion.x,this.motion.y,this.motion.tip.x,this.motion.tip.y);
   }
   private keyboardMove(){const x=Number(this.keys.has('ArrowRight'))-Number(this.keys.has('ArrowLeft')),y=Number(this.keys.has('ArrowDown'))-Number(this.keys.has('ArrowUp')),length=Math.hypot(x,y)||1;this.set(x/length,y/length);}
-  private set(x:number,y:number){
+  private set(x:number,y:number,tipX=x*this.motion.radius,tipY=y*this.motion.radius){
     this.x=x;this.y=y;
-    this.element.style.setProperty('--stick-x',`${x*28}px`);this.element.style.setProperty('--stick-y',`${y*28}px`);
+    this.element.style.setProperty('--stick-x',`${tipX}px`);this.element.style.setProperty('--stick-y',`${tipY}px`);
+    this.element.dataset.stickX=x.toFixed(3);this.element.dataset.stickY=y.toFixed(3);
     this.element.classList.toggle('held',Boolean(x||y));this.change();
   }
-  reset(){const pointer=this.pointer;this.pointer=null;this.keys.clear();if(pointer!==null&&this.element.hasPointerCapture(pointer))this.element.releasePointerCapture(pointer);this.set(0,0);}
+  reset(){const pointer=this.pointer;this.pointer=null;this.keys.clear();if(pointer!==null&&this.element.hasPointerCapture(pointer))this.element.releasePointerCapture(pointer);this.element.classList.remove('stick-active');this.element.style.setProperty('--stick-base-x','0px');this.element.style.setProperty('--stick-base-y','0px');this.set(0,0);}
 }
 
 export function holdControl(button:HTMLButtonElement,change:(held:boolean,cancelled?:boolean)=>void){

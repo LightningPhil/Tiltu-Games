@@ -313,3 +313,55 @@
  #app .arcade-port.ballistics-port .port-mode-actions .mode-card{padding:9px 11px}
  #app .arcade-port.ballistics-port .title-row{margin:6px 0 12px}
 }
+
+/* Keep flight controls in the same thumb order at every viewport size. */
+#app .void-port .flight-bottom{padding-bottom:max(8px,env(safe-area-inset-bottom));}
+#app .void-port .void-control-row.thumb-deck{width:100%;grid-template-columns:var(--thumb-size) minmax(0,1fr) var(--thumb-size);gap:8px;}
+#app .void-port .thumb-aux .pulse-control{min-width:0;display:flex;position:relative;}
+#app .void-port .thumb-aux .pulse-control button{width:100%;}
+#app .void-port .thumb-aux .pulse-control #pulse-charge{position:absolute;bottom:1px;left:2px;right:2px;pointer-events:none;}
+#app .horizon-port #touch-controls.thumb-deck{display:none;inset:auto 8px max(8px,env(safe-area-inset-bottom));width:auto;padding:6px 8px;border:1px solid var(--line);border-radius:14px;background:color-mix(in srgb,var(--surface) 92%,transparent);pointer-events:auto;}
+#app .horizon-port.using-touch #touch-controls.thumb-deck{display:grid;}
+#app .horizon-port .thumb-deck .touch-action{position:static;grid-area:auto;}
+#app .horizon-port .thumb-deck .thumb-fire{grid-area:1/1;}
+#app .horizon-port .thumb-deck #touch-stick{position:relative;inset:auto;}
+#app .horizon-port.using-touch .systems-panel{bottom:142px;}
+#app .horizon-port.using-touch .flight-footer{bottom:130px;}
+#app .horizon-port.using-touch .hud-actions #level-button{display:none;}
+#app .horizon-port #cruise-throttle button{width:48px;height:48px;}
+@media(pointer:coarse),(max-width:700px){
+ #app .horizon-port #touch-controls.thumb-deck{display:grid;}
+ #app .horizon-port .systems-panel{bottom:142px;}
+ #app .horizon-port .flight-footer{bottom:130px;}
+ #app .horizon-port .hud-actions #level-button{display:none;}
+ #app .horizon-port .hud-actions{top:100px;bottom:auto;right:10px;transform:none;gap:8px;}
+ #app .horizon-port .hud-actions button{min-width:48px;min-height:48px;}
+}
+@media(min-width:601px) and (max-height:500px){
+ #app .horizon-port #touch-controls.thumb-deck{bottom:max(4px,env(safe-area-inset-bottom));padding:2px 8px;}
+ #app .horizon-port .hud-actions{top:8px;bottom:auto;right:8px;transform:none;gap:8px;}
+ #app .horizon-port .hud-actions button{min-width:48px;min-height:48px;}
+ #app .horizon-port .hud-actions #level-button{display:none;}
+ #app .horizon-port .systems-panel{bottom:90px;left:12px;max-width:155px;}
+ #app .horizon-port .flight-footer{display:none;}
+}
+
+#app .horizon-port #touch-stick{width:var(--thumb-size);height:var(--thumb-size);border:0;border-radius:16px;background:none;}
+#app .horizon-port #touch-fire{width:76px;height:76px;}
+#app .void-port #fire-btn{width:76px;height:76px;}
+@media(max-width:360px){#app .horizon-port #touch-fire,#app .void-port #fire-btn{width:64px;height:64px;}}
+@media(min-width:601px) and (max-height:500px){#app .horizon-port #touch-fire,#app .void-port #fire-btn{width:68px;height:68px;}}
+
+@media(pointer:coarse),(max-width:700px){#app .horizon-port .hud-actions{top:148px;}}
+@media(min-width:601px) and (max-height:500px){
+ #app .horizon-port .hud-wrapper{padding:8px 240px 8px 12px;gap:8px;}
+ #app .horizon-port .hud-element{flex:1;min-width:0;padding:5px 8px;font-size:16px;}
+ #app .horizon-port .hud-actions{top:8px;}
+ #app .horizon-port .systems-panel{left:auto;right:12px;bottom:90px;width:auto;max-width:none;flex-direction:row;align-items:center;gap:12px;padding:4px 8px;border-radius:9px;background:color-mix(in srgb,var(--surface) 90%,transparent);}
+ #app .horizon-port .systems-panel #energy-box,#app .horizon-port .systems-panel #pulse-box{width:80px;}
+ #app .horizon-port .systems-panel :is(#energy-hint,#afterburner-button,#pulse-box>small){display:none;}
+ #app .horizon-port #cruise-throttle:not([hidden]){display:flex;align-items:center;gap:8px;}
+ #app .horizon-port #cruise-throttle>.hud-label{flex-direction:column;gap:2px;}
+ #app .horizon-port #cruise-throttle>div{margin:0;gap:8px;}
+ #app .horizon-port #cruise-throttle>div>span{display:none;}
+}

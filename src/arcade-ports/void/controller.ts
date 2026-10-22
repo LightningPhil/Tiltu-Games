@@ -162,7 +162,7 @@ const Game = {
     init() {
         this.profile = loadProfile(undefined,Boolean(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches));
         this.touchMode=Boolean(window.matchMedia?.('(pointer: coarse)').matches);
-        this.stick=new VirtualStick(document.getElementById('void-stick'));
+        this.stick=new VirtualStick(document.getElementById('void-stick'),()=>{},()=>this.active&&!this.paused);
         this.fireControl=holdControl(document.getElementById('fire-btn'),held=>{this.touchFire=held;});
         this.resize(); window.addEventListener('resize', () => this.resize()); this.createStars();
         window.visualViewport?.addEventListener('resize',()=>this.resize());
@@ -249,7 +249,7 @@ const Game = {
         for(const key of ['enemies','bullets','missiles','drops','crates','bgStars'])this[key]?.forEach(item=>item.x=item.x/oldWidth*WIDTH);
         document.body.style.setProperty('--arena-top',`${layout.top}px`);document.body.style.setProperty('--arena-center',`${layout.left+layout.width/2}px`);
         document.body.style.setProperty('--banner-top',`${layout.top+layout.height*.22}px`);
-        if(changed)this.pointer.end();
+        if(changed)this.clearKeys();
         if(rotated&&this.active&&!this.paused)this.pauseForFocus();
         if(document.getElementById('shop-screen').style.display==='flex'&&!this.salvagePending)this.openShop();
     },

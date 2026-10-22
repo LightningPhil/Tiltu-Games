@@ -12,6 +12,10 @@ The home library fits game tiles to your screen, with search, categories, recent
 
 Open the play link in a modern browser. There is no account or installation. Computer opponents, graphics, sound and game logic run on your device. Shared-device multiplayer is available in supported games.
 
+On phones, Archive Patrol, Neon Void and Neon Horizon share the same flight controls: **Fire on the left, auxiliary actions in the middle, steering on the right**. Touch anywhere in the stick pad, then drag; the centre follows long drags and returns home on release. A scaled circular dead zone supports small corrections without diagonal speed boosts. Each finger has its own captured input, and pause, cancellation, navigation and resizing release held controls. Existing keyboard, mouse, gamepad and automatic-fire options remain available where supported.
+
+The touch design draws on [Godot's dynamic/following joystick modes](https://docs.godotengine.org/en/stable/classes/class_virtualjoystick.html), [Google's touch-target and spacing guidance](https://support.google.com/accessibility/android/answer/7101858?hl=en), and [Xbox's input-accessibility guidance on alternative controls and automatic holds](https://learn.microsoft.com/en-us/gaming/accessibility/xbox-accessibility-guidelines/107). Flight action targets are at least 48 CSS pixels with 8-pixel gaps; compact screens retain the same control order.
+
 Progress and preferences are stored in your browser on this site's origin. They do not sync between devices or browsers. Clearing site data clears saves; private browsing or restricted storage can prevent lasting saves. Saves from a different website or a local file are separate.
 
 The production game is a self-contained `index.html`. You may save an unmodified copy for your own personal offline play under the [license](LICENSE); it needs no internet connection or server once saved. Local-file storage behaviour varies by browser. The hosted site itself is not an installable offline PWA.

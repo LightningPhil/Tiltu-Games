@@ -10,6 +10,7 @@ import {patrolMapPoint,transferPatrolScene} from './archive-renderer.ts';
 import {renderPatrol} from './patrol-view.ts';
 import {patrolKey,patrolFlightInput,patrolKeyIdentity} from './patrol-input.ts';
 import './patrol.css';
+import {VirtualStick} from './arcade-controls.ts';
 /** One animation loop owns drawing. HUD updates never replace the canvas or move the page. */
 export class PatrolController {
   private game:'salvage'|null=null;
@@ -23,7 +24,7 @@ export class PatrolController {
   private pointerControls=new Map<number,HTMLElement>();
   private difficulty=2;
   private audio=new ArcadeAudio();private lastShot=0;
-  private patrolMissions=false;private stickId:number|null=null;private stick={x:0,y:0};
+  private patrolMissions=false;private stick:VirtualStick|null=null;
   private heard={shots:0,kills:0,scans:0};
   private canvasSession:SalvageSession|null=null;
   private docking:{x:number;y:number;angle:number;clock:number}|null=null;
@@ -32,11 +33,9 @@ export class PatrolController {
     window.addEventListener('mouseup',e=>{if(e.button===0)this.mouseFire=false;});
     root.addEventListener('mousedown',e=>this.mouseDown(e));
     window.addEventListener('blur',()=>this.pause());
+    window.addEventListener('resize',()=>this.clearInput());
     document.addEventListener('visibilitychange',()=>{if(document.hidden)this.pause();});
     root.addEventListener('pointerdown',e=>this.pointerDown(e));
-    root.addEventListener('pointermove',e=>{
-      if(e.pointerId===this.stickId){e.preventDefault();this.updateStick(e);}
-    });
     root.addEventListener('contextmenu',e=>{if(this.game==='salvage'&&e.target===this.canvas)e.preventDefault();});
     window.addEventListener('pointerup',e=>this.pointerEnd(e.pointerId));
     window.addEventListener('pointercancel',e=>this.pointerEnd(e.pointerId));
@@ -55,12 +54,13 @@ export class PatrolController {
   private configureAudio():void {const s=this.state.actionArcade;this.audio.configure(s.music,s.volume,s.effects);}
   private session():SalvageSession|null {return this.game?this.state.actionArcade[this.game]:null;}
   private running():boolean {const s=this.session();return !!s&&!s.paused&&['playing','clearing','flying'].includes(s.phase);}
-  private clearInput():void {this.held.clear();this.pointers.clear();this.mouseFire=false;this.stickId=null;this.stick={x:0,y:0};const captured=[...this.pointerControls];this.pointerControls.clear();for(const [id,control] of captured)if(control.hasPointerCapture(id))control.releasePointerCapture(id);const thumb=this.root.querySelector<HTMLElement>('.patrol-stick-thumb');if(thumb)thumb.style.transform='';}
+  private clearInput():void {this.held.clear();this.pointers.clear();this.mouseFire=false;this.stick?.reset();const captured=[...this.pointerControls];this.pointerControls.clear();for(const [id,control] of captured){control.classList.remove('held');control.setAttribute('aria-pressed','false');if(control.hasPointerCapture(id))control.releasePointerCapture(id);}}
   private pause():void {
     const s=this.session();this.clearInput();this.audio.pause();if(!s||s.paused)return;s.paused=true;this.changed();
   }
   leave():void {const s=this.session();if(s)s.paused=true;if(this.docking&&this.game==='salvage')this.state.actionArcade.salvage!.x=this.state.actionArcade.salvage!.y=900;this.docking=null;this.clearInput();this.audio.pause();cancelAnimationFrame(this.frame);this.frame=0;this.canvas=null;this.canvasSession=null;this.game=null;this.settings=false;this.confirmReset=false;this.patrolMissions=false;}
   mount():void {
+    this.clearInput();const pad=this.root.querySelector<HTMLElement>('[data-patrol-stick]');this.stick=pad?new VirtualStick(pad,()=>{},()=>this.running()):null;
     const touch=this.root.querySelector('.patrol-touch-flight'),world=this.root.querySelector('.patrol-world');if(touch&&world)world.after(touch);
     const game='salvage';this.ensure();cancelAnimationFrame(this.frame);const previous=this.canvas;this.canvas=this.root.querySelector<HTMLCanvasElement>('#action-canvas');this.palette=readArcadePalette();
     if(game==='salvage'){const f=this.state.actionArcade.salvage!;if(this.canvasSession===f)transferPatrolScene(previous,this.canvas);this.canvasSession=f;this.heard={shots:f.stats.shots,kills:f.kills,scans:f.mission.beacons.filter(b=>b.scanned).length};}
@@ -70,7 +70,7 @@ export class PatrolController {
   private paint():void {if(!this.canvas||!this.palette)return;const s=this.state.actionArcade;if(this.game==='salvage'){let display=s.salvage!;if(this.docking){const d=this.docking,t=Math.min(1,d.clock/.7),ease=t*t*(3-2*t),angle=Math.atan2(Math.sin(-Math.PI/2-d.angle),Math.cos(-Math.PI/2-d.angle));display={...display,x:d.x+(900-d.x)*ease,y:d.y+(900-d.y)*ease,angle:d.angle+angle*ease,elapsed:display.elapsed+d.clock};}drawSalvage(this.canvas,display,this.palette,{thrust:display.engineThrottle,tractor:this.pressed('tractor')});}}
   private pressed(...actions:string[]):boolean {return actions.some(action=>[...this.held.values(),...this.pointers.values()].includes(action));}
   private flightInput():FlightInput {
-    return patrolFlightInput([...this.held.values(),...this.pointers.values()],this.stick,this.mouseFire,!!this.state.actionArcade.salvage!.arcade?.autoFire);
+    return patrolFlightInput([...this.held.values(),...this.pointers.values()],this.stick??{x:0,y:0},this.mouseFire,!!this.state.actionArcade.salvage!.arcade?.autoFire);
   }
 
   private tick(now:number):void {
@@ -192,15 +192,13 @@ export class PatrolController {
   private pointerDown(e:PointerEvent):void {
     if(!this.game)return;const target=e.target as HTMLElement;
     if(e.button!==0)return;const hold=target.closest<HTMLButtonElement>('[data-action-hold]');
-    const stick=target.closest<HTMLButtonElement>('[data-patrol-stick]');if(stick&&this.running()){if(this.stickId!==null)return;e.preventDefault();this.stickId=e.pointerId;this.pointerControls.set(e.pointerId,stick);stick.setPointerCapture(e.pointerId);this.updateStick(e);return;}
     if(hold?.disabled)return;
     if(hold&&this.running()){
-      e.preventDefault();this.pointers.set(e.pointerId,hold.dataset.actionHold!);this.pointerControls.set(e.pointerId,hold);hold.setPointerCapture(e.pointerId);
+      e.preventDefault();this.pointers.set(e.pointerId,hold.dataset.actionHold!);this.pointerControls.set(e.pointerId,hold);hold.setPointerCapture(e.pointerId);hold.classList.add('held');hold.setAttribute('aria-pressed','true');
       if(this.game==='salvage'&&hold.dataset.actionHold==='fire')this.firePatrol();
     }else if(target===this.canvas)this.canvas!.focus({preventScroll:true});
   }
 
-  private updateStick(e:PointerEvent):void {const pad=this.root.querySelector<HTMLElement>('[data-patrol-stick]'),thumb=this.root.querySelector<HTMLElement>('.patrol-stick-thumb');if(!pad)return;const r=pad.getBoundingClientRect(),radius=r.width*.33;let x=(e.clientX-r.left-r.width/2)/radius,y=(e.clientY-r.top-r.height/2)/radius;const length=Math.hypot(x,y);if(length>1){x/=length;y/=length;}this.stick={x:Math.abs(x)<.1?0:x,y:Math.abs(y)<.1?0:y};if(thumb)thumb.style.transform=`translate(${x*radius}px,${y*radius}px)`;}
-  private pointerEnd(id:number):void {this.pointers.delete(id);this.pointerControls.delete(id);if(id===this.stickId){this.stickId=null;this.stick={x:0,y:0};const thumb=this.root.querySelector<HTMLElement>('.patrol-stick-thumb');if(thumb)thumb.style.transform='';}}
+  private pointerEnd(id:number):void {const control=this.pointerControls.get(id);this.pointers.delete(id);this.pointerControls.delete(id);if(control&&!Array.from(this.pointerControls.values()).includes(control)){control.classList.remove('held');control.setAttribute('aria-pressed','false');}}
   render():string {this.ensure();return renderPatrol(this.state.actionArcade.salvage!,this.state.actionArcade,{settings:this.settings,settingsTab:this.settingsTab,missions:this.patrolMissions,confirmReset:this.confirmReset,difficulty:this.difficulty,docking:!!this.docking});}
 }

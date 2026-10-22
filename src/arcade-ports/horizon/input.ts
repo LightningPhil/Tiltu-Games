@@ -1,5 +1,6 @@
 /** Ported from neon-horozon; the standalone source remains independent. */
 import {document,window,localStorage,requestAnimationFrame,cancelAnimationFrame,setTimeout,clearTimeout,setInterval,clearInterval,AudioContext,ResizeObserver} from './environment.ts';
+import {VirtualStick} from '../../arcade-controls.ts';
 import { clamp, flightStick } from './flight.ts';
 import { shapeAxis, type Settings } from './game.ts';
 
@@ -26,7 +27,7 @@ export class Input {
     dragPointer: number | null = null;
     dragX = 0;
     dragY = 0;
-    stickPointer: number | null = null;
+    stick: VirtualStick | null = null;
     actionPointers = new Map<HTMLElement, Set<number>>();
     actionBindings: { action: string; pointers: Set<number> }[] = [];
     mouseStick = { x: 0, y: 0, active: false };
@@ -123,14 +124,11 @@ export class Input {
         this.keys.clear(); this.pointerFire = this.pulseQueued = this.levelQueued = false; this.mouseX = this.mouseY = 0;
         this.mouseStick = { x: 0, y: 0, active: false };
         this.touch.x = this.touch.y = 0; this.touch.fire = this.touch.boost = this.touch.brake = false;
-        const stick = document.getElementById('touch-stick');
-        if (this.stickPointer !== null && stick?.hasPointerCapture(this.stickPointer)) stick.releasePointerCapture(this.stickPointer);
-        this.stickPointer = null;
+        this.stick?.reset();
         for (const [button, pointers] of this.actionPointers) {
             for (const pointer of pointers) if (button.hasPointerCapture(pointer)) button.releasePointerCapture(pointer);
-            pointers.clear();
+            pointers.clear();button.setAttribute('aria-pressed','false');
         }
-        const knob = document.getElementById('stick-knob'); if (knob) knob.style.transform = 'translate(-50%, -50%)';
         document.querySelectorAll('.touch-action').forEach(button => button.classList.remove('held'));
     }
     release() { this.clear(); if (document.pointerLockElement === this.canvas) document.exitPointerLock(); }
@@ -161,8 +159,8 @@ export class Input {
         this.mouseX -= mouseX; this.mouseY -= mouseY;
         const stickMode = this.settings.controls === 'flightstick';
         const mouse = stickMode && this.mouseStick.active ? flightStick(this.mouseStick.x, this.mouseStick.y, this.mouseRadius) : { x: 0, y: 0 };
-        const pitch = Number(down('ArrowUp') || !stickMode && down('KeyW')) - Number(down('ArrowDown') || !stickMode && down('KeyS')) - shapeAxis(pad?.axes[1] || 0) - shapeAxis(this.touch.y) - mouse.y;
-        const yaw = Number(down('ArrowLeft') || !stickMode && down('KeyA')) - Number(down('ArrowRight') || !stickMode && down('KeyD')) - shapeAxis(pad?.axes[0] || 0) - shapeAxis(this.touch.x) - mouse.x;
+        const pitch = Number(down('ArrowUp') || !stickMode && down('KeyW')) - Number(down('ArrowDown') || !stickMode && down('KeyS')) - shapeAxis(pad?.axes[1] || 0) - this.touch.y - mouse.y;
+        const yaw = Number(down('ArrowLeft') || !stickMode && down('KeyA')) - Number(down('ArrowRight') || !stickMode && down('KeyD')) - shapeAxis(pad?.axes[0] || 0) - this.touch.x - mouse.x;
         return { pitch: clamp(pitch, -1, 1), yaw: clamp(yaw, -1, 1),
             roll: clamp(Number(down('KeyQ')) - Number(down('KeyE')) - shapeAxis(pad?.axes[2] || 0), -1, 1),
             fire: down('Space') || this.pointerFire || this.touch.fire || button(7) || button(0),
@@ -173,32 +171,21 @@ export class Input {
             strafeY: Number(down('KeyT')) - Number(down('KeyG')), drift: down('AltLeft', 'AltRight') || button(4) };
     }
     bindTouch() {
-        const stick = document.getElementById('touch-stick')!, knob = document.getElementById('stick-knob')!;
-        const move = (event: PointerEvent) => {
-            const rect = stick.getBoundingClientRect(), dx = (event.clientX - rect.left - rect.width / 2) / (rect.width * 0.34), dy = (event.clientY - rect.top - rect.height / 2) / (rect.height * 0.34);
-            const magnitude = Math.max(1, Math.hypot(dx, dy)); this.touch.x = dx / magnitude; this.touch.y = dy / magnitude;
-            knob.style.transform = `translate(calc(-50% + ${this.touch.x * 34}px), calc(-50% + ${this.touch.y * 34}px))`;
-        };
-        stick.addEventListener('pointerdown', event => {
-            if (!this.active() || this.stickPointer !== null || event.button>0) return;
-            this.stickPointer = event.pointerId; stick.setPointerCapture(this.stickPointer); move(event); event.preventDefault();
-        });
-        stick.addEventListener('pointermove', event => { if (this.stickPointer === event.pointerId) move(event); });
-        const release = (event: PointerEvent) => { if (this.stickPointer === event.pointerId) { this.stickPointer = null; this.touch.x = this.touch.y = 0; knob.style.transform = 'translate(-50%, -50%)'; } };
-        stick.addEventListener('pointerup', release); stick.addEventListener('pointercancel', release); stick.addEventListener('lostpointercapture', release);
+        const stick = document.getElementById('touch-stick')!;
+        this.stick = new VirtualStick(stick,()=>{this.touch.x=this.stick?.x??0;this.touch.y=this.stick?.y??0;},this.active);
         for (const [id, action] of [['touch-fire', 'fire'], ['touch-boost', 'boost'], ['afterburner-button', 'boost'], ['touch-brake', 'brake'], ['touch-pulse', 'pulse']] as const) {
             const button = document.getElementById(id); if (!button) continue;
             const pointers = new Set<number>();
             this.actionPointers.set(button, pointers);
             this.actionBindings.push({ action, pointers });
             button.addEventListener('pointerdown', event => {
-                if (!this.active()) return;
-                pointers.add(event.pointerId); button.setPointerCapture(event.pointerId); button.classList.add('held'); event.preventDefault();
+                if (!this.active() || event.button>0) return;
+                pointers.add(event.pointerId); button.setPointerCapture(event.pointerId); button.classList.add('held');button.setAttribute('aria-pressed','true'); event.preventDefault();
                 if (action === 'pulse') this.pulseQueued = true; else this.touch[action] = true;
             });
             const releaseAction = (event: PointerEvent) => {
                 pointers.delete(event.pointerId);
-                if (!pointers.size) { if (action !== 'pulse') this.touch[action] = this.actionBindings.some(binding => binding.action === action && binding.pointers.size > 0); button.classList.remove('held'); }
+                if (!pointers.size) { if (action !== 'pulse') this.touch[action] = this.actionBindings.some(binding => binding.action === action && binding.pointers.size > 0); button.classList.remove('held');button.setAttribute('aria-pressed','false'); }
             };
             button.addEventListener('pointerup', releaseAction); button.addEventListener('pointercancel', releaseAction); button.addEventListener('lostpointercapture', releaseAction);
         }

@@ -1,7 +1,10 @@
 import {panelNavigation} from '../../arcade-controls.ts';
+import {renderGameHelp} from '../../game-help.ts';
+import {bindGameHelp} from '../../game-help-view.ts';
 export function whackerNavigation(root:HTMLElement){
   const get=(selector:string)=>root.querySelector<HTMLElement>(selector)!;
   const sidebar=get('.sidebar'),host=document.createElement('div');host.id='whack-options';
+  const guide=get('.guide');guide.removeAttribute('aria-labelledby');guide.setAttribute('aria-label','Game help');guide.innerHTML=renderGameHelp('whacker');bindGameHelp(guide);
   const custom=get('#custom-menu') as HTMLDetailsElement;custom.open=true;
   const pace=document.createElement('section');pace.className='panel';
   for(const selector of ['.pace-heading','#difficulty-picker','#pace-note','.tap-settings','#tap-note','.practice-toggle'])pace.append(get(selector));

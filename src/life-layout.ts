@@ -1,4 +1,6 @@
 import {panelNavigation} from './arcade-controls.ts';
+import {renderGameHelp} from './game-help.ts';
+import {bindGameHelp} from './game-help-view.ts';
 
 export function lifeLayout(root:HTMLElement,selected:number,onSelect:(index:number)=>void){
   const main=root.querySelector<HTMLElement>('.arcade-page')!,arena=main.querySelector<HTMLElement>('.arena')!,layout=main.querySelector('.play-layout')!;
@@ -8,7 +10,7 @@ export function lifeLayout(root:HTMLElement,selected:number,onSelect:(index:numb
   const groups=[{name:'Play',elements:[arena]},{name:'World',elements:[settings]}];
   if(patterns){patterns.removeAttribute('data-remember');patterns.open=true;groups.push({name:'Patterns',elements:[patterns]});}
   if(snapshots){snapshots.removeAttribute('data-remember');snapshots.open=true;groups.push({name:'Snapshots',elements:[snapshots]});}
-  help.setAttribute('open','');groups.push({name:'Help',elements:[help]});
+  const guide=document.createElement('div');guide.innerHTML=renderGameHelp('life');bindGameHelp(guide);help.remove();groups.push({name:'Help',elements:[guide]});
   const host=document.createElement('div');host.id='life-workbench';
   panelNavigation(host,'Life workspace sections',groups,Math.min(selected,groups.length-1),onSelect);
   main.classList.add('life-page');main.append(host,status);layout.remove();

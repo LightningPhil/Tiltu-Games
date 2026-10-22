@@ -4,7 +4,7 @@ A collection of 54 browser games, created by **Philip Leichauer** for his daught
 
 **[Play Tiltu’s Games](https://lightningphil.github.io/Tiltu-Games/)**
 
-Explore board games, cards, puzzles and arcade games, with five shared themes, computer opponents, hints and saved progress. The collection includes Chess, Draughts, Go, Sudoku, Patience (Klondike, FreeCell and Spider), TetriGrid, Archive Patrol, Neon Void, Whack-a-Party!, Neon Horizon and Neon Synth Ballistics. See the [game guide](GAME_GUIDE.md) for controls, variants and rule choices, or open **How to play** inside a game.
+Explore board games, cards, puzzles and arcade games, with five shared themes, computer opponents, hints and saved progress. The collection includes Chess, Draughts, Go, Sudoku, Patience (Klondike, FreeCell and Spider), TetriGrid, Archive Patrol, Neon Void, Whack-a-Party!, Neon Horizon and Neon Synth Ballistics. See the [game guide](GAME_GUIDE.md) for controls, variants and rule choices, or tap **? Game help** inside any game. Every guide includes **Introduction**, **Getting started**, **Tips** and **Full rules**, with section shortcuts and notes on the app’s particular variants.
 
 The home library fits game tiles to your screen, with search, categories, recent games and page controls always close by. **Switch game** opens the same library during play, with no need to scroll through a long menu. Searches for FreeCell, Spider or Klondike open that variant directly.
 
@@ -44,6 +44,8 @@ npm run preview
 ```
 
 Vite's development and preview servers are local development tools. They are not needed by the deployed games. `dist_single/index.html` contains the game, with scripts, styles, artwork and browser workers inlined. The output also includes `LICENSE.txt` and `THIRD_PARTY_NOTICES.txt` for convenient reference.
+
+Help content lives in `src/game-help.ts`, with the existing Club Plus variant rules shared from `src/club-plus/rules.ts`. The header help dialog and workspace Help tabs use the same guide. Keep all four sections accurate when adding or changing a game.
 
 The browser tests check every library entry, gameplay, saves, offline play and the `/Tiltu-Games/` hosting path. They verify that every game is reachable without scrolling through both the home library and in-game picker, including search, recent games and returning to saved progress. They exercise all nine Arcade & worlds games and all 45 puzzle, board and card workspaces at phone, landscape and desktop sizes. Checks include legal touch moves, dice, scoring, card passing/bidding/discarding, all Patience and Poker variants, safe board panning, all five themes, independent arcade touch controls and JPG character imports:
 

@@ -5,6 +5,7 @@ import {plusGraphic} from './club-plus-art.ts';
 import { CollectionController, collectionRoute, isCollectionGame } from './collection/controller.ts';
 import { GAME_NAMES } from './catalog.ts';
 import {GameLibrary} from './game-library.ts';
+import {GameHelpView} from './game-help-view.ts';
 import {collectionGraphic} from './collection-art.ts';
 import type { PatienceVariant } from './collection/patience-collection.ts';
 import { patiencePicker } from './collection/view.ts';
@@ -16,6 +17,7 @@ import {GameWorkspace} from './game-workspace.ts';
 import './visuals.css';
 import './collection/collection.css';
 import './club-plus/plus.css';
+import './game-help.css';
 import { BoardArtwork, sudokuBoxTint, sudokuFinishedRows } from './board-art.ts';
 import { chessGraphic, clubMark, discEmblem, gameGraphic } from './graphics.ts';
 import { explainFour } from './four-guide.ts';
@@ -637,7 +639,7 @@ function renderHeader(): string {
   const current = state.preferences.game;
   return `<header class="topbar"><button class="brand" data-game="home" aria-label="Tiltu’s Games home"><span class="brand-mark" aria-hidden="true">${clubMark()}</span><span>TILTU’S<span class="brand-light"> GAMES</span></span></button>
     ${current==='home'?'':`<button type="button" class="library-open" id="game-library-open" data-library-open aria-label="Switch game" aria-haspopup="dialog" aria-expanded="false"><span class="library-open-icon" aria-hidden="true">▦</span><span class="library-open-label"><strong>${names[current]}</strong><small>Switch game ▾</small></span></button>`}
-    <label class="theme-control"><span>Theme</span><select id="theme" aria-label="Theme">${THEMES.map(t => `<option value="${t}" ${state.preferences.theme === t ? 'selected' : ''}>${themeNames[t]}</option>`).join('')}</select></label>${current === 'ski' ? '<button class="button ski-setup-toggle" data-arcade="setup" aria-label="Setup and help">⚙</button>' : ''}</header>`;
+    <label class="theme-control"><span>Theme</span><select id="theme" aria-label="Theme">${THEMES.map(t => `<option value="${t}" ${state.preferences.theme === t ? 'selected' : ''}>${themeNames[t]}</option>`).join('')}</select></label>${current==='home'?'':'<button type="button" class="game-help-open" id="game-help-open" data-help-open aria-label="Game help" aria-haspopup="dialog" title="Game help">?</button>'}${current === 'ski' ? '<button class="button ski-setup-toggle" data-arcade="setup" aria-label="Setup and help">⚙</button>' : ''}</header>`;
 }
 
 function renderHome(): string {
@@ -803,15 +805,18 @@ function renderSudoku(): string {
     <div class="status-card ${solved ? 'result-card' : ''}" role="status" aria-live="polite" aria-atomic="true"><span class="status-icon" aria-hidden="true">${solved ? '✦' : s?.paused ? 'Ⅱ' : '▦'}</span><div><h2>${solved ? 'Puzzle complete!' : generating ? 'One moment…' : s?.paused ? 'Paused.' : 'One number at a time.'}</h2><p>${escape(detail)}</p></div>${solved ? '<button class="button primary" id="play-again">New puzzle ↗</button>' : ''}</div><div class="game-meta"><span>${s && !s.paused ? `Selected: row ${Math.floor(s.selected / s.size) + 1}, column ${s.selected % s.size + 1}` : 'Your progress is kept here'}</span><span>${prefs.notes ? '✎ Pencil mode' : 'Number mode'}</span></div></section></div></main>`;
 }
 
+function suspendForReference(){tickTimer();cancelWork();cancelMotion();actionArcade.leave();arcade.leave();collection.leave();plus.leave();countingTutor.leave();pokerRoom.leave();clearTutor();persist();}
+function resumeAfterReference(){timerStart=performance.now();render();if(state.preferences.game==='sudoku'&&!state.sudoku)makePuzzle();else scheduleComputer();}
+const gameHelp=new GameHelpView(app,{current:()=>state.preferences.game,beforeOpen:suspendForReference,afterClose:resumeAfterReference});
 const gameLibrary=new GameLibrary(app,{current:()=>state.preferences.game,hasProgress:gameProgress,
   artwork:game=>isActionGame(game)?actionGraphic(game):isPlus(game)?plusGraphic(game):isCollectionGame(game)?collectionGraphic(game):gameGraphic(game),
-  beforeOpen:()=>{tickTimer();cancelWork();cancelMotion();actionArcade.leave();arcade.leave();collection.leave();plus.leave();countingTutor.leave();pokerRoom.leave();clearTutor();persist();},
+  beforeOpen:suspendForReference,
   choose:(game,patience)=>{if(patience)state.preferences.patienceVariant=patience;changeGame(game);},
-  afterCancel:()=>{timerStart=performance.now();render();if(state.preferences.game==='sudoku'&&!state.sudoku)makePuzzle();else scheduleComputer();}
+  afterCancel:resumeAfterReference
 });
 const gameWorkspace=new GameWorkspace(app);
 function render(): void {
-  if(gameLibrary.isOpen)return;
+  if(gameLibrary.isOpen||gameHelp.isOpen)return;
   const scrollPositions = ['.mine-scroll', '.life-stage','.workspace-surface','.workspace-board','.workspace-hand'].map(selector => { const el = app.querySelector(selector); return { selector, left: el?.scrollLeft ?? 0, top: el?.scrollTop ?? 0 }; });
   const focus = document.activeElement as HTMLElement;
   const blackjackFocus = !!focus?.closest('.blackjack-actions');

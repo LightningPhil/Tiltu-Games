@@ -2,6 +2,8 @@ import {GAME_CATEGORY} from './catalog.ts';
 import {panelNavigation} from './arcade-controls.ts';
 import type {Game} from './state.ts';
 import {prepareCardWorkspace} from './card-workspace.ts';
+import {renderGameHelp} from './game-help.ts';
+import {bindGameHelp} from './game-help-view.ts';
 
 const puzzleBoards:Record<string,string>={sudoku:'.sudoku-board,.board-loading',mines:'.mine-window',tetravex:'.tetra-tables',mahjong:'.mahjong-board',sliding:'.sliding-board',pegs:'.peg-board',nonograms:'.nonogram-board',memory:'.memory-grid',kakuro:'.plus-number-board',futoshiki:'.futoshiki-board',skyscrapers:'.skyscrapers-board',slitherlink:'.plus-loop-board',hashi:'.plus-hashi-board',tangrams:'.tangram-stage',wordsearch:'.wordsearch-grid'};
 const boardGames:Record<string,string>={snakes:'.snakes-board',senet:'.senet-board',ludo:'.ludo-board',dominoes:'.domino-line',chinese:'.plus-hop-network',ur:'.ur-board',gomoku:'.plus-gomoku',halma:'.plus-halma',fox:'.plus-hop-network',tafl:'.plus-tafl',nim:'.plus-nim-board',hex:'.plus-hex',four:'.four-board',draughts:'.draughts-board',chess:'.chess-board',go:'.go-board',noughts:'.noughts-board',reversi:'.reversi-board',backgammon:'.backgammon-board',dots:'.dots-board',morris:'.morris-board',kalah:'.kalah-board'};
@@ -118,6 +120,7 @@ export class GameWorkspace {
   panelNavigation(host,'Game sections',groups,Math.max(0,groups.findIndex(group=>group.name===this.tabs.get(game))),index=>this.tabs.set(game,groups[index].name));
   host.querySelectorAll('[role=tab]').forEach((tab,index)=>{tab.id=`workspace-tab-${groups[index].name.toLowerCase()}`;host.querySelector(`[role=tabpanel]:nth-of-type(${index+1})`)?.setAttribute('aria-labelledby',tab.id);});
   this.selectPlay=()=>{(host.querySelector('[role=tab]') as HTMLButtonElement).click();(host.querySelector('[role=tab]') as HTMLButtonElement).focus({preventScroll:true});};
+  help.innerHTML=renderGameHelp(game as Exclude<Game,'home'>);bindGameHelp(help);
   const license=this.root.querySelector('#license-info');if(license)help.append(license);
   main.append(host);layout.remove();
   this.resize=new ResizeObserver(()=>this.fitBoard(surface,board));this.resize.observe(surface);this.fitBoard(surface,board);

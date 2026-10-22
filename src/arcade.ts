@@ -1,5 +1,7 @@
 import {SKILL_NAMES} from './skill.ts';
 import {panelNavigation} from './arcade-controls.ts';
+import {renderGameHelp} from './game-help.ts';
+import {bindGameHelp} from './game-help-view.ts';
 import {lifeLayout} from './life-layout.ts';
 import LifeWorker from './ai-worker.ts?worker&inline';
 import { tetraJoinedEdges } from './board-art.ts';
@@ -83,7 +85,9 @@ export class ArcadeController {
     if(game==='ski'){
       const panel=this.app.querySelector<HTMLElement>('.ski-settings-panel')!,children=[...panel.children],help=children.findIndex(e=>e.tagName==='H2'&&e.textContent==='How to play'),done=children.at(-1)!;
       const host=document.createElement('div');host.id='ski-setup-panels';
-      panelNavigation(host,'Ski setup sections',[{name:'Run & steering',elements:children.slice(0,help)},{name:'How to play',elements:children.slice(help,-1)}],this.skiSetupTab,index=>{this.skiSetupTab=index;});
+      const guide=document.createElement('div');guide.innerHTML=renderGameHelp('ski');bindGameHelp(guide);
+      children.slice(help,-1).forEach(element=>element.remove());
+      panelNavigation(host,'Ski setup sections',[{name:'Run & steering',elements:children.slice(0,help)},{name:'How to play',elements:[guide]}],this.skiSetupTab,index=>{this.skiSetupTab=index;});
       panel.append(done,host);
     }
     this.app.querySelector<HTMLDetailsElement>('.ski-settings')?.addEventListener('toggle', event => {

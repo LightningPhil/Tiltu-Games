@@ -1,16 +1,19 @@
 import {panelNavigation} from '../../arcade-controls.ts';
+import {renderGameHelp} from '../../game-help.ts';
+import {bindGameHelp} from '../../game-help-view.ts';
 export function horizonNavigation(root:HTMLElement){
   const get=(s:string)=>root.querySelector<HTMLElement>(s)!;
   const field=(id:string)=>[get(`label[for="${id}"]`),get(`#${id}`)];
   const check=(id:string)=>get(`#${id}`).closest('label')!;
   const panel=get('#load-screen .menu-panel'),host=document.createElement('div');host.id='horizon-deck';
   const manual=get('.flight-manual') as HTMLDetailsElement;manual.open=true;
+  const guide=document.createElement('div');guide.innerHTML=renderGameHelp('horizon');bindGameHelp(guide);
   panelNavigation(host,'Flight deck sections',[
     {name:'Fly',elements:[get('.field-row'),get('#cruise-setup'),get('#briefing-title'),get('#mode-description'),get('.route-picker'),get('#launch-note')]},
     {name:'Controls',elements:[...field('controls'),get('#control-summary'),...field('sensitivity'),get('.assist-options'),check('invert-y')]},
     {name:'Look',elements:[...field('visual-style'),...field('quality'),...field('view'),check('reduced-motion')]},
     {name:'Sound',elements:[check('sound'),check('music'),get('#load-screen .soundtrack-settings'),get('#music-volume').closest('label')!,get('#effects-volume').closest('label')!]},
-    {name:'Guide',elements:[manual,get('#mission-route')]},
+    {name:'Guide',elements:[guide,manual,get('#mission-route')]},
   ]);
   // All inputs remain the same live nodes, with their existing handlers and IDs.
   get('.setup-grid').replaceWith(host);

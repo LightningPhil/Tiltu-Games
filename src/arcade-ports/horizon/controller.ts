@@ -8,7 +8,7 @@ import { MUSIC_TRACKS, isMusicTrack } from './soundtrack.ts';
 import { FLIGHT, DIFFICULTIES, clamp, pilotAxis, flightVelocity, advanceSpeed, interceptTime, segmentBoxFraction } from './flight.ts';
 import { rotateBody, readAttitude, autoBankAngle, recoverBody, liftAndGravity, chaseCounterBank } from './flight-body.ts';
 import { SECTORS, ENEMIES, ENERGY, createRun, tickRun, damageRun, killReward, gateReward, nearMissReward, rankRun,
-    tickEnergy, usePulse, crossesGate, randomSource, parseSettings, parseScores, sentinelCruise, dodgeReward, type Score } from './game.ts';
+    tickEnergy, usePulse, crossesGate, randomSource, parseSettings, parseScores, sentinelCruise, dodgeReward, CRASH_DURATION, type Score } from './game.ts';
 import { attackPlan, closestApproach, patrolPlan, cannonStep } from './combat.ts';
 import { routeCode, parseRoute } from './routes.ts';
 import { gateApproach, clearApproach } from './navigation.ts';
@@ -36,7 +36,9 @@ const effects = new Effects(scene);
 let airframe = createCraft(1, false, settings.visualStyle); airframe.scale.multiplyScalar(.26); airframe.rotation.y = Math.PI; airframe.position.y = -1; player.add(airframe); airframe.visible = false;
 const airflow = new Airflow(player);
 let renderer: any, presentation: FlightRenderer, city: City, controls: Input;
-let state: 'menu' | 'playing' | 'paused' | 'results' = 'menu';
+let state: 'menu' | 'playing' | 'paused' | 'crashing' | 'results' = 'menu';
+let crashAge = 0, crashReason = 'AIRFRAME DESTROYED';
+const crashOrigin = new THREE.Vector3(), crashCameraOffset = new THREE.Vector3();
 let run = createRun(settings.mode, settings.difficulty, 1), rng = randomSource(1);
 let enemies: any[] = [], lasers: any[] = [], projectiles: any[] = [];
 let gate: any = null, gateTimer = 6, boss: any = null, nextEnemyId = 0;
@@ -80,6 +82,7 @@ function init() {
     renderer.domElement.setAttribute('aria-label', 'Neon Horizon flight view'); renderer.domElement.id = 'flight-view';
     renderer.domElement.tabIndex=0;
     document.body.appendChild(renderer.domElement);
+    renderer.domElement.insertAdjacentHTML('afterend','<div id="crash-animation" role="status" aria-live="assertive" hidden><strong>SHIP DESTROYED</strong><span id="crash-cause"></span></div>');
     if (diagnostics) {
         const output = document.createElement('output'); output.id = 'render-stats'; output.style.cssText = 'position:fixed;bottom:0;left:0;z-index:200;background:#020a12dd;color:#b4f7db;padding:5px;font:11px monospace;pointer-events:none'; document.body.append(output);
     }
@@ -258,8 +261,8 @@ function updateSetup() {
     const descriptions = {
         mission: 'Clear Neon Mile, survive Crossfire, then defeat the Sentinel. Fly recharge gates to recover and extend your contract.',
         endless: 'An open-ended city hunt. Build your score against increasingly dangerous patrols. How long can you hold the skyline?',
-        practice: 'Eight short flying lessons, then free practice. No clock, hostile fire, or shield loss. Learn the controls at your pace. Scores are not recorded.',
-        cruise: 'The city is yours. No hostiles, deadline or damage. Follow the recharge gates, skim the avenues or climb into the sunset. Switch views with V.',
+        practice: 'Eight short flying lessons, then free practice. No clock or hostile fire, but every collision destroys your ship. Scores are not recorded.',
+        cruise: 'The city is yours. No hostiles or deadline. Avoid every collision: one impact destroys your ship. Follow the gates and switch views with V.',
     };
     el('mode-description').textContent = descriptions[settings.mode];
     el('briefing-title').textContent = settings.mode === 'cruise' ? 'Lose yourself in the skyline.' : settings.mode === 'practice' ? 'Learn the controls. Find your line.' : settings.mode === 'endless' ? 'Keep the city clear. Hold the skyline.' : 'Clear the patrol. Break the Sentinel.';
@@ -360,6 +363,8 @@ function startGame(seed?: number) {
     lesson = createLesson(); flightDelta = { yaw: 0, pitch: 0 };
     flightDistance = peakSpeed = 0;
     runId = `${newSeed.toString(36)}-${Date.now().toString(36)}`; nextEnemyId = 0;
+    player.add(camera); applyView(); camera.fov = 74; camera.up.set(0, 1, 0);
+    crashAge = 0; crashReason = 'AIRFRAME DESTROYED'; el('crash-animation').hidden = true;
     player.position.set(0, 115, 0); player.quaternion.identity(); cockpit.rotation.set(0, 0, 0);
     manualBanking = false; flightAttitude = { pitch: 0, bank: 0, heading: 0 };
     speed = pitchRate = yawRate = rollRate = shotCooldown = hitTime = killTime = blockedTime = flashTime = pulseFlash = nearMissCooldown = 0;
@@ -412,15 +417,38 @@ function returnToMenu() {
 }
 function finishRun() {
     if (state !== 'playing') return;
+    if (run.outcome === 'crashed') { beginCrash(); return; }
+    showResults();
+}
+function beginCrash() {
+    state = 'crashing'; crashAge = 0; controls.release(); applyAudio();
+    el('pause-screen').hidden = el('load-screen').hidden = el('crash-screen').hidden = el('ui-layer').hidden = true;
+    document.body.classList.remove('damaged', 'boosting', 'emp-active');
+    boostActive = false; airflow.lines.visible = cockpit.visible = airframe.visible = false;
+    crashOrigin.copy(player.position);
+    // Move outside the cockpit, staying on the clear side of the impact surface.
+    const eye = crashOrigin.clone().add(new THREE.Vector3(0, 18, 72).applyQuaternion(player.quaternion));
+    eye.y = Math.max(12, eye.y);
+    const obstruction = city.segmentHit(crashOrigin, eye, 1);
+    if (obstruction) eye.copy(crashOrigin.clone().lerp(eye, Math.max(.05, obstruction.fraction * .8)));
+    crashCameraOffset.copy(eye).sub(crashOrigin);
+    scene.add(camera); camera.position.copy(eye); camera.up.set(0, 1, 0); camera.lookAt(crashOrigin);
+    camera.fov = 74; camera.updateProjectionMatrix();
+    effects.shipExplosion(crashOrigin, camera.quaternion, settings.reducedMotion);
+    sfx('sfxExplosion', crashOrigin, true);
+    el('crash-cause').textContent = crashReason; el('crash-animation').hidden = false; needsRender = true;
+}
+function showResults() {
     state = 'results'; controls.release(); applyAudio(); el('pause-screen').hidden = true; el('load-screen').hidden = true;
+    el('crash-animation').hidden = true;
     el('crash-screen').hidden = false; el('ui-layer').hidden = true;
     const won = run.outcome === 'victory';
     if (won) { tone('victory'); effects.ring(player.position.clone().add(new THREE.Vector3(0, 0, -100).applyQuaternion(player.quaternion)), 0x69ffb5, 180, 1.8, player.quaternion); }
-    else if (run.outcome === 'crashed') { sfx('sfxCrash'); effects.burst(player.position, 0xff628a, 65, true); }
-    else if (run.mode === 'cruise') tone('gate');
-    el('result-eyebrow').textContent = run.mode === 'cruise' ? 'FLIGHT COMPLETE // UNTIL THE NEXT SUNSET' : won ? 'CONTRACT FULFILLED // SKYLINE SECURED' : run.outcome === 'timeout' ? 'CONTRACT WINDOW CLOSED' : 'FLIGHT RECORDER RECOVERED';
-    el('result-title').textContent = run.mode === 'cruise' ? 'A SKYLINE WELL FLOWN' : run.mode === 'practice' ? 'FLIGHT COMPLETE' : run.outcome === 'retired' ? 'PATROL LOGGED' : won ? 'MISSION COMPLETE' : run.outcome === 'timeout' ? 'TIME EXPIRED' : 'SIGNAL LOST';
-    el('result-title').classList.toggle('victory', won || run.mode === 'practice' || run.mode === 'cruise');
+    else if (run.mode === 'cruise' && run.outcome !== 'crashed') tone('gate');
+    const crashed = run.outcome === 'crashed';
+    el('result-eyebrow').textContent = crashed ? 'FLIGHT RECORDER RECOVERED' : run.mode === 'cruise' ? 'FLIGHT COMPLETE // UNTIL THE NEXT SUNSET' : won ? 'CONTRACT FULFILLED // SKYLINE SECURED' : run.outcome === 'timeout' ? 'CONTRACT WINDOW CLOSED' : 'FLIGHT RECORDER RECOVERED';
+    el('result-title').textContent = crashed ? 'SHIP DESTROYED' : run.mode === 'cruise' ? 'A SKYLINE WELL FLOWN' : run.mode === 'practice' ? 'FLIGHT COMPLETE' : run.outcome === 'retired' ? 'PATROL LOGGED' : won ? 'MISSION COMPLETE' : run.outcome === 'timeout' ? 'TIME EXPIRED' : 'SIGNAL LOST';
+    el('result-title').classList.toggle('victory', !crashed && (won || run.mode === 'practice' || run.mode === 'cruise'));
     el('result-rank').textContent = run.mode === 'practice' ? lesson.step === LESSONS.length ? '✓' : '↗' : run.mode === 'mission' && !won ? '—' : rankRun(run);
     el('final-score').textContent = String(run.score).padStart(6, '0');
     el('result-score-label').textContent = run.mode === 'cruise' ? 'DISTANCE FLOWN' : 'FLIGHT SCORE';
@@ -434,6 +462,7 @@ function finishRun() {
     el('result-bonus').textContent = run.mode === 'practice' ? lesson.step === LESSONS.length ? 'Wings earned. Your first intercept contract is waiting on the flight deck.' : 'Keep practising the remaining skills whenever you like.'
         : won ? `Completion bonus +${run.bonus} · time remaining + shields preserved` : 'Recharge gates restore shields and energy. Use F to clear incoming fire.';
     if (run.mode === 'cruise') { el('final-stats').textContent = `${formatTime(run.elapsed)} airborne · ${Math.round(peakSpeed * 3.6)}km/h peak · ${run.gates} gates`; el('result-bonus').textContent = 'Another avenue. Another sunset. Your city is waiting.'; }
+    if (crashed) { el('result-rank').textContent = '—'; el('result-bonus').textContent = `${crashReason}. ${crashReason === 'SHIELDS DEPLETED' ? 'Enemy fire destroyed the airframe.' : 'One collision destroys your ship, regardless of shields.'} Retry to fly this route again.`; }
     el('leaderboard').hidden = run.mode === 'practice' || run.mode === 'cruise';
     el<HTMLInputElement>('player-name').value = settings.pilot;
     el('name-input-section').hidden = run.mode === 'practice' || run.mode === 'cruise' || run.score <= 0;
@@ -715,26 +744,13 @@ function checkCollision(previous: any) {
     const contact = city.segmentHit(previous, player.position, 2.3);
     if (contact) {
         player.position.copy(previous.clone().lerp(player.position, Math.max(0, contact.fraction - 0.015)));
-        const box = contact.building.box.clone().expandByScalar(3.6), p = player.position;
-        const faces = [
-            { axis: 'x', value: box.min.x, normal: new THREE.Vector3(-1, 0, 0) }, { axis: 'x', value: box.max.x, normal: new THREE.Vector3(1, 0, 0) },
-            { axis: 'y', value: box.max.y, normal: new THREE.Vector3(0, 1, 0) }, { axis: 'z', value: box.min.z, normal: new THREE.Vector3(0, 0, -1) }, { axis: 'z', value: box.max.z, normal: new THREE.Vector3(0, 0, 1) },
-        ].sort((a, b) => Math.abs(p[a.axis] - a.value) - Math.abs(p[b.axis] - b.value));
-        p[faces[0].axis] = faces[0].value;
-        const escape = new THREE.Vector3(0, 0, -1).applyQuaternion(player.quaternion).reflect(faces[0].normal).addScaledVector(faces[0].normal, 0.6).normalize();
-        if (Math.abs(escape.y) > 0.9) escape.set(0, 0.7, -0.7).normalize();
-        player.quaternion.setFromRotationMatrix(new THREE.Matrix4().lookAt(p, p.clone().add(escape), up));
-        manualBanking = false;
-        pitchRate = yawRate = rollRate = 0; speed *= .55; driveSpeed = speed; velocity.copy(escape).multiplyScalar(speed); damage('BUILDING IMPACT', true);
+        damage('BUILDING IMPACT', true); return;
     }
     if (player.position.y < 9 || player.position.y > 390) {
         const ground = player.position.y < 9; player.position.y = clamp(player.position.y, 9, 390);
-        const level = recoverBody(player.quaternion, readAttitude(player.quaternion, flightAttitude).heading, 10).orientation;
-        player.quaternion.copy(rotateBody(level, ground ? .22 : -.22, 0, 0)); pitchRate = 0; manualBanking = false;
-        velocity.y = (ground ? 1 : -1) * Math.abs(velocity.y) * .35;
-        damage(ground ? 'GROUND IMPACT' : 'FLIGHT CEILING', true);
+        damage(ground ? 'GROUND IMPACT' : 'FLIGHT CEILING', true); return;
     }
-    if (run.invulnerable <= 0) for (const ship of enemies) {
+    for (const ship of enemies) {
         const start = previous.clone().add(ship.position).sub(ship.userData.previous);
         if (segmentBoxFraction(start, player.position, ship.userData.box, 2.2) !== null) {
             damage('HOSTILE IMPACT', true);
@@ -756,13 +772,8 @@ function checkNearMiss(dt: number) {
     }
 }
 function damage(reason: string, collision = false, amount: number = DIFFICULTIES[run.difficulty].damage, incoming?: any) {
-    if (!damageRun(run, amount, collision)) {
-        if (collision && (run.mode === 'cruise' || run.mode === 'practice') && flashTime === 0) {
-            if (settings.sound) AudioEngine.impact(true, .3);
-            flashTime = .25; showMessage('WINGS RECOVERED', reason === 'FLIGHT CEILING' ? 'Top of the flight envelope · ease the nose down' : 'Your safety systems deflected the impact · R levels the wings', 2, 1);
-        }
-        return;
-    }
+    if (!damageRun(run, amount, collision)) return;
+    if (run.outcome === 'crashed') { crashReason = collision ? reason : 'SHIELDS DEPLETED'; finishRun(); return; }
     if (incoming) {
         const direction = incoming.clone().negate().applyQuaternion(player.quaternion.clone().invert());
         const angle = Math.hypot(direction.x, direction.y) < 0.1 ? direction.z > 0 ? Math.PI : 0 : Math.atan2(direction.x, direction.y);
@@ -771,7 +782,7 @@ function damage(reason: string, collision = false, amount: number = DIFFICULTIES
     }
     flashTime = 0.25; document.body.classList.add('damaged');
     if (settings.sound) AudioEngine.impact(collision);
-    showMessage(reason, collision ? 'Brake and turn · recharge through cyan gates' : 'Incoming fire · change course or press F for EMP', 2.4, 2);
+    showMessage(reason, 'Incoming fire · change course or press F for EMP', 2.4, 2);
     tone('warning');
     if (run.outcome !== 'flying') finishRun();
 }
@@ -1042,7 +1053,7 @@ function updateHud() {
     if (run.mode === 'cruise') {
         const districts = ['LUMEN WARD', 'AFTERGLOW', 'THE NEON MILE', 'ECHO DISTRICT', 'SKYLINE COMMONS'];
         const district = Math.abs(Math.floor(player.position.x / 1200) * 7 + Math.floor(player.position.z / 1200) * 3) % districts.length;
-        el('hud-sector').textContent = `SUNSET CRUISE / ${districts[district]}`; el('hud-objective').textContent = 'No deadline · no damage · follow your own line';
+        el('hud-sector').textContent = `SUNSET CRUISE / ${districts[district]}`; el('hud-objective').textContent = 'No deadline · every collision is fatal';
         el('hud-combo').textContent = `${run.gates} GATES · FLY FREELY`; el('clock-label').textContent = 'AIRBORNE';
     }
     const fill = run.mode === 'practice' ? (lesson.step + (lesson.step < LESSONS.length ? lessonProgress(lesson, run) : 0)) / LESSONS.length
@@ -1151,11 +1162,18 @@ function animate(timestamp: number) {
     if (state === 'playing') {
         let remaining = dt;
         while (remaining > 1e-8 && state === 'playing') { const step = Math.min(remaining, 1 / 120); simulate(step); remaining -= step; }
-        player.updateMatrixWorld(true); camera.updateMatrixWorld(true); updateTarget(true);
-        airflow.update(dt, speed, boostActive && !settings.reducedMotion);
-        AudioEngine.updateFlight({ speed, boost: boostActive, brake: currentInput.brake, turn: Math.abs(yawRate) + Math.abs(pitchRate), shields: run.shields,
-            intensity: boss ? 1 : run.mode === 'cruise' || run.mode === 'practice' ? .1 : Math.min(1, run.sector * .28 + projectiles.length * .06) });
+        if (state === 'playing') {
+            player.updateMatrixWorld(true); camera.updateMatrixWorld(true); updateTarget(true);
+            airflow.update(dt, speed, boostActive && !settings.reducedMotion);
+            AudioEngine.updateFlight({ speed, boost: boostActive, brake: currentInput.brake, turn: Math.abs(yawRate) + Math.abs(pitchRate), shields: run.shields,
+                intensity: boss ? 1 : run.mode === 'cruise' || run.mode === 'practice' ? .1 : Math.min(1, run.sector * .28 + projectiles.length * .06) });
+        }
         needsRender = true;
+    } else if (state === 'crashing') {
+        crashAge = Math.min(CRASH_DURATION, crashAge + dt); effects.update(dt);
+        camera.position.copy(crashOrigin).addScaledVector(crashCameraOffset, settings.reducedMotion ? 1 : 1 + .16 * crashAge / CRASH_DURATION);
+        camera.lookAt(crashOrigin); needsRender = true;
+        if (crashAge >= CRASH_DURATION) showResults();
     } else if (state === 'results' && (effects.particles.length || effects.rings.length)) { effects.update(dt); needsRender = true; }
     if (needsRender) {
         const started = performance.now(); effects.render(); camera.updateMatrixWorld(true); city.cull(camera); presentation.render(scene, camera); needsRender = false;

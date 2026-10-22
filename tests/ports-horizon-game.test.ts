@@ -27,14 +27,27 @@ test('a timeout ends the contract once; practice and endless flights have no dea
         const run = createRun(mode, 'ace', 1); tickRun(run, 1000); assert.equal(run.outcome, 'flying');
     }
 });
-test('damage has a recovery window, interrupts a chain, and cannot bypass practice immunity', () => {
+test('gunfire has a recovery window, interrupts a chain, and cannot bypass practice immunity', () => {
     const run = createRun('mission', 'arcade', 2); tickRun(run, 3); killReward(run, 100);
-    assert.equal(damageRun(run, 28, true), true); assert.equal(run.shields, 72); assert.equal(run.combo, 0); assert.equal(run.streak, 0);
+    assert.equal(damageRun(run, 28), true); assert.equal(run.shields, 72); assert.equal(run.combo, 0); assert.equal(run.streak, 0);
     assert.equal(damageRun(run, 100), false, 'a cluster of simultaneous impacts is one hit');
     tickRun(run, 1.4); assert.equal(damageRun(run, 12), true); assert.equal(run.shields, 60);
     tickRun(run, 6); near(run.shields, 60); tickRun(run, 2); near(run.shields, 64);
     const practice = createRun('practice', 'ace', 2); tickRun(practice, 3);
-    assert.equal(damageRun(practice, 1000, true), false); assert.equal(practice.shields, 100); assert.equal(practice.outcome, 'flying');
+    assert.equal(damageRun(practice, 1000), false); assert.equal(practice.shields, 100); assert.equal(practice.outcome, 'flying');
+});
+
+test('a single collision is fatal in every mode and difficulty, including protection windows', () => {
+    for (const mode of ['mission','endless','practice','cruise'] as const)
+    for (const difficulty of ['relaxed','arcade','ace'] as const)
+    for (const invulnerable of [0, .72, 2]) {
+        const run = createRun(mode, difficulty, 7); run.invulnerable = invulnerable; run.combo = 5; run.streak = 4;
+        assert.equal(damageRun(run, 1, true), true, `${mode}/${difficulty}/${invulnerable}`);
+        assert.equal(run.shields, 0); assert.equal(run.damageTaken, 100); assert.equal(run.outcome, 'crashed');
+        assert.equal(run.combo, 0); assert.equal(run.streak, 0); assert.equal(run.multiplier, 1);
+        tickRun(run, 20); assert.equal(run.elapsed, 0); assert.equal(run.shields, 0);
+        assert.equal(damageRun(run, 1, true), false); assert.equal(gateReward(run), 0); assert.equal(killReward(run, 100).points, 0);
+    }
 });
 test('lethal damage is clamped and freezes further score and damage', () => {
     const run = createRun('mission', 'arcade', 2); tickRun(run, 3);

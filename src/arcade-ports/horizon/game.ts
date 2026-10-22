@@ -17,6 +17,7 @@ export const ENEMIES = [
     { name: 'WARDEN', color: 0xff638f, health: 3, score: 360, scale: 2.1, speed: 30, fireInterval: 4.6 },
 ] as const;
 export const ENERGY = { boostDrain: 27, recovery: 18, delay: 0.65, pulseCost: 45, pulseCooldown: 7, pulseRadius: 260 } as const;
+export const CRASH_DURATION = 1.8;
 export function sentinelCruise(difficulty: Difficulty, distanceAlong: number) {
     const cruise = DIFFICULTIES[difficulty].speed;
     return clamp(cruise * 0.9 + (380 - distanceAlong) * 0.5, 15, cruise * 1.15);
@@ -68,11 +69,18 @@ export function tickRun(run: Run, dt: number) {
     }
 }
 export function damageRun(run: Run, amount: number, collision = false) {
-    if (run.outcome !== 'flying' || run.invulnerable > 0) return false;
+    if (run.outcome !== 'flying') return false;
+    // Physical impacts destroy the airframe, including during gunfire protection or training.
+    if (collision) {
+        run.damageTaken += run.shields; run.shields = 0; run.damageAge = 0;
+        run.combo = run.streak = 0; run.multiplier = 1; run.outcome = 'crashed';
+        return true;
+    }
+    if (run.invulnerable > 0) return false;
     if (run.mode === 'practice' || run.mode === 'cruise') { run.invulnerable = 0.8; return false; }
     const applied = Math.min(run.shields, amount);
     run.shields -= applied; run.damageTaken += applied; run.damageAge = 0;
-    run.invulnerable = collision ? 1.35 : 0.72;
+    run.invulnerable = 0.72;
     run.combo = run.streak = 0; run.multiplier = 1;
     if (run.shields <= 0) run.outcome = 'crashed';
     return true;

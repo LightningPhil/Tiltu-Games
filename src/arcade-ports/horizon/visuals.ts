@@ -226,6 +226,21 @@ export class Effects {
         }
         this.dirty = true;
     }
+    shipExplosion(position: any, quaternion: any, reducedMotion = false) {
+        this.clear();
+        this.burst(position, 0xff641f, reducedMotion ? 18 : 100, true);
+        this.burst(position, 0xffc34d, reducedMotion ? 10 : 55, true);
+        for (const particle of this.particles) {
+            particle.velocity.multiplyScalar(reducedMotion ? .18 : .55);
+            particle.gravity = reducedMotion ? 0 : 12;
+            particle.life = particle.total = 1.65;
+            particle.size = reducedMotion ? 5 : 7;
+        }
+        // A growing hot core, sparks and an expanding shockwave remain visible before debrief.
+        this.particles.push({position:position.clone(),color:0xffa533,velocity:new THREE.Vector3(),life:.75,total:.75,size:42,fireball:true});
+        this.ring(position, 0xffad53, reducedMotion ? 14 : 48, 1.5, quaternion);
+        this.dirty = true;
+    }
     ring(position: any, color: number, maxRadius: number, duration = 0.65, quaternion?: any) {
         const material = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.85, depthWrite: false });
         const ring = new THREE.Mesh(this.ringGeometry, material); ring.position.copy(position);
@@ -238,6 +253,7 @@ export class Effects {
             const particle = this.particles[i]; particle.life -= dt;
             particle.position.addScaledVector(particle.velocity, dt);
             particle.velocity.multiplyScalar(Math.exp(-1.2 * dt));
+            if (particle.gravity) particle.velocity.y -= particle.gravity * dt;
             if (particle.life <= 0) this.particles.splice(i, 1);
         }
         for (let i = this.rings.length - 1; i >= 0; i--) {
@@ -249,7 +265,8 @@ export class Effects {
     render() {
         if (!this.dirty) return;
         this.particles.forEach((particle, i) => {
-            this.scale.setScalar(particle.size * Math.max(0, particle.life / particle.total));
+            const life = Math.max(0, particle.life / particle.total);
+            this.scale.setScalar(particle.size * (particle.fireball ? Math.sin(Math.PI * (1 - life)) * life + life * .3 : life));
             this.matrix.compose(particle.position, this.quaternion, this.scale);
             this.batch.setMatrixAt(i, this.matrix); this.batch.setColorAt(i, this.color.setHex(particle.color));
         });

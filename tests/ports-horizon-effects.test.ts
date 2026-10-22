@@ -14,3 +14,17 @@ test('large explosions share one bounded particle draw and preserve per-particle
     effects.burst(origin, 0xffffff, 10, true); effects.render(); assert.equal(effects.batch.count, 10);
     effects.clear(); effects.render(); assert.equal(effects.batch.count, 0); assert.equal(scene.children.length, 1);
 });
+
+test('ship destruction expands a fireball, moves burning fragments and clears every effect', () => {
+    for (const reduced of [false,true]) {
+        const scene = new THREE.Scene(), effects = new Effects(scene), origin = new THREE.Vector3(10, 20, 30);
+        effects.shipExplosion(origin, new THREE.Quaternion(), reduced); effects.render();
+        assert.ok(effects.batch.count > 20 && effects.batch.count <= 420); assert.equal(scene.children.length, 2);
+        const core = effects.particles.find(p=>p.fireball), index = effects.particles.indexOf(core), start = new THREE.Matrix4(), grown = new THREE.Matrix4();
+        effects.batch.getMatrixAt(index, start); effects.update(.2); effects.render(); effects.batch.getMatrixAt(index, grown);
+        assert.ok(grown.getMaxScaleOnAxis() > start.getMaxScaleOnAxis(), 'the fireball grows before fading');
+        assert.ok(effects.particles.some(p=>!p.fireball&&p.position.distanceTo(origin)>1));
+        assert.ok(effects.rings[0].scale.x > 1);
+        effects.update(1.6); effects.render(); assert.equal(effects.batch.count, 0); assert.equal(effects.rings.length, 0); assert.equal(scene.children.length, 1);
+    }
+});

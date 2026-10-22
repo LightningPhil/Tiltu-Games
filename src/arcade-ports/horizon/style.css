@@ -3,6 +3,9 @@
 .arcade-port.horizon-port { margin:0; background:var(--bg); color:var(--ink); }
 .arcade-port.horizon-port canvas { display:block; }
 .arcade-port.horizon-port [hidden] { display:none !important; }
+.arcade-port.horizon-port #crash-animation { position:absolute;left:50%;bottom:clamp(18px,5vh,48px);transform:translateX(-50%);z-index:50;display:grid;gap:4px;max-width:calc(100% - 28px);padding:12px 20px;border:1px solid #ffac5766;border-radius:8px;background:#170b08e8;color:#fff3dc;text-align:center;pointer-events:none; }
+.arcade-port.horizon-port #crash-animation strong { font-size:clamp(16px,3cqw,24px);letter-spacing:2px;line-height:1.3; }
+.arcade-port.horizon-port #crash-cause { font-size:11px;letter-spacing:1.5px; }
 .arcade-port.horizon-port button,.arcade-port.horizon-port input,.arcade-port.horizon-port select { font:inherit; }
 .arcade-port.horizon-port button { cursor:pointer; }
 .arcade-port.horizon-port button:disabled { opacity:.4; cursor:default; }

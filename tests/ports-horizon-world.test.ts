@@ -42,9 +42,10 @@ test('engine flames and the Sentinel shield cannot inflate solid aircraft hit vo
     }
 });
 
-test('Sunset Cruise is invulnerable, has no deadline and never receives a competitive rank', () => {
+test('Sunset Cruise has no deadline or gunfire damage, but a collision ends the flight', () => {
     const run = createRun('cruise', 'ace', 1); run.invulnerable = 0; tickRun(run, 999);
-    assert.equal(run.outcome, 'flying'); assert.equal(damageRun(run, 1000, true), false); assert.equal(run.shields, 100); assert.equal(rankRun(run), 'FREE FLIGHT');
+    assert.equal(run.outcome, 'flying'); assert.equal(damageRun(run, 1000), false); assert.equal(run.shields, 100); assert.equal(rankRun(run), 'FREE FLIGHT');
+    assert.equal(damageRun(run, 1, true), true); assert.equal(run.outcome, 'crashed');
     const settings = parseSettings('{"mode":"cruise","quality":"bad","view":"chase","musicVolume":9,"effectsVolume":-1}');
     assert.equal(settings.mode, 'cruise'); assert.equal(settings.quality, 'cinematic'); assert.equal(settings.view, 'chase'); assert.equal(settings.musicVolume, 1); assert.equal(settings.effectsVolume, 0);
     assert.equal(parseSettings(null, false, true).quality, 'performance');

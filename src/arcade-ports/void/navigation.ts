@@ -22,4 +22,9 @@ export function voidNavigation(root:HTMLElement){
     {name:'Flight',elements:[get('.flight-settings')]},
     {name:'Sound',elements:[get('.soundtrack-settings')]},
   ]);
+  const shop=get('#shop-screen'),tabs=get('.shop-tabs'),footer=get('.shop-footer');
+  tabs.insertAdjacentHTML('beforeend','<button type="button" id="shop-loadout-tab" role="tab" data-shop-tab="ship">SHIP &amp; REPAIR</button>');
+  shop.insertBefore(tabs,get('#shop-container'));
+  footer.prepend(get('#shop-pagination'));
+  get('.shop-header h1').textContent='RESUPPLY';
 }

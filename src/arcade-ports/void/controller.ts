@@ -197,6 +197,7 @@ const Game = {
         for(const event of ['pointerup','pointercancel','lostpointercapture'])CANVAS_GAME.addEventListener(event,e=>this.pointer.end(e.pointerId));
         CANVAS_GAME.addEventListener('contextmenu',e=>e.preventDefault());
         document.getElementById('repair-decal').innerHTML=shopDiagram('repair');
+        document.getElementById('shop-loadout-tab')?.addEventListener('click',()=>this.selectShopTab('ship'));
         const trackOptions=document.getElementById('music-track-options');
         document.getElementById('music-track-count').innerText=`${Object.keys(MUSIC_TRACKS).length} TRACKS`;
         trackOptions.innerHTML=Object.entries(MUSIC_TRACKS).map(([id,track])=>`<button type="button" data-music-track="${id}" aria-pressed="false" style="--track-color:${track.color}"><span><strong>${track.name}</strong><small>${track.style}</small></span><em>${track.bpm}<small>BPM</small></em></button>`).join('');
@@ -721,6 +722,9 @@ const Game = {
         if(!shopWasOpen){this.player.refillOrdnance();this.player.pendingShots=[];this.player.fireTimer=0;}
         this.paused = true; this.clearKeys(); this.accumulator = 0;AudioEngine.updateVolumes();
         const shopUI = document.getElementById('shop-screen');
+        const compact=compactShop(window.innerWidth,window.innerHeight);
+        if(!compact&&this.shopTab==='ship')this.shopTab='weapons';
+        shopUI.classList.toggle('shop-ship-view',this.shopTab==='ship');
         const grid = document.getElementById('shop-grid');
         document.getElementById('shop-coins').innerText = Math.floor(this.coins);
         document.getElementById('shop-ship-value').innerText = getShipValue(this.levels).toLocaleString();
@@ -747,8 +751,8 @@ const Game = {
             speed: `${stats.speedBase.toFixed(1)} SPEED`, shieldGen: `${stats.maxRegenShield} / ${stats.regenPerSecond.toFixed(1)}/SEC`, magnet: stats.magnetRange ? `${stats.magnetRange} RANGE` : 'OFF',
         })[key];
         document.querySelectorAll('[data-shop-tab]').forEach(button=>{const selected=button.dataset.shopTab===this.shopTab;button.classList.toggle('selected',selected);button.setAttribute('aria-selected',String(selected));});
-        const catalogue=Object.keys(GAME_CONFIG.UPGRADES).filter(key=>this.shopTab==='ordnance'?ORDNANCE_KEYS.includes(key):this.shopTab==='weapons'?MODULE_KEYS.includes(key)&&!ORDNANCE_KEYS.includes(key):!MODULE_KEYS.includes(key));
-        const pageSize=compactShop(window.innerWidth,window.innerHeight)?2:6,pages=Math.ceil(catalogue.length/pageSize);
+        const catalogue=this.shopTab==='ship'?[]:Object.keys(GAME_CONFIG.UPGRADES).filter(key=>this.shopTab==='ordnance'?ORDNANCE_KEYS.includes(key):this.shopTab==='weapons'?MODULE_KEYS.includes(key)&&!ORDNANCE_KEYS.includes(key):!MODULE_KEYS.includes(key));
+        const pageSize=compact?2:6,pages=Math.max(1,Math.ceil(catalogue.length/pageSize));
         this.shopPage=Math.max(0,Math.min(pages-1,this.shopPage));
         document.getElementById('shop-pagination').hidden=pages<=1;
         document.getElementById('shop-page-label').innerText=`${this.shopPage+1} / ${pages}`;
@@ -777,7 +781,7 @@ const Game = {
         if(!shopWasOpen){shopUI.scrollTop=0;this.focusOverlay('shop-screen');}
         else if(previousBuy||previousSalvage){const key=previousBuy||previousSalvage;const candidate=grid.querySelector(`[data-buy="${key}"]:not(:disabled)`)||grid.querySelector(`[data-upgrade="${key}"]`);candidate?.focus?.({preventScroll:true});}
     },
-    selectShopTab(tab) { if(this.salvagePending||!['weapons','ordnance','systems'].includes(tab))return;this.shopTab=tab;this.shopPage=0;this.openShop();document.querySelector(`[data-shop-tab="${tab}"]`)?.focus?.({preventScroll:true}); },
+    selectShopTab(tab) { if(this.salvagePending||!['weapons','ordnance','systems','ship'].includes(tab))return;this.shopTab=tab;this.shopPage=0;this.openShop();document.querySelector(`[data-shop-tab="${tab}"]`)?.focus?.({preventScroll:true}); },
     changeShopPage(direction) { if(this.salvagePending)return;this.shopPage+=direction;this.openShop();document.getElementById(direction>0?'shop-prev':'shop-next').focus?.({preventScroll:true}); },
 
     updateHUD() {
